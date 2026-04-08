@@ -481,23 +481,23 @@
 
                         <!-- Заголовок -->
                         <TextBlock Grid.Row="0"
-               Text="⚙️ КАЛИБРОВКА ВЕСОВ"
-               FontSize="28"
-               FontWeight="Bold"
-               Foreground="{StaticResource WhiteBrush}"
-               HorizontalAlignment="Center"
-               Margin="0,30,0,30"/>
+   Text="⚙️ КАЛИБРОВКА ВЕСОВ"
+   FontSize="28"
+   FontWeight="Bold"
+   Foreground="{StaticResource WhiteBrush}"
+   HorizontalAlignment="Center"
+   Margin="0,30,0,30"/>
 
                         <!-- Основная карточка -->
                         <Border Grid.Row="1"
-            Background="#344955"
-            CornerRadius="20"
-            Margin="50,0,50,50"
-            Padding="35"
-            VerticalAlignment="Center"
-            HorizontalAlignment="Center"
-            MinWidth="650"
-            MaxWidth="850">
+Background="#344955"
+CornerRadius="20"
+Margin="50,0,50,50"
+Padding="35"
+VerticalAlignment="Center"
+HorizontalAlignment="Center"
+MinWidth="650"
+MaxWidth="850">
 
                             <Grid>
                                 <Grid.RowDefinitions>
@@ -516,11 +516,11 @@
 
                                 <!-- Выбор терминала -->
                                 <Border Grid.Row="0" 
-                    Grid.ColumnSpan="3"
-                    Background="#2C3E50"
-                    CornerRadius="12"
-                    Padding="20"
-                    Margin="0,0,0,10">
+        Grid.ColumnSpan="3"
+        Background="#2C3E50"
+        CornerRadius="12"
+        Padding="20"
+        Margin="0,0,0,10">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
@@ -529,48 +529,48 @@
                                         </Grid.ColumnDefinitions>
 
                                         <TextBlock Text="🔢" 
-                               FontSize="24"
-                               VerticalAlignment="Center"
-                               Margin="0,0,15,0"/>
+                   FontSize="24"
+                   VerticalAlignment="Center"
+                   Margin="0,0,15,0"/>
 
                                         <StackPanel Grid.Column="1">
                                             <TextBlock Text="ВЫБОР ДАТЧИКА"
-                                   Foreground="#7F8C8D"
-                                   FontSize="11"
-                                   FontWeight="Bold"
-                                   Margin="0,0,0,5"/>
+                       Foreground="#7F8C8D"
+                       FontSize="11"
+                       FontWeight="Bold"
+                       Margin="0,0,0,5"/>
                                             <TextBlock Text="Укажите номер датчика для калибровки"
-                                   Foreground="#95A5A6"
-                                   FontSize="12"
-                                   Margin="0,0,0,8"/>
+                       Foreground="#95A5A6"
+                       FontSize="12"
+                       Margin="0,0,0,8"/>
                                         </StackPanel>
 
                                         <Border Grid.Column="2"
-                            Background="#344955"
-                            CornerRadius="8"
-                            Padding="15,10">
-                                            <TextBox Text="1"
-                                 FontSize="18"
-                                 FontWeight="Bold"
-                                 Width="80"
-                                 HorizontalAlignment="Center"
-                                 TextAlignment="Center"
-                                 Background="Transparent"
-                                 Foreground="#F1C40F"
-                                 BorderThickness="0"
-                                 CaretBrush="White">
+                Background="#344955"
+                CornerRadius="8"
+                Padding="15,10">
+                                            <TextBox Text="{Binding TerminalNumber, UpdateSourceTrigger=PropertyChanged}"
+                     FontSize="18"
+                     FontWeight="Bold"
+                     Width="80"
+                     HorizontalAlignment="Center"
+                     TextAlignment="Center"
+                     Background="Transparent"
+                     Foreground="#F1C40F"
+                     BorderThickness="0"
+                     CaretBrush="White">
                                                 <TextBox.Style>
                                                     <Style TargetType="TextBox">
                                                         <Setter Property="Template">
                                                             <Setter.Value>
                                                                 <ControlTemplate TargetType="TextBox">
                                                                     <Border Background="#344955"
-                                                        CornerRadius="8"
-                                                        BorderThickness="1"
-                                                        BorderBrush="#4A6572">
+                                            CornerRadius="8"
+                                            BorderThickness="1"
+                                            BorderBrush="#4A6572">
                                                                         <ScrollViewer x:Name="PART_ContentHost" 
-                                                                  Margin="15,10"
-                                                                  HorizontalAlignment="Center"/>
+                                                      Margin="15,10"
+                                                      HorizontalAlignment="Center"/>
                                                                     </Border>
                                                                 </ControlTemplate>
                                                             </Setter.Value>
@@ -584,46 +584,46 @@
 
                                 <!-- Точка 0 (Нулевая калибровка) -->
                                 <Border Grid.Row="2" 
-                    Grid.Column="0"
-                    Background="#2C3E50"
-                    CornerRadius="12"
-                    Padding="25"
-                    Margin="0,0,15,0">
+        Grid.Column="0"
+        Background="#2C3E50"
+        CornerRadius="12"
+        Padding="25"
+        Margin="0,0,15,0">
                                     <StackPanel>
                                         <TextBlock Text="🎯 ТОЧКА 0"
-                               Foreground="#7F8C8D"
-                               FontSize="11"
-                               FontWeight="Bold"
-                               Margin="0,0,0,15"/>
+                   Foreground="#7F8C8D"
+                   FontSize="11"
+                   FontWeight="Bold"
+                   Margin="0,0,0,15"/>
 
                                         <TextBlock Text="Калибровка нуля"
-                               Foreground="White"
-                               FontSize="16"
-                               FontWeight="SemiBold"
-                               Margin="0,0,0,10"/>
+                   Foreground="White"
+                   FontSize="16"
+                   FontWeight="SemiBold"
+                   Margin="0,0,0,10"/>
 
                                         <TextBlock Text="Убедитесь, что на платформе нет груза"
-                               Foreground="#95A5A6"
-                               FontSize="12"
-                               Margin="0,0,0,20"/>
+                   Foreground="#95A5A6"
+                   FontSize="12"
+                   Margin="0,0,0,20"/>
 
                                         <Button Command="{Binding ZeroPointCommand}"
-                            Height="55"
-                            Background="#E67E22"
-                            Foreground="White"
-                            FontSize="16"
-                            FontWeight="Bold"
-                            Cursor="Hand">
+                Height="55"
+                Background="#E67E22"
+                Foreground="White"
+                FontSize="16"
+                FontWeight="Bold"
+                Cursor="Hand">
                                             <Button.Style>
                                                 <Style TargetType="Button">
                                                     <Setter Property="Template">
                                                         <Setter.Value>
                                                             <ControlTemplate TargetType="Button">
                                                                 <Border Background="{TemplateBinding Background}"
-                                                    CornerRadius="10">
+                                        CornerRadius="10">
                                                                     <ContentPresenter HorizontalAlignment="Center"
-                                                                  VerticalAlignment="Center"
-                                                                  Margin="20,15"/>
+                                                      VerticalAlignment="Center"
+                                                      Margin="20,15"/>
                                                                 </Border>
                                                             </ControlTemplate>
                                                         </Setter.Value>
@@ -645,42 +645,42 @@
                                         </Button>
 
                                         <TextBlock Text="Статус: готов"
-                               Foreground="#27AE60"
-                               FontSize="11"
-                               Margin="0,12,0,0"
-                               HorizontalAlignment="Center"/>
+                   Foreground="#27AE60"
+                   FontSize="11"
+                   Margin="0,12,0,0"
+                   HorizontalAlignment="Center"/>
                                     </StackPanel>
                                 </Border>
 
                                 <!-- Разделитель -->
                                 <TextBlock Grid.Row="2" 
-                       Grid.Column="1"
-                       Text="VS"
-                       FontSize="14"
-                       FontWeight="Bold"
-                       Foreground="#7F8C8D"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Center"/>
+           Grid.Column="1"
+           Text="VS"
+           FontSize="14"
+           FontWeight="Bold"
+           Foreground="#7F8C8D"
+           VerticalAlignment="Center"
+           HorizontalAlignment="Center"/>
 
                                 <!-- Точка 1 (Калибровка весом) -->
                                 <Border Grid.Row="2" 
-                    Grid.Column="2"
-                    Background="#2C3E50"
-                    CornerRadius="12"
-                    Padding="25"
-                    Margin="15,0,0,0">
+        Grid.Column="2"
+        Background="#2C3E50"
+        CornerRadius="12"
+        Padding="25"
+        Margin="15,0,0,0">
                                     <StackPanel>
                                         <TextBlock Text="⚖️ ТОЧКА 1"
-                               Foreground="#7F8C8D"
-                               FontSize="11"
-                               FontWeight="Bold"
-                               Margin="0,0,0,15"/>
+                   Foreground="#7F8C8D"
+                   FontSize="11"
+                   FontWeight="Bold"
+                   Margin="0,0,0,15"/>
 
                                         <TextBlock Text="Калибровка эталонным весом"
-                               Foreground="White"
-                               FontSize="16"
-                               FontWeight="SemiBold"
-                               Margin="0,0,0,10"/>
+                   Foreground="White"
+                   FontSize="16"
+                   FontWeight="SemiBold"
+                   Margin="0,0,0,10"/>
 
                                         <Grid Margin="0,0,0,20">
                                             <Grid.ColumnDefinitions>
@@ -689,55 +689,55 @@
                                             </Grid.ColumnDefinitions>
 
                                             <TextBlock Text="Эталонный вес:"
-                                   Foreground="#95A5A6"
-                                   FontSize="12"
-                                   VerticalAlignment="Center"/>
+                       Foreground="#95A5A6"
+                       FontSize="12"
+                       VerticalAlignment="Center"/>
 
                                             <Border Grid.Column="1"
-                                Background="#344955"
-                                CornerRadius="8"
-                                Padding="10,5"
-                                Margin="10,0,0,0">
+                    Background="#344955"
+                    CornerRadius="8"
+                    Padding="10,5"
+                    Margin="10,0,0,0">
                                                 <Grid>
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="Auto"/>
                                                         <ColumnDefinition Width="Auto"/>
                                                     </Grid.ColumnDefinitions>
 
-                                                    <TextBox Text="100"
-                                         FontSize="14"
-                                         Width="80"
-                                         TextAlignment="Center"
-                                         Background="Transparent"
-                                         Foreground="#F1C40F"
-                                         BorderThickness="0"/>
+                                                    <TextBox Text="{Binding EtalonWeight, UpdateSourceTrigger=PropertyChanged}"
+                             FontSize="14"
+                             Width="80"
+                             TextAlignment="Center"
+                             Background="Transparent"
+                             Foreground="#F1C40F"
+                             BorderThickness="0"/>
 
                                                     <TextBlock Grid.Column="1"
-                                           Text=" кг"
-                                           Foreground="White"
-                                           VerticalAlignment="Center"
-                                           Margin="5,0,0,0"/>
+                               Text=" кг"
+                               Foreground="White"
+                               VerticalAlignment="Center"
+                               Margin="5,0,0,0"/>
                                                 </Grid>
                                             </Border>
                                         </Grid>
 
                                         <Button Command="{Binding EtalonPointCommand}"
-                            Height="55"
-                            Background="#27AE60"
-                            Foreground="White"
-                            FontSize="16"
-                            FontWeight="Bold"
-                            Cursor="Hand">
+                Height="55"
+                Background="#27AE60"
+                Foreground="White"
+                FontSize="16"
+                FontWeight="Bold"
+                Cursor="Hand">
                                             <Button.Style>
                                                 <Style TargetType="Button">
                                                     <Setter Property="Template">
                                                         <Setter.Value>
                                                             <ControlTemplate TargetType="Button">
                                                                 <Border Background="{TemplateBinding Background}"
-                                                    CornerRadius="10">
+                                        CornerRadius="10">
                                                                     <ContentPresenter HorizontalAlignment="Center"
-                                                                  VerticalAlignment="Center"
-                                                                  Margin="20,15"/>
+                                                      VerticalAlignment="Center"
+                                                      Margin="20,15"/>
                                                                 </Border>
                                                             </ControlTemplate>
                                                         </Setter.Value>
@@ -759,20 +759,20 @@
                                         </Button>
 
                                         <TextBlock Text="Поместите груз на платформу перед калибровкой"
-                               Foreground="#E67E22"
-                               FontSize="10"
-                               Margin="0,12,0,0"
-                               HorizontalAlignment="Center"/>
+                   Foreground="#E67E22"
+                   FontSize="10"
+                   Margin="0,12,0,0"
+                   HorizontalAlignment="Center"/>
                                     </StackPanel>
                                 </Border>
 
                                 <!-- Информационная панель -->
                                 <Border Grid.Row="4" 
-                    Grid.ColumnSpan="3"
-                    Background="#2C3E50"
-                    CornerRadius="12"
-                    Padding="15"
-                    Margin="0,20,0,0">
+        Grid.ColumnSpan="3"
+        Background="#2C3E50"
+        CornerRadius="12"
+        Padding="15"
+        Margin="0,20,0,0">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
@@ -781,37 +781,37 @@
                                         </Grid.ColumnDefinitions>
 
                                         <TextBlock Text="ℹ️" 
-                               FontSize="18"
-                               VerticalAlignment="Center"
-                               Margin="0,0,15,0"/>
+                   FontSize="18"
+                   VerticalAlignment="Center"
+                   Margin="0,0,15,0"/>
 
                                         <TextBlock Grid.Column="1"
-                               Text="Перед калибровкой убедитесь в стабильности весов. Процесс может занять несколько секунд."
-                               Foreground="#95A5A6"
-                               FontSize="11"
-                               TextWrapping="Wrap"/>
+                   Text="Перед калибровкой убедитесь в стабильности весов. Процесс может занять несколько секунд."
+                   Foreground="#95A5A6"
+                   FontSize="11"
+                   TextWrapping="Wrap"/>
 
                                         <Button Grid.Column="2"
-                            Content="Помощь"
-                            Background="Transparent"
-                            Foreground="#3498DB"
-                            BorderThickness="1"
-                            BorderBrush="#3498DB"
-                            Padding="15,8"
-                            FontSize="11"
-                            Cursor="Hand">
+                Content="Помощь"
+                Background="Transparent"
+                Foreground="#3498DB"
+                BorderThickness="1"
+                BorderBrush="#3498DB"
+                Padding="15,8"
+                FontSize="11"
+                Cursor="Hand">
                                             <Button.Style>
                                                 <Style TargetType="Button">
                                                     <Setter Property="Template">
                                                         <Setter.Value>
                                                             <ControlTemplate TargetType="Button">
                                                                 <Border Background="{TemplateBinding Background}"
-                                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                                    BorderThickness="{TemplateBinding BorderThickness}"
-                                                    CornerRadius="8">
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        CornerRadius="8">
                                                                     <ContentPresenter HorizontalAlignment="Center"
-                                                                  VerticalAlignment="Center"
-                                                                  Margin="15,8"/>
+                                                      VerticalAlignment="Center"
+                                                      Margin="15,8"/>
                                                                 </Border>
                                                             </ControlTemplate>
                                                         </Setter.Value>

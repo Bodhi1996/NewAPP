@@ -426,8 +426,30 @@ namespace NewAPP
             }
         }
 
-        
-        
+        private string _terminalNumber; //добавлено свойство для ввода терминала
+        public string TerminalNumber
+        {
+            get => _terminalNumber;
+            set
+            {
+                _terminalNumber = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _etalonWeight = "150"; //еталонный вес
+        public string EtalonWeight
+        {
+            get => _etalonWeight;
+            set
+            {
+                _etalonWeight = value; OnPropertyChanged();
+            }
+        }
+
+
+
+
 
         // ===== КОМАНДЫ =====
         public ICommand StartStopCommand { get; }
@@ -837,17 +859,24 @@ namespace NewAPP
 
         private async void ExecuteZeroPoint ( object param )
         {
-           
-                try
+            try
+            {
+                // Получаем номер терминала из свойства
+                if (!byte.TryParse(TerminalNumber, out byte terminalAddress))
                 {
-                    await _calibration.CalibZero("192.168.0.56", 5000, 1);
-                    MessageBox.Show("Калибровка выполнена успешно");
+                    MessageBox.Show("Введите корректный номер терминала (1-255)", "Ошибка");
+                    return;
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Ошибка: {ex.Message}");
-                }
+                //await _modbusService.TareAfterExternal(TerminalVM.IpAddress,int.Parse(TerminalVM.Port), byte.Parse(TerminalVM.UnitId));
+                await _calibration.CalibZero("192.168.0.56", 5000, terminalAddress);
+                MessageBox.Show("Калибровка нуля выполнена успешно", "Успех");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка");
+            }
         }
+
 
         private async void ExecuteAddUser ( object param ) //добавление пользователя
         {
@@ -891,7 +920,8 @@ namespace NewAPP
         {
             try
             {
-                await _calibration.CalibWeight("192.168.0.56", 5000, 1, 100);
+                await _calibration.CalibWeight("192.168.0.56", 5000, 1, int.Parse(EtalonWeight));
+                await _calibration.CalibWeight("192.168.0.56", 5000, 1, int.Parse(EtalonWeight));
                 MessageBox.Show("Вес успешно выставлен");
             }
             catch (Exception ex)
