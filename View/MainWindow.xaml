@@ -1,0 +1,1274 @@
+﻿<Window x:Class="NewAPP.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NewAPP"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+
+        <!-- Цветовая палитра (оставь как у тебя) -->
+        <Color x:Key="DarkBlueColor">#2C3E50</Color>
+        <Color x:Key="MediumBlueColor">#344955</Color>
+        <Color x:Key="LightBlueColor">#4A6572</Color>
+        <Color x:Key="BlueBorderColor">#3498DB</Color>
+        <Color x:Key="CellDarkBlueColor">#2C3E50</Color>
+        <Color x:Key="WhiteColor">#FFFFFF</Color>
+        <Color x:Key="LightGrayColor">#F5F5F5</Color>
+
+        <SolidColorBrush x:Key="DarkBlueBrush" Color="{StaticResource DarkBlueColor}"/>
+        <SolidColorBrush x:Key="MediumBlueBrush" Color="{StaticResource MediumBlueColor}"/>
+        <SolidColorBrush x:Key="LightBlueBrush" Color="{StaticResource LightBlueColor}"/>
+        <SolidColorBrush x:Key="BlueBorderBrush" Color="{StaticResource BlueBorderColor}"/>
+        <SolidColorBrush x:Key="CellDarkBlueBrush" Color="{StaticResource CellDarkBlueColor}"/>
+        <SolidColorBrush x:Key="WhiteBrush" Color="{StaticResource WhiteColor}"/>
+        <SolidColorBrush x:Key="LightGrayBrush" Color="{StaticResource LightGrayColor}"/>
+
+        <!-- Стили для кнопок (оставь как у тебя) -->
+        <Style x:Key="TopButtonStyle" TargetType="Button">
+            <!-- ... твой стиль ... -->
+        </Style>
+
+        <Style x:Key="LeftButtonStyle" TargetType="Button" BasedOn="{StaticResource TopButtonStyle}">
+            <Setter Property="Padding" Value="20,12"/>
+            <Setter Property="Margin" Value="5,2"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        </Style>
+
+        <!-- Стиль для ячеек с датчиками -->
+        <Style x:Key="SensorCellStyle" TargetType="Border">
+            <Setter Property="Background" Value="#27AE60"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BlueBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Margin" Value="6"/>
+            <Setter Property="Width" Value="170"/>
+            <Setter Property="Height" Value="150"/>
+        </Style>
+
+        <!-- DataTemplate для датчика -->
+        <DataTemplate x:Key="SensorTemplate">
+            <Border Style="{StaticResource SensorCellStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Название датчика -->
+                    <TextBlock Grid.Row="0" 
+                       Text="{Binding Name}"
+                       FontWeight="Bold"
+                       FontSize="12"
+                       Foreground="{StaticResource WhiteBrush}"
+                       HorizontalAlignment="Center"
+                       Margin="0,2,0,2"/>
+
+                    <!-- Местоположение (0-0-0) -->
+                    <TextBlock Grid.Row="1" 
+                       Text="{Binding Location, StringFormat='📍 {0}'}"
+                       FontSize="9"
+                       Foreground="#F1C40F"
+                       HorizontalAlignment="Center"
+                       Margin="0,2,0,2"/>
+
+                    <!-- ВЫПАДАЮЩИЙ СПИСОК НОМЕНКЛАТУРЫ -->
+                    <ComboBox Grid.Row="2"
+                      ItemsSource="{Binding DataContext.LoadlNum, RelativeSource={RelativeSource AncestorType=Window}}"
+                      DisplayMemberPath="Name"
+                      SelectedValuePath="Name"
+                      SelectedValue="{Binding SelectedNomenclature, UpdateSourceTrigger=PropertyChanged}"
+                      Width="130"
+                      Height="24"
+                      Margin="5,2"
+                      FontSize="10"
+                      Background="#34495E"
+                      Foreground="Black"
+                      BorderBrush="#4A6572"/>
+
+                    <!-- Вес и единицы измерения в одной строке -->
+                    <StackPanel Grid.Row="3" 
+                        Orientation="Horizontal" 
+                        HorizontalAlignment="Center"
+                        Margin="0,2,0,2">
+                        <TextBlock Text="{Binding Weight}" 
+                           FontSize="22" 
+                           FontWeight="Bold" 
+                           Foreground="#F1C40F"/>
+                        <TextBlock Text="{Binding SelectedUnit, StringFormat='({0})'}" 
+                           FontSize="10" 
+                           Foreground="#A5D6A7"
+                           Margin="5,0,0,5"
+                           VerticalAlignment="Bottom"/>
+                    </StackPanel>
+
+                    <!-- Нижняя панель со статусом и кнопкой Убрать -->
+                    <Border Grid.Row="4" 
+                    Background="#2C3E50" 
+                    CornerRadius="0,0,5,5" 
+                    Margin="-1,-2,-1,-1" 
+                    Padding="5,2"
+                    VerticalAlignment="Bottom">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Статус подключения -->
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                <Ellipse Width="7" Height="7" 
+                                 Fill="{Binding StatusColor}"
+                                 Margin="0,0,4,0"/>
+                                <TextBlock Text="{Binding StatusText}" 
+                                   FontSize="9" FontWeight="Bold"
+                                   Foreground="{Binding StatusColor}"/>
+                            </StackPanel>
+
+                            <!-- Кнопка "Убрать" -->
+                            <Button Grid.Column="1" 
+                            Content="Убрать"
+                            Background="#E74C3C" 
+                            Foreground="White"
+                            BorderThickness="0"
+                            Padding="8,3"
+                            FontSize="9"
+                            FontWeight="Bold"
+                            Command="{Binding DataContext.DeleteNomCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                            CommandParameter="{Binding}"
+                            Cursor="Hand">
+                                <Button.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="3"/>
+                                    </Style>
+                                </Button.Resources>
+                            </Button>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid Background="{StaticResource WhiteBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Верхняя панель -->
+        <Border Grid.Row="0" Background="{StaticResource DarkBlueBrush}" 
+                BorderBrush="{StaticResource BlueBorderBrush}" BorderThickness="0,0,0,2"
+                Padding="10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Левые кнопки управления -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" 
+                            Visibility="{Binding IsTopControlsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+
+                    <Button Content="{Binding StartButtonText}"
+                            Background="{Binding StartButtonColor}"
+                            Command="{Binding StartStopCommand}"
+                            Width="100"
+                            Foreground="White"
+                            FontWeight="Bold"
+                            Margin="5,0"/>
+
+                    <Button Content="📡 ТЕСТ MODBUS"
+                            Command="{Binding TestConnectionCommand}"
+                            Width="120"
+                            Background="#FF00008B"
+                            Foreground="White"
+                            FontWeight="Bold"
+                            Margin="5,0"/>
+                </StackPanel>
+
+                <!-- Центральные кнопки -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Content="ОТЧЕТ" Style="{StaticResource TopButtonStyle}" Width="120"/>
+                    <Button Content="БАЗА ДАННЫХ" Style="{StaticResource TopButtonStyle}" Width="120"/>
+                    <Button Content="СКЛАД" Style="{StaticResource TopButtonStyle}" Width="120" Command="{Binding SetingSklad}" 
+                            Visibility="{Binding IsVisibleSklad,Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                </StackPanel>
+
+                <!-- Правые настройки -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal" 
+                            Visibility="{Binding IsRightCellsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+
+                    <TextBlock Text="Датчиков:"
+                             VerticalAlignment="Center"
+                             Foreground="White"
+                             Margin="10,0,5,0"/>
+
+                    <ComboBox Width="80"
+                              ItemsSource="{Binding AvailableCounts}"
+                              SelectedItem="{Binding SelectedSensorsCount}"/>
+
+                    <TextBlock Text="Колонок:"
+                             VerticalAlignment="Center"
+                             Foreground="White"
+                             Margin="20,0,5,0"/>
+
+                    <ComboBox Width="80"
+                              ItemsSource="{Binding AvailableColumns}"
+                              SelectedItem="{Binding SelectedColumns}"/>
+
+                    <Button Content="{Binding ModeButtonText}"
+                            Background="{Binding ModeButtonColor}"
+                            Command="{Binding SwitchModeCommand}"
+                            Width="80"
+                            Foreground="White"
+                            FontWeight="Bold"
+                            Margin="10,0,0,0"
+                            ToolTip="Тестовый/MODBUS режим"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Основная область -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Левое меню -->
+            <Border Grid.Column="0" Background="{StaticResource DarkBlueBrush}" 
+                    BorderBrush="{StaticResource BlueBorderBrush}" BorderThickness="0,0,2,0"
+                    Padding="10">
+                <StackPanel>
+                    <TextBlock Text="МЕНЮ" Foreground="{StaticResource WhiteBrush}" 
+                             FontSize="16" FontWeight="Bold" 
+                             Margin="5,0,5,10" HorizontalAlignment="Center"/>
+
+                    <Button Content="ГЛАВНОЕ ОКНО" 
+                            Style="{StaticResource LeftButtonStyle}"
+                            Command="{Binding ShowSensorsCommand}"
+                            Background="{StaticResource BlueBorderBrush}"/>
+
+                    <Button Content="НАСТРОЙКИ" 
+                            Style="{StaticResource LeftButtonStyle}"
+                            Command="{Binding ShowSettingsCommand}"
+                            Background="{StaticResource BlueBorderBrush}"/>
+
+                    <Button Content="СЕТЬ" 
+                            Style="{StaticResource LeftButtonStyle}"
+                            Command="{Binding ShowNetworkCommand}"
+                            Background="{StaticResource BlueBorderBrush}"/>
+
+                    <Button Content="НОМЕНКЛАТУРА" 
+                            Style="{StaticResource LeftButtonStyle}"
+                            Command="{Binding ButtonDataBase}"
+                            Background="{StaticResource BlueBorderBrush}"
+                            Visibility="{Binding IsDataBaseButtonVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+                    <Button Content="ИСТОРИЯ" 
+                            Style="{StaticResource LeftButtonStyle}"
+                            Command="{Binding ShowHistoryCommand}"
+                            Background="{StaticResource BlueBorderBrush}"/>
+                    <Button Content="Добавление юзера"
+                            Style="{StaticResource LeftButtonStyle}"
+                            Command="{Binding AddUserCommand}"
+                            Visibility="{Binding IsAddButtonUsersVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            Background="{StaticResource BlueBorderBrush}" x:Name="ButtonAddUsersMenu"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Центральная область -->
+            <Border Grid.Column="1" Background="{StaticResource DarkBlueBrush}" Padding="15">
+                <Grid>
+                    <!-- Приветствие -->
+                    <TextBlock Text="Выберите пункт меню слева" 
+                             FontSize="18" 
+                             Foreground="{StaticResource DarkBlueBrush}"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Center"
+                             Visibility="{Binding IsWelcomeVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+                    <!-- Настройки TCP -->
+                    <!-- Настройки TCP - Убираем DataContext и используем полный путь -->
+                    <Grid Visibility="{Binding IsTcpSettingsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" d:Visibility="Collapsed">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Заголовок -->
+                        <TextBlock Grid.Row="0" 
+               Text="🌐 УПРАВЛЕНИЕ TCP ТЕРМИНАЛАМИ"
+               FontSize="24" 
+               FontWeight="Bold"
+               Foreground="{StaticResource WhiteBrush}"
+               HorizontalAlignment="Center"
+               Margin="0,20,0,30"/>
+
+                        <!-- Основная область с двумя колонками -->
+                        <Grid Grid.Row="1" Margin="20,0,20,20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="320"/>
+                                <ColumnDefinition Width="15"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- ЛЕВАЯ ПАНЕЛЬ: Список терминалов -->
+                            <Border Grid.Column="0" Background="#344955" CornerRadius="15" Padding="15">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Заголовок списка -->
+                                    <StackPanel Grid.Row="0" Margin="0,0,0,15">
+                                        <TextBlock Text="📡 ТЕРМИНАЛЫ" Foreground="#F1C40F" FontSize="14" FontWeight="Bold" Margin="0,0,0,5"/>
+                                        <TextBlock Text="Список подключенных устройств" Foreground="#95A5A6" FontSize="11"/>
+                                        <Border Height="1" Background="#4A6572" Margin="0,10,0,10"/>
+                                    </StackPanel>
+
+                                    <!-- Список терминалов - ИСПРАВЛЕНО: используем TerminalVM.Terminals -->
+                                    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" MaxHeight="400">
+                                        <ItemsControl ItemsSource="{Binding TerminalVM.Terminals}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Background="#2C3E50" CornerRadius="10" Margin="0,0,0,8" Padding="12,10" Cursor="Hand">
+                                                        <Border.InputBindings>
+                                                            <MouseBinding MouseAction="LeftClick" Command="{Binding DataContext.TerminalVM.SelectTerminalCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                      CommandParameter="{Binding}"/>
+                                                        </Border.InputBindings>
+                                                        <Border.Style>
+                                                            <Style TargetType="Border">
+                                                                <Style.Triggers>
+                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                        <Setter Property="Background" Value="#3D5166"/>
+                                                                    </Trigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Border.Style>
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                                <ColumnDefinition Width="*"/>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <Border Grid.Column="0" Width="10" Height="10" CornerRadius="5" Background="{Binding StatusColor}" Margin="0,0,12,0"/>
+                                                            <StackPanel Grid.Column="1">
+                                                                <TextBlock Text="{Binding Name}" Foreground="White" FontWeight="Bold" FontSize="13"/>
+                                                                <TextBlock Text="{Binding IpAddress}" Foreground="#7F8C8D" FontSize="10" Margin="0,3,0,0"/>
+                                                                <TextBlock Foreground="#7F8C8D" FontSize="10">
+                                                <Run Text="Порт: "/><Run Text="{Binding Port}"/><Run Text=" | ID: "/><Run Text="{Binding UnitId}"/>
+                                                                </TextBlock>
+                                                            </StackPanel>
+                                                            <Border Grid.Column="2" Width="24" Height="24" CornerRadius="12" Background="#4A6572" VerticalAlignment="Center">
+                                                                <TextBlock Text="›" Foreground="White" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                            </Border>
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </ScrollViewer>
+
+                                    <!-- Статистика - ИСПРАВЛЕНО -->
+                                    <Border Grid.Row="3" Background="#2C3E50" CornerRadius="10" Padding="12,10" Margin="0,15,0,0">
+                                        <StackPanel>
+                                            <TextBlock Text="📊 СТАТИСТИКА" Foreground="#7F8C8D" FontSize="10" FontWeight="Bold" Margin="0,0,0,8"/>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0">
+                                                    <TextBlock Text="Всего терминалов" Foreground="#95A5A6" FontSize="11"/>
+                                                    <TextBlock Text="{Binding TerminalVM.TotalTerminal}" Foreground="#F1C40F" FontSize="20" FontWeight="Bold"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1">
+                                                    <TextBlock Text="Активных" Foreground="#95A5A6" FontSize="11"/>
+                                                    <TextBlock Text="{Binding TerminalVM.ActivaTerminal}" Foreground="#27AE60" FontSize="20" FontWeight="Bold"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+                            </Border>
+
+                            <!-- Разделитель -->
+                            <Border Grid.Column="1" Background="#4A6572" Width="1" Margin="0,20"/>
+
+                            <!-- ПРАВАЯ ПАНЕЛЬ: Форма - ИСПРАВЛЕНО: привязки к TerminalVM -->
+                            <Border Grid.Column="2" Background="#344955" CornerRadius="15" Padding="25">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+
+                                    <StackPanel Grid.Row="0" Margin="0,0,0,25">
+                                        <TextBlock Text="⚙️ НАСТРОЙКА ТЕРМИНАЛА" Foreground="#F1C40F" FontSize="18" FontWeight="Bold" Margin="0,0,0,5"/>
+                                        <TextBlock Text="Заполните параметры подключения" Foreground="#95A5A6" FontSize="12"/>
+                                        <Border Height="1" Background="#4A6572" Margin="0,12,0,0"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Row="1">
+                                        <!-- Имя терминала -->
+                                        <StackPanel Margin="0,0,0,20">
+                                            <TextBlock Text="🏷️ Имя терминала" Foreground="White" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                                            <TextBox Text="{Binding TerminalVM.TerminalName, UpdateSourceTrigger=PropertyChanged}" FontSize="14" Padding="15,12" Background="#2C3E50" Foreground="White" BorderBrush="#4A6572" BorderThickness="1" CaretBrush="White"/>
+                                        </StackPanel>
+
+                                        <!-- IP Адрес -->
+                                        <StackPanel Margin="0,0,0,20">
+                                            <TextBlock Text="🌐 IP Адрес" Foreground="White" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                                            <TextBox Text="{Binding TerminalVM.IpAddress, UpdateSourceTrigger=PropertyChanged}" FontSize="14" Padding="15,12" Background="#2C3E50" Foreground="White" BorderBrush="#4A6572" BorderThickness="1" CaretBrush="White"/>
+                                        </StackPanel>
+
+                                        <!-- Порт и Unit ID -->
+                                        <Grid Margin="0,0,0,20">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="15"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="🔌 Порт" Foreground="White" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                                                <TextBox Text="{Binding TerminalVM.Port, UpdateSourceTrigger=PropertyChanged}" FontSize="14" Padding="15,12" Background="#2C3E50" Foreground="White" BorderBrush="#4A6572" BorderThickness="1"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2">
+                                                <TextBlock Text="🆔 Unit ID" Foreground="White" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                                                <TextBox Text="{Binding TerminalVM.UnitId, UpdateSourceTrigger=PropertyChanged}" FontSize="14" Padding="15,12" Background="#2C3E50" Foreground="White" BorderBrush="#4A6572" BorderThickness="1"/>
+                                            </StackPanel>
+                                        </Grid>
+
+
+                                        <!-- Кнопки -->
+                                        <Grid Margin="0,10,0,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="15"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="15"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Button Grid.Column="0" Content="➕ ДОБАВИТЬ" Command="{Binding TerminalVM.AddTerminalCommand}" Background="#27AE60" Foreground="White" FontSize="14" FontWeight="Bold" Height="45" Cursor="Hand"/>
+                                            <Button Grid.Column="2" Content="✏️ РЕДАКТИРОВАТЬ" Command="{Binding TerminalVM.EditTerminalCommand}" Background="#F39C12" Foreground="White" FontSize="14" FontWeight="Bold" Height="45" Cursor="Hand"/>
+                                            <Button Grid.Column="4" Content="🗑️ УДАЛИТЬ" Command="{Binding TerminalVM.DeleteTerminalCommand}" Background="#E74C3C" Foreground="White" FontSize="14" FontWeight="Bold" Height="45" Cursor="Hand"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Grid>
+
+                    <!-- Калибровка -->
+                    <Grid Visibility="{Binding IsSettingsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" d:Visibility="Collapsed">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Заголовок -->
+                        <TextBlock Grid.Row="0"
+               Text="⚙️ КАЛИБРОВКА ВЕСОВ"
+               FontSize="28"
+               FontWeight="Bold"
+               Foreground="{StaticResource WhiteBrush}"
+               HorizontalAlignment="Center"
+               Margin="0,30,0,30"/>
+
+                        <!-- Основная карточка -->
+                        <Border Grid.Row="1"
+            Background="#344955"
+            CornerRadius="20"
+            Margin="50,0,50,50"
+            Padding="35"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            MinWidth="650"
+            MaxWidth="850">
+
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="30"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="30"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="30"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Выбор терминала -->
+                                <Border Grid.Row="0" 
+                    Grid.ColumnSpan="3"
+                    Background="#2C3E50"
+                    CornerRadius="12"
+                    Padding="20"
+                    Margin="0,0,0,10">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Text="🔢" 
+                               FontSize="24"
+                               VerticalAlignment="Center"
+                               Margin="0,0,15,0"/>
+
+                                        <StackPanel Grid.Column="1">
+                                            <TextBlock Text="ВЫБОР ДАТЧИКА"
+                                   Foreground="#7F8C8D"
+                                   FontSize="11"
+                                   FontWeight="Bold"
+                                   Margin="0,0,0,5"/>
+                                            <TextBlock Text="Укажите номер датчика для калибровки"
+                                   Foreground="#95A5A6"
+                                   FontSize="12"
+                                   Margin="0,0,0,8"/>
+                                        </StackPanel>
+
+                                        <Border Grid.Column="2"
+                            Background="#344955"
+                            CornerRadius="8"
+                            Padding="15,10">
+                                            <TextBox Text="1"
+                                 FontSize="18"
+                                 FontWeight="Bold"
+                                 Width="80"
+                                 HorizontalAlignment="Center"
+                                 TextAlignment="Center"
+                                 Background="Transparent"
+                                 Foreground="#F1C40F"
+                                 BorderThickness="0"
+                                 CaretBrush="White">
+                                                <TextBox.Style>
+                                                    <Style TargetType="TextBox">
+                                                        <Setter Property="Template">
+                                                            <Setter.Value>
+                                                                <ControlTemplate TargetType="TextBox">
+                                                                    <Border Background="#344955"
+                                                        CornerRadius="8"
+                                                        BorderThickness="1"
+                                                        BorderBrush="#4A6572">
+                                                                        <ScrollViewer x:Name="PART_ContentHost" 
+                                                                  Margin="15,10"
+                                                                  HorizontalAlignment="Center"/>
+                                                                    </Border>
+                                                                </ControlTemplate>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </Style>
+                                                </TextBox.Style>
+                                            </TextBox>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Точка 0 (Нулевая калибровка) -->
+                                <Border Grid.Row="2" 
+                    Grid.Column="0"
+                    Background="#2C3E50"
+                    CornerRadius="12"
+                    Padding="25"
+                    Margin="0,0,15,0">
+                                    <StackPanel>
+                                        <TextBlock Text="🎯 ТОЧКА 0"
+                               Foreground="#7F8C8D"
+                               FontSize="11"
+                               FontWeight="Bold"
+                               Margin="0,0,0,15"/>
+
+                                        <TextBlock Text="Калибровка нуля"
+                               Foreground="White"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,10"/>
+
+                                        <TextBlock Text="Убедитесь, что на платформе нет груза"
+                               Foreground="#95A5A6"
+                               FontSize="12"
+                               Margin="0,0,0,20"/>
+
+                                        <Button Command="{Binding ZeroPointCommand}"
+                            Height="55"
+                            Background="#E67E22"
+                            Foreground="White"
+                            FontSize="16"
+                            FontWeight="Bold"
+                            Cursor="Hand">
+                                            <Button.Style>
+                                                <Style TargetType="Button">
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="Button">
+                                                                <Border Background="{TemplateBinding Background}"
+                                                    CornerRadius="10">
+                                                                    <ContentPresenter HorizontalAlignment="Center"
+                                                                  VerticalAlignment="Center"
+                                                                  Margin="20,15"/>
+                                                                </Border>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Background" Value="#F39C12"/>
+                                                        </Trigger>
+                                                        <Trigger Property="IsPressed" Value="True">
+                                                            <Setter Property="Background" Value="#D35400"/>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="🔘 " FontSize="18" Margin="0,0,8,0"/>
+                                                <TextBlock Text="УСТАНОВИТЬ НОЛЬ"/>
+                                            </StackPanel>
+                                        </Button>
+
+                                        <TextBlock Text="Статус: готов"
+                               Foreground="#27AE60"
+                               FontSize="11"
+                               Margin="0,12,0,0"
+                               HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Разделитель -->
+                                <TextBlock Grid.Row="2" 
+                       Grid.Column="1"
+                       Text="VS"
+                       FontSize="14"
+                       FontWeight="Bold"
+                       Foreground="#7F8C8D"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"/>
+
+                                <!-- Точка 1 (Калибровка весом) -->
+                                <Border Grid.Row="2" 
+                    Grid.Column="2"
+                    Background="#2C3E50"
+                    CornerRadius="12"
+                    Padding="25"
+                    Margin="15,0,0,0">
+                                    <StackPanel>
+                                        <TextBlock Text="⚖️ ТОЧКА 1"
+                               Foreground="#7F8C8D"
+                               FontSize="11"
+                               FontWeight="Bold"
+                               Margin="0,0,0,15"/>
+
+                                        <TextBlock Text="Калибровка эталонным весом"
+                               Foreground="White"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,10"/>
+
+                                        <Grid Margin="0,0,0,20">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Text="Эталонный вес:"
+                                   Foreground="#95A5A6"
+                                   FontSize="12"
+                                   VerticalAlignment="Center"/>
+
+                                            <Border Grid.Column="1"
+                                Background="#344955"
+                                CornerRadius="8"
+                                Padding="10,5"
+                                Margin="10,0,0,0">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <TextBox Text="100"
+                                         FontSize="14"
+                                         Width="80"
+                                         TextAlignment="Center"
+                                         Background="Transparent"
+                                         Foreground="#F1C40F"
+                                         BorderThickness="0"/>
+
+                                                    <TextBlock Grid.Column="1"
+                                           Text=" кг"
+                                           Foreground="White"
+                                           VerticalAlignment="Center"
+                                           Margin="5,0,0,0"/>
+                                                </Grid>
+                                            </Border>
+                                        </Grid>
+
+                                        <Button Command="{Binding EtalonPointCommand}"
+                            Height="55"
+                            Background="#27AE60"
+                            Foreground="White"
+                            FontSize="16"
+                            FontWeight="Bold"
+                            Cursor="Hand">
+                                            <Button.Style>
+                                                <Style TargetType="Button">
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="Button">
+                                                                <Border Background="{TemplateBinding Background}"
+                                                    CornerRadius="10">
+                                                                    <ContentPresenter HorizontalAlignment="Center"
+                                                                  VerticalAlignment="Center"
+                                                                  Margin="20,15"/>
+                                                                </Border>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Background" Value="#2ECC71"/>
+                                                        </Trigger>
+                                                        <Trigger Property="IsPressed" Value="True">
+                                                            <Setter Property="Background" Value="#229954"/>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="🎯 " FontSize="18" Margin="0,0,8,0"/>
+                                                <TextBlock Text="ВЫПОЛНИТЬ КАЛИБРОВКУ"/>
+                                            </StackPanel>
+                                        </Button>
+
+                                        <TextBlock Text="Поместите груз на платформу перед калибровкой"
+                               Foreground="#E67E22"
+                               FontSize="10"
+                               Margin="0,12,0,0"
+                               HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Информационная панель -->
+                                <Border Grid.Row="4" 
+                    Grid.ColumnSpan="3"
+                    Background="#2C3E50"
+                    CornerRadius="12"
+                    Padding="15"
+                    Margin="0,20,0,0">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Text="ℹ️" 
+                               FontSize="18"
+                               VerticalAlignment="Center"
+                               Margin="0,0,15,0"/>
+
+                                        <TextBlock Grid.Column="1"
+                               Text="Перед калибровкой убедитесь в стабильности весов. Процесс может занять несколько секунд."
+                               Foreground="#95A5A6"
+                               FontSize="11"
+                               TextWrapping="Wrap"/>
+
+                                        <Button Grid.Column="2"
+                            Content="Помощь"
+                            Background="Transparent"
+                            Foreground="#3498DB"
+                            BorderThickness="1"
+                            BorderBrush="#3498DB"
+                            Padding="15,8"
+                            FontSize="11"
+                            Cursor="Hand">
+                                            <Button.Style>
+                                                <Style TargetType="Button">
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="Button">
+                                                                <Border Background="{TemplateBinding Background}"
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                                    CornerRadius="8">
+                                                                    <ContentPresenter HorizontalAlignment="Center"
+                                                                  VerticalAlignment="Center"
+                                                                  Margin="15,8"/>
+                                                                </Border>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Background" Value="#3498DB"/>
+                                                            <Setter Property="Foreground" Value="White"/>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </Border>
+                    </Grid>
+
+                    <!--Добавление пользователя-->
+                    <Grid Visibility="{Binding IsAddUsersVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Cursor="" d:Visibility="Collapsed">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Заголовок -->
+                        <TextBlock Text="Добавление пользователя" 
+               Grid.Row="0"
+               HorizontalAlignment="Center" 
+               FontSize="28" 
+               FontWeight="Bold"
+               Margin="0,20,0,30" 
+               Foreground="{StaticResource WhiteBrush}"/>
+
+                        <!-- Основная карточка -->
+                        <Border Grid.Row="1" 
+            Background="#344955" 
+            CornerRadius="15" 
+            Margin="50,0,50,50" 
+            Padding="30"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            MinWidth="500"
+            MaxWidth="700">
+
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="20"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="30"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Логин -->
+                                <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,20,0">
+                                    <TextBlock Text="Логин"
+                           Foreground="{StaticResource WhiteBrush}"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,8"/>
+                                    <TextBox Text="{Binding IsAddUsersLogin, UpdateSourceTrigger=PropertyChanged}" 
+                         FontSize="14" 
+                         Padding="12,10" 
+                         Background="#2C3E50"
+                         Foreground="White"
+                         BorderBrush="#4A6572"
+                         BorderThickness="1"
+                         CaretBrush="White">
+                                        <TextBox.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="8"/>
+                                            </Style>
+                                        </TextBox.Resources>
+                                    </TextBox>
+                                </StackPanel>
+
+                                <!-- Роль -->
+                                <StackPanel Grid.Row="0" Grid.Column="1" Margin="20,0,0,0">
+                                    <TextBlock Text="Роль"
+                           Foreground="{StaticResource WhiteBrush}"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,8"/>
+                                    <ComboBox SelectedItem="{Binding UserRole}" 
+                          ItemsSource="{Binding AvailableRoles}"
+                          Background="#2C3E50"
+                          Foreground="Black"
+                          BorderBrush="#4A6572"
+                          Padding="12,8"
+                          FontSize="14">
+                                        <ComboBox.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="8"/>
+                                            </Style>
+                                        </ComboBox.Resources>
+                                    </ComboBox>
+                                </StackPanel>
+
+                                <!-- Пароль -->
+                                <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,20,0">
+                                    <TextBlock Text="Пароль"
+                           Foreground="{StaticResource WhiteBrush}"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,8"/>
+                                    <TextBox Text="{Binding IsAddUsersPass, UpdateSourceTrigger=PropertyChanged}" 
+                         FontSize="14" 
+                         Padding="12,10"
+                         Background="#2C3E50"
+                         Foreground="White"
+                         BorderBrush="#4A6572"
+                         BorderThickness="1"
+                         CaretBrush="White">
+                                        <TextBox.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="8"/>
+                                            </Style>
+                                        </TextBox.Resources>
+                                    </TextBox>
+                                </StackPanel>
+
+                                <!-- Пустая ячейка для выравнивания -->
+                                <StackPanel Grid.Row="2" Grid.Column="1" Margin="20,0,0,0">
+                                    <!-- Здесь можно добавить что-то еще при необходимости -->
+                                </StackPanel>
+
+                                <!-- Кнопка добавления -->
+                                <Button Grid.Row="4" 
+                    Grid.ColumnSpan="2"
+                    Content="ДОБАВИТЬ ПОЛЬЗОВАТЕЛЯ"
+                    Command="{Binding AddButtonUsers}"
+                    Background="#27AE60"
+                    Foreground="White"
+                    FontSize="16"
+                    FontWeight="Bold"
+                    Height="50"
+                    Width="250"
+                    HorizontalAlignment="Center"
+                    Cursor="Hand">
+                                    <Button.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="8"/>
+                                        </Style>
+                                    </Button.Resources>
+                                    <Button.Triggers>
+                                        <EventTrigger RoutedEvent="Button.MouseEnter">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <ColorAnimation Storyboard.TargetProperty="Background.Color"
+                                              To="#2ECC71"
+                                              Duration="0:0:0.2"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+                                        <EventTrigger RoutedEvent="Button.MouseLeave">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <ColorAnimation Storyboard.TargetProperty="Background.Color"
+                                              To="#27AE60"
+                                              Duration="0:0:0.2"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+                                    </Button.Triggers>
+                                </Button>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                    <!-- Датчики -->
+                    <Grid Visibility="{Binding IsSensorsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Text="МОНИТОРИНГ ДАТЧИКОВ ВЕСА" 
+                                 FontSize="18" FontWeight="Bold" 
+                                 Foreground="{StaticResource DarkBlueBrush}"
+                                 Margin="0,0,0,15"
+                                 HorizontalAlignment="Center"/>
+
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                            <ItemsControl ItemsSource="{Binding VisibleSensors}"
+                                          ItemTemplate="{StaticResource SensorTemplate}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="{Binding SelectedColumns}"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Grid>
+
+                    <!--База данных/номенклатура-->
+                    <Grid Background="#2C3E50" Margin="10" Visibility="{Binding IsNomenclatureVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Margin="0,0,10,0" VerticalAlignment="Top" Background="#2C3E50">
+                            <Border Background="#2C3E50" CornerRadius="5"
+                    Padding="10" Margin="0,0,0,10">
+                                <TextBlock Text="Управление" 
+                           Foreground="White" 
+                           FontWeight="Bold" 
+                           FontSize="14" 
+                           HorizontalAlignment="Center"/>
+                            </Border>
+                            <Button  Content=" + Добавить"
+                                   Height="40" 
+                    Margin="0 0 0 10" 
+                    Background="#001545" 
+                    Foreground="White" 
+                    FontWeight="Bold" 
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Command="{Binding AddNomenclatureButton}">
+                                <Button.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="5"/>
+                                    </Style>
+                                </Button.Resources>
+                            </Button>
+
+                            <Button x:Name="DeleteButton" Content="- Удалить"
+                                   Height="40" 
+                    Margin="0 0 0 10" 
+                    Background="#001545" 
+                    Foreground="White" 
+                    FontWeight="Bold" 
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Command="{Binding DeleteCommand}">
+                                <Button.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="5"/>
+                                    </Style>
+                                </Button.Resources>
+                            </Button>
+                            <Button  Content="Обновить" Command="{Binding UpdateButtonNum}"
+                                   Height="40" 
+                    Margin="0 0 0 10" 
+                    Background="#001545" 
+                    Foreground="White" 
+                    FontWeight="Bold" 
+                    BorderThickness="0"
+                    Cursor="Hand"/>
+                            <Button Content="Отчет" Command="{Binding ExceleOtchet}"
+                                    Margin="0 0 0 10" Background="#001545"
+                                    Foreground="White" FontWeight="Bold"
+                                    BorderThickness="0"
+                                    Cursor="Hand" Height="40"/>
+
+
+                            <Border Height="1"
+                    Background="#00a8ba"
+                    Margin="0,10,0,10"/>
+                            <Border x:Name="SearchPanel"
+                    Background="#2C3E50"
+                    CornerRadius="5"
+                    Padding="10"
+                    Visibility="Visible">
+                                <StackPanel>
+                                    <TextBlock Text="Поиск по наименованию" 
+                               Foreground="#2C3E50" 
+                               Margin="0 0 0 5" 
+                               FontWeight="SemiBold"/>
+                                    <TextBox x:Name="SearchTextBox" 
+                             Height="30" 
+                             Padding="5" 
+                             Text="{Binding SearchText}"/>
+                                    <Button Content="Поиск" 
+                            Height="30" 
+                            Margin="0 5 0 0" 
+                            Background="#95A5A6" 
+                            Foreground="White" 
+                            BorderThickness="0"
+                            Command="{Binding SearchCommand}"/>
+                                </StackPanel>
+
+                            </Border>
+                            <Border Background="#2C3E50" 
+                    CornerRadius="5" 
+                    Padding="10" 
+                    Margin="0 10 0 0">
+                                <StackPanel>
+                                    <TextBlock Text="Статистика" 
+                               Foreground="#2C3E50" 
+                               FontWeight="Bold" 
+                               Margin="0 0 0 5"/>
+                                    <TextBlock x:Name="TotalCountText" 
+                               Text="Всего записей: 0" 
+                               Foreground="#7F8C8D"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                        <Border Grid.Column="1" >
+                            <DataGrid x:Name="NumGride"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      AlternatingRowBackground="LightBlue"
+                      RowBackground="White"
+                      FontSize="12"
+                      Margin="5" GridLinesVisibility="Horizontal"
+                      BorderBrush="Gray" BorderThickness="1"
+                                      ItemsSource="{Binding NomenclatureItems}">
+                                <DataGrid.Resources>
+                                    <Style x:Key="CenterCellStyle" TargetType="TextBlock">
+                                        <Setter Property="TextAlignment" Value="Center"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="Margin" Value="5"/>
+                                    </Style>
+
+                                    <Style x:Key="LeftCellStyle" TargetType="TextBlock">
+                                        <Setter Property="TextAlignment" Value="Left"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="Margin" Value="5"/>
+                                    </Style>
+
+                                    <Style x:Key="RightCellStyle" TargetType="TextBlock">
+                                        <Setter Property="TextAlignment" Value="Right"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="Margin" Value="5"/>
+                                    </Style>
+
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="Background" Value="#2C3E50"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                        <Setter Property="Height" Value="30"/>
+                                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGrid.Resources>
+
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Номер"
+                                        Binding="{Binding Id}"
+                                        Width="50" ElementStyle="{StaticResource CenterCellStyle}"/>
+
+                                    <DataGridTextColumn Header="Наименование"
+                                        Binding="{Binding Name}"
+                                        Width="100">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="TextAlignment" Value="Center"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="Margin" Value="10 5 10 5"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+
+                                    <DataGridTextColumn Header="Вн.номер"
+                    Binding="{Binding InternalArticle}"
+                    Width="50" ElementStyle="{StaticResource CenterCellStyle}"/>
+
+                                    <DataGridTextColumn Header="Внут.номер"
+                                        Binding="{Binding ExternalArticle}"
+                                        Width="100">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="TextAlignment" Value="Center"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="Margin" Value="10 5 10 5"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="Характеристика"
+                    Binding="{Binding Characteristic}"
+                    Width="100" ElementStyle="{StaticResource CenterCellStyle}"/>
+
+                                    <DataGridTextColumn Header="Ед.изм."
+                    Binding="{Binding Unit}"
+                    Width="50" ElementStyle="{StaticResource CenterCellStyle}"/>
+
+                                    <DataGridTextColumn Header="Адрес"
+                    Binding="{Binding AddressCell}"
+                    Width="50" ElementStyle="{StaticResource CenterCellStyle}"/>
+
+                                    <DataGridTextColumn Header="Было"
+                    Binding="{Binding OldQuantity}"
+                    Width="50" ElementStyle="{StaticResource CenterCellStyle}"/>
+
+                                    <DataGridTextColumn Header="Добавили"
+                    Binding="{Binding OperationTypeIn}"
+                    Width="50" ElementStyle="{StaticResource CenterCellStyle}"/>
+
+                                    <DataGridTextColumn Header="Убавили"
+                    Binding="{Binding OperationTypeOut}"
+                    Width="50" ElementStyle="{StaticResource CenterCellStyle}"/>
+
+                                    <DataGridTextColumn Header="Стало"
+                   Binding="{Binding NewQuantity}"
+                   Width="50" ElementStyle="{StaticResource CenterCellStyle}"/>
+                                    
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Border>
+
+                    </Grid>
+
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Нижняя панель -->
+        <Border Grid.Row="2" Background="{StaticResource DarkBlueBrush}" 
+                BorderBrush="{StaticResource BlueBorderBrush}" BorderThickness="0,2,0,0"
+                Padding="10" Cursor="">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="{Binding StatusText}" 
+                         Foreground="{StaticResource WhiteBrush}"
+                         VerticalAlignment="Center"/>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock Text="Роль: "
+                               Foreground="{StaticResource WhiteBrush}"
+                               VerticalAlignment="Center"/>
+
+                    <TextBlock Text="{Binding UserText}"
+                               Foreground="{StaticResource WhiteBrush}"
+                               VerticalAlignment="Center"
+                               FontWeight="Bold" Margin="0,0,15,0"/>
+
+                    <TextBlock Text="Датчиков: " 
+                             Foreground="{StaticResource WhiteBrush}"
+                             VerticalAlignment="Center"/>
+
+                    <TextBlock Text="{Binding SensorsCountText}"
+                             Foreground="#A5D6A7"
+                             FontWeight="Bold"
+                             VerticalAlignment="Center"
+                             Margin="0,0,15,0"/>
+                    
+
+                    <TextBlock Text="Режим: " 
+                             Foreground="{StaticResource WhiteBrush}"
+                             VerticalAlignment="Center"/>
+
+                    <TextBlock Text="{Binding ModeText}"
+                             Foreground="{Binding ModeTextColor}"
+                             FontWeight="Bold"
+                             VerticalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
