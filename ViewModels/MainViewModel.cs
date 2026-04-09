@@ -920,8 +920,11 @@ namespace NewAPP
         {
             try
             {
-                await _calibration.CalibWeight("192.168.0.56", 5000, 1, int.Parse(EtalonWeight));
-                await _calibration.CalibWeight("192.168.0.56", 5000, 1, int.Parse(EtalonWeight));
+                //await _calibration.CalibWeight("192.168.0.56", 5000, 1, int.Parse(EtalonWeight));
+                //await _calibration.CalibWeight("192.168.0.56", 5000, 1, int.Parse(EtalonWeight));
+                await _calibration.CalibrationPoint("192.168.0.56", 5000, 1, int.Parse(EtalonWeight));
+                await _calibration.CalibrationPoint("192.168.0.56", 5000, 1, int.Parse(EtalonWeight));
+
                 MessageBox.Show("Вес успешно выставлен");
             }
             catch (Exception ex)
