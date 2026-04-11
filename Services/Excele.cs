@@ -108,7 +108,7 @@ namespace NewAPP.Services
 
                         string[] headers = {"ID", "Наименование", "Внешний номер", "Номер клиента",
                     "Характеристика", "Серийный номер", "Ед. изм.", "Адрес",
-                    "Начальное кол-во", "Добавили", "Убрали", "Остаток", "Дата операции"};
+                    "Начальное кол-во", "Добавили", "Убрали", "Остаток","Цена", "Дата операции"};
 
                         int headerRow = 8; // Сдвинули из-за добавленной строки
                         for (int i = 0; i < headers.Length; i++)
@@ -135,7 +135,8 @@ namespace NewAPP.Services
                             worksheet1.Cells[row, 10].Value = item.OperationTypeIn;
                             worksheet1.Cells[row, 11].Value = item.OperationTypeOut;
                             worksheet1.Cells[row, 12].Value = item.NewQuantity;
-                            worksheet1.Cells[row, 13].Value = item.OperationDate?.ToString("dd.MM.yyyy HH:mm:ss") ?? "Не указана";
+                            worksheet1.Cells[row, 13].Value = item.UnitPrice;
+                            worksheet1.Cells[row, 14].Value = item.OperationDate?.ToString("dd.MM.yyyy HH:mm:ss") ?? "Не указана";
                             row++;
                         }
 
@@ -146,10 +147,13 @@ namespace NewAPP.Services
                         int totalAdded = data.Sum(x => int.TryParse(x.OperationTypeIn, out int val) ? val : 0);
                         int totalRemoved = data.Sum(x => int.TryParse(x.OperationTypeOut, out int val) ? val : 0);
                         int totalRemaining = data.Sum(x => int.TryParse(x.NewQuantity, out int val) ? val : 0);
+                        int totalPrice = data.Sum(x => (int.TryParse(x.UnitPrice, out int val) ? val : 0) *
+                            (int.TryParse(x.NewQuantity, out int p) ? p : 0)) ;
 
                         worksheet1.Cells[row, 10].Value = totalAdded;
                         worksheet1.Cells[row, 11].Value = totalRemoved;
                         worksheet1.Cells[row, 12].Value = totalRemaining;
+                        worksheet1.Cells[row, 13].Value = totalPrice;
                         worksheet1.Cells[row, 10, row, 12].Style.Font.Bold = true;
 
                         worksheet1.Cells.AutoFitColumns();
