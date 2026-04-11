@@ -805,7 +805,15 @@ namespace NewAPP
                 string selectedNomenclature = sensor.SelectedNomenclature;
                 int weight = sensor.Weight;
 
-                _dataBase.DeleteUnit(selectedNomenclature, weight);
+                if (selectedNomenclature == null)
+                {
+                    MessageBox.Show("ничего не выбрано");
+                }
+                else
+                {
+                    _dataBase.DeleteUnit(selectedNomenclature, weight);
+                }
+
 
                 // Здесь будет логика обновления базы данных
             }
