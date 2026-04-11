@@ -6,220 +6,130 @@
         xmlns:local="clr-namespace:NewAPP.View"
         mc:Ignorable="d"
         Title="ReportWindow" Height="650" Width="900">
-    <Grid Background="#2C3E50" Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Background="#2C3E50" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <!-- Заголовок -->
-        <TextBlock Grid.Row="0" 
-                   Text="📊 ПАРАМЕТРЫ ОТЧЕТА" 
-                   FontSize="18" 
-                   FontWeight="Bold" 
-                   Foreground="White"
-                   HorizontalAlignment="Center"
-                   Margin="0,0,0,20"/>
+            <!-- Заголовок -->
+            <TextBlock Grid.Row="0" 
+                       Text="📊 ПАРАМЕТРЫ ОТЧЕТА" 
+                       FontSize="18" 
+                       FontWeight="Bold" 
+                       Foreground="White"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,15"/>
 
-        <!-- Выбор даты -->
-        <Border Grid.Row="1" 
-                Background="#34495E" 
-                CornerRadius="5" 
-                Padding="10" 
-                Margin="0,0,0,10">
-            <StackPanel>
-                <TextBlock Text="📅 Период отчета" 
-                           Foreground="White" 
-                           FontWeight="Bold" 
-                           Margin="0,0,0,10"/>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+            <!-- Выбор даты -->
+            <Border Grid.Row="1" Background="#34495E" CornerRadius="5" Padding="10" Margin="0,0,0,8">
+                <StackPanel>
+                    <TextBlock Text="📅 Период отчета" Foreground="White" FontWeight="Bold" Margin="0,0,0,8"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="С:" Foreground="White" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <DatePicker x:Name="StartDatePicker" Grid.Column="1" Margin="0,0,10,0"/>
+                        <TextBlock Grid.Column="2" Text="По:" Foreground="White" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <DatePicker x:Name="EndDatePicker" Grid.Column="3"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
 
-                    <TextBlock Grid.Column="0" 
-                               Text="С:" 
-                               Foreground="White" 
-                               VerticalAlignment="Center" 
-                               Margin="0,0,10,0"/>
-                    <DatePicker x:Name="StartDatePicker" 
-                                Grid.Column="1" 
-                                Margin="0,0,10,0"/>
+            <!-- Выбор товара -->
+            <Border Grid.Row="2" Background="#34495E" CornerRadius="5" Padding="10" Margin="0,0,0,8">
+                <StackPanel>
+                    <TextBlock Text="🔍 Выбор товара" Foreground="White" FontWeight="Bold" Margin="0,0,0,8"/>
+                    <ComboBox x:Name="ProductComboBox" Height="30" SelectionChanged="ProductComboBox_SelectionChanged" Margin="0,0,0,8"/>
+                    <TextBox x:Name="ManualProductTextBox" Height="30" Visibility="Collapsed" Margin="0,0,0,8"/>
+                    <CheckBox x:Name="ManualEntryCheckBox" Content="Ввести название вручную" Foreground="White"
+                              Checked="ManualEntryCheckBox_Checked" Unchecked="ManualEntryCheckBox_Unchecked"/>
+                </StackPanel>
+            </Border>
 
-                    <TextBlock Grid.Column="2" 
-                               Text="По:" 
-                               Foreground="White" 
-                               VerticalAlignment="Center" 
-                               Margin="0,0,10,0"/>
-                    <DatePicker x:Name="EndDatePicker" 
-                                Grid.Column="3"/>
-                </Grid>
+            <!-- Периодичность -->
+            <Border Grid.Row="3" Background="#34495E" CornerRadius="5" Padding="10" Margin="0,0,0,8">
+                <StackPanel>
+                    <TextBlock Text="📈 Периодичность отчета" Foreground="White" FontWeight="Bold" Margin="0,0,0,8"/>
+                    <ComboBox x:Name="PeriodTypeComboBox" Height="30" SelectionChanged="PeriodTypeComboBox_SelectionChanged">
+                        <ComboBoxItem Content="По дням" Tag="Day" IsSelected="True"/>
+                        <ComboBoxItem Content="По неделям" Tag="Week"/>
+                        <ComboBoxItem Content="По месяцам" Tag="Month"/>
+                        <ComboBoxItem Content="По кварталам" Tag="Quarter"/>
+                    </ComboBox>
+                </StackPanel>
+            </Border>
+
+            <!-- Тип отчета -->
+            <Border Grid.Row="4" Background="#34495E" CornerRadius="5" Padding="10" Margin="0,0,0,8">
+                <StackPanel>
+                    <TextBlock Text="📄 Тип отчета" Foreground="White" FontWeight="Bold" Margin="0,0,0,8"/>
+                    <RadioButton x:Name="AllProductsRadio" Content="Все товары" Foreground="White" GroupName="ReportType" IsChecked="True" Margin="0,3,0,3"/>
+                    <RadioButton x:Name="SingleProductRadio" Content="Конкретный товар" Foreground="White" GroupName="ReportType" Margin="0,3,0,3"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Статистика -->
+            <Border Grid.Row="5" Background="#34495E" CornerRadius="5" Padding="10" Margin="0,0,0,8">
+                <StackPanel>
+                    <TextBlock Text="📊 СТАТИСТИКА" Foreground="White" FontWeight="Bold" Margin="0,0,0,8"/>
+                    <TextBlock x:Name="PreviewText" Text="Выберите параметры отчета..." Foreground="#BDC3C7" FontSize="12"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Таблица -->
+            <Border Grid.Row="6" Background="White" CornerRadius="5" Padding="5" Margin="0,0,0,8">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                    <DataGrid x:Name="ReportDataGrid" 
+                              AutoGenerateColumns="True"
+                              IsReadOnly="True"
+                              AlternatingRowBackground="LightBlue"
+                              RowBackground="White"
+                              FontSize="11"
+                              GridLinesVisibility="Horizontal"
+                              BorderBrush="Gray" 
+                              BorderThickness="1"
+                              MinHeight="150"
+                              MaxHeight="300">
+                        <DataGrid.Resources>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="Background" Value="#2C3E50"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                                <Setter Property="Height" Value="30"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGrid.Resources>
+                    </DataGrid>
+                </ScrollViewer>
+            </Border>
+
+            <!-- Кнопки -->
+            <StackPanel Grid.Row="7" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,5">
+                <Button x:Name="GenerateReportButton" Content="📊 Сформировать Excel" Width="140" Height="35" 
+                        Background="#27AE60" Foreground="White" FontWeight="Bold" Margin="0,0,10,0"
+                        Click="GenerateReportButton_Click"/>
+                <Button x:Name="RefreshButton" Content="🔄 Обновить" Width="100" Height="35" 
+                        Background="#3498DB" Foreground="White" FontWeight="Bold" Margin="0,0,10,0"
+                        Click="RefreshButton_Click"/>
+                <Button x:Name="CancelButton" Content="❌ Закрыть" Width="100" Height="35" 
+                        Background="#E74C3C" Foreground="White" FontWeight="Bold"
+                        Click="CancelButton_Click"/>
             </StackPanel>
-        </Border>
+        </Grid>
+    </ScrollViewer>
 
-        <!-- Выбор товара -->
-        <Border Grid.Row="2" 
-                Background="#34495E" 
-                CornerRadius="5" 
-                Padding="10" 
-                Margin="0,0,0,10">
-            <StackPanel>
-                <TextBlock Text="🔍 Выбор товара" 
-                           Foreground="White" 
-                           FontWeight="Bold" 
-                           Margin="0,0,0,10"/>
-                <ComboBox x:Name="ProductComboBox" 
-                          Height="35" 
-
-                          SelectionChanged="ProductComboBox_SelectionChanged"
-                          Margin="0,0,0,10"/>
-                <TextBox x:Name="ManualProductTextBox" 
-                         Height="35" 
-                         Visibility="Collapsed"
-                         Margin="0,0,0,10"/>
-                <CheckBox x:Name="ManualEntryCheckBox" 
-                          Content="Ввести название вручную" 
-                          Foreground="White"
-                          Checked="ManualEntryCheckBox_Checked"
-                          Unchecked="ManualEntryCheckBox_Unchecked"/>
-            </StackPanel>
-        </Border>
-
-        <Border Grid.Row="2" 
-        Background="#34495E" 
-        CornerRadius="5" 
-        Padding="10" 
-        Margin="0,0,0,10">
-            <StackPanel>
-                <TextBlock Text="📈 Периодичность отчета" 
-                   Foreground="White" 
-                   FontWeight="Bold" 
-                   Margin="0,0,0,10"/>
-                <ComboBox x:Name="PeriodTypeComboBox" 
-                  Height="35"
-                  SelectionChanged="PeriodTypeComboBox_SelectionChanged">
-                    <ComboBoxItem Content="По дням" Tag="Day" IsSelected="True"/>
-                    <ComboBoxItem Content="По неделям" Tag="Week"/>
-                    <ComboBoxItem Content="По месяцам" Tag="Month"/>
-                    <ComboBoxItem Content="По кварталам" Tag="Quarter"/>
-                </ComboBox>
-            </StackPanel>
-        </Border>
-        
-        <!-- Тип отчета -->
-        <Border Grid.Row="3" 
-                Background="#34495E" 
-                CornerRadius="5" 
-                Padding="10" 
-                Margin="0,0,0,10">
-            <StackPanel>
-                <TextBlock Text="📄 Тип отчета" 
-                           Foreground="White" 
-                           FontWeight="Bold" 
-                           Margin="0,0,0,10"/>
-                <RadioButton x:Name="AllProductsRadio" 
-                             Content="Все товары" 
-                             Foreground="White" 
-                             GroupName="ReportType" 
-                             IsChecked="True"
-                             Margin="0,5,0,5"/>
-                <RadioButton x:Name="SingleProductRadio" 
-                             Content="Конкретный товар" 
-                             Foreground="White" 
-                             GroupName="ReportType"
-                             Margin="0,5,0,5"/>
-            </StackPanel>
-        </Border>
-
-        <!-- Статистика -->
-        <Border Grid.Row="4" 
-                Background="#34495E" 
-                CornerRadius="5" 
-                Padding="10" 
-                Margin="0,0,0,10">
-            <StackPanel>
-                <TextBlock Text="📊 СТАТИСТИКА" 
-                           Foreground="White" 
-                           FontWeight="Bold" 
-                           Margin="0,0,0,10"/>
-                <TextBlock x:Name="PreviewText" 
-                           Text="Выберите параметры отчета..." 
-                           Foreground="#BDC3C7" 
-                           FontSize="12"/>
-            </StackPanel>
-        </Border>
-
-        <!-- Таблица с данными (ДОБАВЛЕНО!) -->
-        <Border Grid.Row="5" 
-                Background="White" 
-                CornerRadius="5" 
-                Padding="5" 
-                Margin="0,0,0,10">
-            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                <DataGrid x:Name="ReportDataGrid" 
-                          AutoGenerateColumns="True"
-                          IsReadOnly="True"
-                          AlternatingRowBackground="LightBlue"
-                          RowBackground="White"
-                          FontSize="11"
-                          GridLinesVisibility="Horizontal"
-                          BorderBrush="Gray" 
-                          BorderThickness="1"
-                          MinHeight="150">
-                    <DataGrid.Resources>
-                        <Style TargetType="DataGridColumnHeader">
-                            <Setter Property="Background" Value="#2C3E50"/>
-                            <Setter Property="Foreground" Value="White"/>
-                            <Setter Property="FontWeight" Value="Bold"/>
-                            <Setter Property="Height" Value="30"/>
-                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                        </Style>
-                    </DataGrid.Resources>
-                </DataGrid>
-            </ScrollViewer>
-        </Border>
-
-        <!-- Кнопки -->
-        <StackPanel Grid.Row="6" 
-                    Orientation="Horizontal" 
-                    HorizontalAlignment="Center" 
-                    Margin="0,10,0,0">
-            <Button x:Name="GenerateReportButton" 
-                    Content="📊 Сформировать Excel" 
-                    Width="150" 
-                    Height="40" 
-                    Background="#27AE60" 
-                    Foreground="White" 
-                    FontWeight="Bold"
-                    Margin="0,0,10,0"
-                    Click="GenerateReportButton_Click"/>
-            <Button x:Name="RefreshButton" 
-                    Content="🔄 Обновить" 
-                    Width="100" 
-                    Height="40" 
-                    Background="#3498DB" 
-                    Foreground="White" 
-                    FontWeight="Bold"
-                    Margin="0,0,10,0"
-                    Click="RefreshButton_Click"/>
-            <Button x:Name="CancelButton" 
-                    Content="❌ Закрыть" 
-                    Width="100" 
-                    Height="40" 
-                    Background="#E74C3C" 
-                    Foreground="White" 
-                    FontWeight="Bold"
-                    Click="CancelButton_Click"/>
-        </StackPanel>
-    </Grid>
 
 </Window>
 
