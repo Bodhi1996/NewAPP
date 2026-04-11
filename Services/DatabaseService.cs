@@ -57,9 +57,9 @@ namespace NewAPP.Services
                     insertUser.Parameters.AddWithValue("@pass", HashPassword("user123"));
                     insertUser.ExecuteNonQuery();
                 }
-                //var dropTable = connection.CreateCommand();
-                //dropTable.CommandText = "DROP TABLE IF EXISTS Nomenclature";
-                //dropTable.ExecuteNonQuery();
+                var dropTable = connection.CreateCommand();
+                dropTable.CommandText = "DROP TABLE IF EXISTS Nomenclature";
+                dropTable.ExecuteNonQuery();
 
 
                 createTable.CommandText = @"CREATE TABLE IF NOT EXISTS nomenclature ( 
@@ -74,8 +74,9 @@ namespace NewAPP.Services
                                             OldQuantity INTEGER DEFAULT 0,
                                             OperationTypeIn INTEGER DEFAULT 0,
                                             OperationTypeOut INTEGER DEFAULT 0,
-                                             NewQuantity INTEGER DEFAULT 0,
-                                             OperationDate DATETIME DEFAULT CURRENT_TIMESTAMP
+                                            NewQuantity INTEGER DEFAULT 0,
+                                            UnitPrice INTEGER DEFAULT 0,
+                                            OperationDate DATETIME DEFAULT CURRENT_TIMESTAMP
             )";
 
 
@@ -84,22 +85,22 @@ namespace NewAPP.Services
                 var bolts = new List<(string Name, string InternalArticle, string ExternalArticle,
                                           string Characteristic, string SerialNumber, string Unit,
                                           string AddressCell, int OldQuantity, int OperationTypeIn,
-                                          int OperationTypeOut, int NewQuantity)>
+                                          int OperationTypeOut, int NewQuantity, int UnitPrice)>
 
             {
-                ("Болт М1", "111111", "131313", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90),
-                ("Болт М2", "222222", "121212", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90),
-                ("Болт М3", "333333", "111115", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90),
-                ("Болт М4", "444444", "101010", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90),
-                ("Болт М5", "555555", "999999", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90),
-                ("Болт М6", "666666", "888888", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90),
-                ("Болт М7", "777777", "777777", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90),
-                ("Болт М8", "888888", "666666", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90),
-                ("Болт М9", "999999", "555555", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90),
-                ("Болт М10", "101010", "444444", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90),
-                ("Болт М11", "111112", "333333", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90),
-                ("Болт М12", "131313", "222222", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90),
-                ("Болт М13", "141414", "111111", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90)
+                ("Болт М1", "111111", "131313", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10),
+                ("Болт М2", "222222", "121212", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10),
+                ("Болт М3", "333333", "111115", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10),
+                ("Болт М4", "444444", "101010", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10),
+                ("Болт М5", "555555", "999999", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10),
+                ("Болт М6", "666666", "888888", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10),
+                ("Болт М7", "777777", "777777", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10),
+                ("Болт М8", "888888", "666666", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10),
+                ("Болт М9", "999999", "555555", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10),
+                ("Болт М10", "101010", "444444", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10),
+                ("Болт М11", "111112", "333333", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10),
+                ("Болт М12", "131313", "222222", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10),
+                ("Болт М13", "141414", "111111", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10)
 
             };
 
@@ -113,11 +114,11 @@ namespace NewAPP.Services
                     insertCommand.CommandText = @"INSERT OR IGNORE INTO nomenclature 
                                             (Name, InternalArticle, ExternalArticle, Characteristic, 
                                              SerialNumber, Unit, AddressCell, OldQuantity, 
-                                             OperationTypeIn, OperationTypeOut, NewQuantity, OperationDate) 
+                                             OperationTypeIn, OperationTypeOut, NewQuantity, UnitPrice, OperationDate) 
                                             VALUES ($name, $internalArticle, $externalArticle, 
                                                     $characteristic, $serialNumber, $unit, $addressCell, 
                                                     $oldQuantity, $operationTypeIn, $operationTypeOut, 
-                                                    $newQuantity, $operationDate)";
+                                                    $newQuantity, $unitPrice, $operationDate)";
                     insertCommand.Parameters.AddWithValue("$name", bolt.Name);
                     insertCommand.Parameters.AddWithValue("$internalArticle", bolt.InternalArticle);
                     insertCommand.Parameters.AddWithValue("$externalArticle", bolt.ExternalArticle);
@@ -129,6 +130,7 @@ namespace NewAPP.Services
                     insertCommand.Parameters.AddWithValue("$operationTypeIn", bolt.OperationTypeIn);
                     insertCommand.Parameters.AddWithValue("$operationTypeOut", bolt.OperationTypeOut);
                     insertCommand.Parameters.AddWithValue("$newQuantity", bolt.NewQuantity);
+                    insertCommand.Parameters.AddWithValue("$unitPrice", bolt.UnitPrice);
                     insertCommand.Parameters.AddWithValue("$operationDate", DateTime.Now);
 
                     int result = insertCommand.ExecuteNonQuery();
@@ -137,7 +139,7 @@ namespace NewAPP.Services
                     else
                         skipped++;
                 }
-                //nf,kbwf nthvbyfkjd
+                //таблица терминалов
                 createTable.CommandText = @"CREATE TABLE IF NOT EXISTS Terminals (
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
                 Name TEXT NOT NULL,
