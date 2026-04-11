@@ -36,6 +36,7 @@ namespace NewAPP.View
         public int OperationTypeIn { get; set; } //добавили
         public int OperationTypeOut { get; set; } //убавили
         public int NewQuantity { get; set; } //остаток
+        public int UnitPrice { get; set; } //цена за единицу товара
 
         public AddNomenclatureWindow ()
         {
@@ -61,11 +62,13 @@ namespace NewAPP.View
             int.TryParse(InNomenclatureBox.Text.Trim(), out int OperIn);
             int.TryParse(OutNomenclatureBox.Text.Trim(), out int OperOut);
             int.TryParse(NewNomenclatureBox.Text.Trim(), out int NewQ);
+            int.TryParse(UnitPriceBox.Text.Trim(), out int UnitPri);
 
             OldQuantity = oldQyt;
             OperationTypeIn = OperIn;
             OperationTypeOut = OperOut;
             NewQuantity = NewQ;
+            UnitPrice = UnitPri;
             // Закрываем окно с успешным результатом
             this.DialogResult = true;
             this.Close();
@@ -85,6 +88,7 @@ namespace NewAPP.View
                     !string.IsNullOrWhiteSpace(OldNomenclatureBox?.Text) &&
                     !string.IsNullOrWhiteSpace(InNomenclatureBox?.Text) &&
                     !string.IsNullOrWhiteSpace(OutNomenclatureBox?.Text) &&
+                    !string.IsNullOrWhiteSpace(UnitPriceBox?.Text) &&
                     !string.IsNullOrWhiteSpace(NewNomenclatureBox?.Text);
         }
     }
