@@ -447,6 +447,17 @@ namespace NewAPP
             }
         }
 
+        private int _unitPrice;
+        public int UnitPrice  //свойство для цены за единицу
+        {
+            get => _unitPrice;
+            set
+            {
+                _unitPrice = value;
+                OnPropertyChanged();
+            }
+        }
+
 
 
 
@@ -836,6 +847,7 @@ namespace NewAPP
                 OperationTypeIn = addNomenclatureWindow.OperationTypeIn;
                 OperationTypeOut = addNomenclatureWindow.OperationTypeOut;
                 NewQuantity = addNomenclatureWindow.NewQuantity;
+                UnitPrice = addNomenclatureWindow.UnitPrice;
 
                 _dataBase.AddNomenclature(Name, InternalArticle, ExternalArticle, Characteristic, SerialNumber, Unit, AdressCell, OldQuantity, OperationTypeIn, OperationTypeOut, NewQuantity);
             }
