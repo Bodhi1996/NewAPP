@@ -252,7 +252,7 @@ namespace NewAPP.Services
 
                 var incertResult = connection.CreateCommand();
 
-                incertResult.CommandText = "SELECT Id, Name, InternalArticle, ExternalArticle, Characteristic, SerialNumber, Unit, AddressCell, OldQuantity, OperationTypeIn, OperationTypeOut, NewQuantity, OperationDate FROM nomenclature";
+                incertResult.CommandText = "SELECT Id, Name, InternalArticle, ExternalArticle, Characteristic, SerialNumber, Unit, AddressCell, OldQuantity, OperationTypeIn, OperationTypeOut, NewQuantity, UnitPrice, OperationDate FROM nomenclature";
 
                 using (var reader = incertResult.ExecuteReader())
                 {
@@ -273,7 +273,8 @@ namespace NewAPP.Services
                                 OperationTypeIn = reader.GetInt32(9).ToString(),
                                 OperationTypeOut = reader.GetInt32(10).ToString(),
                                 NewQuantity = reader.GetInt32(11).ToString(),
-                                OperationDate = reader.IsDBNull(12) ? (DateTime?)null : reader.GetDateTime(12)
+                                UnitPrice = reader.GetInt32(12).ToString(),
+                                OperationDate = reader.IsDBNull(13) ? (DateTime?)null : reader.GetDateTime(13)
 
                             });
                     }
