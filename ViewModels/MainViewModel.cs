@@ -849,7 +849,7 @@ namespace NewAPP
                 NewQuantity = addNomenclatureWindow.NewQuantity;
                 UnitPrice = addNomenclatureWindow.UnitPrice;
 
-                _dataBase.AddNomenclature(Name, InternalArticle, ExternalArticle, Characteristic, SerialNumber, Unit, AdressCell, OldQuantity, OperationTypeIn, OperationTypeOut, NewQuantity);
+                _dataBase.AddNomenclature(Name, InternalArticle, ExternalArticle, Characteristic, SerialNumber, Unit, AdressCell, OldQuantity, OperationTypeIn, OperationTypeOut, NewQuantity, UnitPrice);
             }
         }
 

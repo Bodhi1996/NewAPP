@@ -283,7 +283,7 @@ namespace NewAPP.Services
             return result;
         } //вывод всего содержания
 
-        public bool AddNomenclature ( string name, string internalArticle, string externalArticle, string characteristic, string serialNumber, string unit, string addressCell, int oldQuantity, int operationTypeIn, int operationTypeOut, int newQuantity ) //добавление чего либо
+        public bool AddNomenclature ( string name, string internalArticle, string externalArticle, string characteristic, string serialNumber, string unit, string addressCell, int oldQuantity, int operationTypeIn, int operationTypeOut, int newQuantity, int unitPrice) //добавление чего либо
         {
             try
             {
@@ -292,7 +292,7 @@ namespace NewAPP.Services
                     connection.Open();
 
                     var incertResult = connection.CreateCommand();
-                    incertResult.CommandText = "INSERT INTO nomenclature (Name, InternalArticle, ExternalArticle, Characteristic, SerialNumber, Unit, AddressCell, OldQuantity, OperationTypeIn, OperationTypeOut, NewQuantity) VALUES (@name, @internalArticle, @externalArticle, @characteristic, @serialNumber, @unit, @addressCell, @oldQuantity, @operationTypeIn, @operationTypeOut, @newQuantity)";
+                    incertResult.CommandText = "INSERT INTO nomenclature (Name, InternalArticle, ExternalArticle, Characteristic, SerialNumber, Unit, AddressCell, OldQuantity, OperationTypeIn, OperationTypeOut, NewQuantity, UnitPrice) VALUES (@name, @internalArticle, @externalArticle, @characteristic, @serialNumber, @unit, @addressCell, @oldQuantity, @operationTypeIn, @operationTypeOut, @newQuantity, @unitPrice)";
                     incertResult.Parameters.AddWithValue(@"name", name);
                     incertResult.Parameters.AddWithValue(@"internalArticle", internalArticle);
                     incertResult.Parameters.AddWithValue(@"externalArticle", externalArticle);
@@ -304,6 +304,7 @@ namespace NewAPP.Services
                     incertResult.Parameters.AddWithValue("@operationTypeIn",operationTypeIn);
                     incertResult.Parameters.AddWithValue("@operationTypeOut", operationTypeOut);
                     incertResult.Parameters.AddWithValue("@newQuantity", newQuantity);
+                    incertResult.Parameters.AddWithValue("@unitPrice", unitPrice);
                     incertResult.Parameters.AddWithValue("@operationDate", DateTime.Now);
 
                     incertResult.ExecuteNonQuery();
