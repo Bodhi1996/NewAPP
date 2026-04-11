@@ -20,6 +20,8 @@ namespace NewAPP.Models
         public string OperationTypeIn { get; set; } //добавили
         public string OperationTypeOut { get; set; } //убавили
         public string NewQuantity { get; set; } = string.Empty; //остаток
+        public string UnitPrice { get; set; } //цена за ед.товара
+        public string TotalPrice { get; set; } //цена за общее кол-во товара
         public DateTime? OperationDate { get; set; }
 
     }
