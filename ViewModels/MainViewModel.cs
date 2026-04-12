@@ -746,12 +746,7 @@ namespace NewAPP
         {
             var all = _dataBase.AllNum();
             var reportWindow = new ReportWindow(all);
-            
-
-                if(reportWindow.ShowDialog()== true)
-                {
-                    
-                }
+            reportWindow.Show();
         }
 
         private void ExecuteAddUsers (object param ) //область добавления пользователя
@@ -846,26 +841,9 @@ namespace NewAPP
         {
             var addNomenclatureWindow = new AddNomenclatureWindow();
             addNomenclatureWindow.peredacha += OnDataRecivedAddNomenclature;
-           // _dataBase.AddNomenclature(Name, InternalArticle, ExternalArticle, Characteristic, SerialNumber, Unit, AdressCell, OldQuantity, OperationTypeIn, OperationTypeOut, NewQuantity, UnitPrice);
+           
             addNomenclatureWindow.Show();
 
-            //if(addNomenclatureWindow.ShowDialog() == true)
-            //{
-            //    Name = addNomenclatureWindow.Name;
-            //    InternalArticle = addNomenclatureWindow.InternalArticle;
-            //    ExternalArticle = addNomenclatureWindow.ExternalArticle;
-            //    Characteristic = addNomenclatureWindow.Characteristic;
-            //    SerialNumber = addNomenclatureWindow.SerialNumber;
-            //    Unit = addNomenclatureWindow.Unit;
-            //    AdressCell = addNomenclatureWindow.AdressCell;
-            //    OldQuantity = addNomenclatureWindow.OldQuantity;
-            //    OperationTypeIn = addNomenclatureWindow.OperationTypeIn;
-            //    OperationTypeOut = addNomenclatureWindow.OperationTypeOut;
-            //    NewQuantity = addNomenclatureWindow.NewQuantity;
-            //    UnitPrice = addNomenclatureWindow.UnitPrice;
-
-               //    _dataBase.AddNomenclature(Name, InternalArticle, ExternalArticle, Characteristic, SerialNumber, Unit, AdressCell, OldQuantity, OperationTypeIn, OperationTypeOut, NewQuantity, UnitPrice);
-            //}
         }
 
         private void OnDataRecivedAddNomenclature((string val1, string val2, string val3, string val4, string val5, string val6, string val7, int val8, int val9, int val10, int val11, int val12)data)
