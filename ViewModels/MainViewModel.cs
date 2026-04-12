@@ -861,6 +861,7 @@ namespace NewAPP
             NewQuantity = data.val11;
             UnitPrice = data.val12;
             _dataBase.AddNomenclature(Name, InternalArticle, ExternalArticle, Characteristic, SerialNumber, Unit, AdressCell, OldQuantity, OperationTypeIn, OperationTypeOut, NewQuantity, UnitPrice);
+            MessageBox.Show("Позиция добавлена");
         }
 
         private async void ExecuteDeleteCommand(object param) 
