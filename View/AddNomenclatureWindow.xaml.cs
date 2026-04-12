@@ -46,23 +46,24 @@ namespace NewAPP.View
 
             AddNumButton1 = new RelayCommand(ExecuteAddNomenclature, CanExecuteAddNomenclature);
         }
+        public event Action<(string val1, string val2, string val3, string val4, string val5, string val6, string val7, int val8, int val9, int val10, int val11, int val12)> peredacha;
         public ICommand AddNumButton1 { get; }
 
         private void ExecuteAddNomenclature ( object param )
         {
             // Сохраняем данные
-            Name = NameNomenclatureBox.Text.Trim();
-            InternalArticle = InterNomenclatureBox.Text.Trim();
-            ExternalArticle = ExterNomenclatureBox.Text.Trim();
-            Characteristic = CharNomenclatureBox.Text.Trim();
-            SerialNumber = SNNomenclatureBox.Text.Trim();
-            Unit = UnitNomenclatureBox.Text.Trim();
-            AdressCell = AdrNomenclatureBox.Text.Trim();
-            int.TryParse(OldNomenclatureBox.Text.Trim(), out int oldQyt);
-            int.TryParse(InNomenclatureBox.Text.Trim(), out int OperIn);
-            int.TryParse(OutNomenclatureBox.Text.Trim(), out int OperOut);
-            int.TryParse(NewNomenclatureBox.Text.Trim(), out int NewQ);
-            int.TryParse(UnitPriceBox.Text.Trim(), out int UnitPri);
+            Name = NameNomenclatureBox.Text.Trim(); //val1
+            InternalArticle = InterNomenclatureBox.Text.Trim(); //val2
+            ExternalArticle = ExterNomenclatureBox.Text.Trim(); //val3
+            Characteristic = CharNomenclatureBox.Text.Trim(); //val4
+            SerialNumber = SNNomenclatureBox.Text.Trim(); //val5
+            Unit = UnitNomenclatureBox.Text.Trim(); //val6
+            AdressCell = AdrNomenclatureBox.Text.Trim(); //val7
+            int.TryParse(OldNomenclatureBox.Text.Trim(), out int oldQyt); //val8
+            int.TryParse(InNomenclatureBox.Text.Trim(), out int OperIn);//val9
+            int.TryParse(OutNomenclatureBox.Text.Trim(), out int OperOut); //val10
+            int.TryParse(NewNomenclatureBox.Text.Trim(), out int NewQ); //val11
+            int.TryParse(UnitPriceBox.Text.Trim(), out int UnitPri); //val12
 
             OldQuantity = oldQyt;
             OperationTypeIn = OperIn;
@@ -70,8 +71,7 @@ namespace NewAPP.View
             NewQuantity = NewQ;
             UnitPrice = UnitPri;
             // Закрываем окно с успешным результатом
-            this.DialogResult = true;
-            this.Close();
+            peredacha?.Invoke((Name, InternalArticle, ExternalArticle, Characteristic, SerialNumber, Unit, AdressCell, OldQuantity, OperationTypeIn, OperationTypeOut, NewQuantity, UnitPrice));
         }
 
         // Метод проверки - возвращает bool, доступна ли команда
