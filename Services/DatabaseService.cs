@@ -57,9 +57,9 @@ namespace NewAPP.Services
                     insertUser.Parameters.AddWithValue("@pass", HashPassword("user123"));
                     insertUser.ExecuteNonQuery();
                 }
-                var dropTable = connection.CreateCommand();
-                dropTable.CommandText = "DROP TABLE IF EXISTS Nomenclature";
-                dropTable.ExecuteNonQuery();
+                //var dropTable = connection.CreateCommand();
+                //dropTable.CommandText = "DROP TABLE IF EXISTS Nomenclature";
+                //dropTable.ExecuteNonQuery();
 
 
                 createTable.CommandText = @"CREATE TABLE IF NOT EXISTS nomenclature ( 

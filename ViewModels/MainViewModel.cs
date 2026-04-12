@@ -2,6 +2,7 @@
 using NewAPP.Services;
 using NewAPP.View;
 using NewAPP.ViewModels;
+using OfficeOpenXml.FormulaParsing.Ranges;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -820,22 +821,25 @@ namespace NewAPP
 
         }
 
+
         private void ExecuteSetSklad ( object param )  // настройки склада
         {
             var setSkladWindow = new SetSkladWindow();
 
-            if(setSkladWindow.ShowDialog() == true)
-            {
-                Row = Int32.Parse(setSkladWindow.Row);
-                Shelf = Int32.Parse(setSkladWindow.Shelf);
-                Cell = Int32.Parse(setSkladWindow.Cell);
+            setSkladWindow.dataCon += OnDataReceived;
+           
+            ExecuteShowSensors(null);
 
-                InitializeTerminals(); // ← Переинициализация с новым Row
-                UpdateVisibleSensors(); // ← Обновляем отображение
+            setSkladWindow.Show();
+        }
 
-                // 3. Показываем датчики (если нужно)
-                ExecuteShowSensors(null);
-            }
+        private void OnDataReceived ( (int val1, int val2, int val3) data ) //метод для передачи данных из окна склада
+        {
+                Row = data.val1;
+                Cell = data.val2; 
+                Shelf = data.val3;
+            InitializeTerminals();
+            UpdateVisibleSensors();
         }
 
         private async void ExecuteAddNomenclature ( object param ) //кнопка добавления номенклатуры

@@ -23,18 +23,25 @@ namespace NewAPP.View
     /// </summary>
     public partial class SetSkladWindow : Window
     {
-        public  string Shelf { get; set; } //стелаж
-        public string Cell { get; set; } // ячейка
-        public string Row { get; set; }         //ряд
+        public  int Shelf { get; set; } //стелаж
+        public int Cell { get; set; } // ячейка
+        public int Row { get; set; }         //ряд
+        public bool flag = false;
+        
+
+        
+        
             
         public SetSkladWindow()
         {
             //SkladCommand = new RelayCommand(ExecuteSklad, CanExecuteSklad);
             InitializeComponent();
+            
             this.DataContext = this;
             SkladCommand = new RelayCommand(ExecuteSklad, CanExecuteSklad);
-
         }
+
+        public event Action<(int val1, int val2, int val3)> dataCon;
         public ICommand SkladCommand { get; }
 
         private bool CanExecuteSklad ( object param ) //проверка есть ли данные в кнопке
@@ -44,14 +51,22 @@ namespace NewAPP.View
                    !string.IsNullOrWhiteSpace(CellBox?.Text);
         }
 
+       
         public void ExecuteSklad ( object param)
         {
-            Shelf = ShelfBox.Text;
-            Cell = CellBox.Text;
-            Row = RowBox.Text;
+            Row = int.Parse(RowBox.Text.Trim());
+            Cell = int.Parse(CellBox.Text.Trim());
+            Shelf = int.Parse(ShelfBox.Text.Trim());
 
-            this.DialogResult = true;
-            this.Close();
+            dataCon?.Invoke((Row, Cell,  Shelf));
+
+            //Shelf = ShelfBox?.Text;
+            //Cell = CellBox?.Text;
+            //Row = RowBox?.Text;
+            //flag = true;
+            
+            MessageBox.Show("параметры переданы");
+
         }
     }
 }
