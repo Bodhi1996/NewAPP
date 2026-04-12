@@ -31,16 +31,20 @@ namespace NewAPP.View
             DeleteButtonNumCommand = new RelayCommand(ExecuteAddNomenclature, CanExecuteAddNomenclature);
         }
 
+        public event Action<string> deleteName;
+
         public ICommand DeleteButtonNumCommand { get; }
 
         private void ExecuteAddNomenclature ( object param )
         {
             // Сохраняем данные
             Name = DeleteTextBox.Text.Trim();
+            deleteName?.Invoke(Name);
+            
 
             // Закрываем окно с успешным результатом
-            this.DialogResult = true;
-            this.Close();
+            //this.DialogResult = true;
+            //this.Close();
         }
 
         // Метод проверки - возвращает bool, доступна ли команда

@@ -866,11 +866,17 @@ namespace NewAPP
         private async void ExecuteDeleteCommand(object param) 
         {
             var deleteNomenclatute = new DeleteNomenclatureWindow();
-            if (deleteNomenclatute.ShowDialog() == true)
-            {
-                DeleteName = deleteNomenclatute.Name;
-                _dataBase.DeleteNomenclature(DeleteName);
-            }
+            deleteNomenclatute.deleteName += DeleteNomenclatute_Action111;
+
+            deleteNomenclatute.Show();
+            
+        }
+
+        private void DeleteNomenclatute_Action111 ( string name )
+        {
+            DeleteName = name;
+            _dataBase.DeleteNomenclature(DeleteName);
+            MessageBox.Show("Позиция удалена, обновите список");
         }
 
         private void ExecuteShowHistory ( object param )
