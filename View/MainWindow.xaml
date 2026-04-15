@@ -57,6 +57,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
@@ -78,21 +79,31 @@
                        Margin="0,2,0,2"/>
 
                     <!-- ВЫПАДАЮЩИЙ СПИСОК НОМЕНКЛАТУРЫ -->
-                    <ComboBox Grid.Row="2"
-                      ItemsSource="{Binding DataContext.LoadlNum, RelativeSource={RelativeSource AncestorType=Window}}"
-                      DisplayMemberPath="Name"
-                      SelectedValuePath="Name"
-                      SelectedValue="{Binding SelectedNomenclature, UpdateSourceTrigger=PropertyChanged}"
-                      Width="130"
-                      Height="24"
-                      Margin="5,2"
-                      FontSize="10"
-                      Background="#34495E"
-                      Foreground="Black"
-                      BorderBrush="#4A6572"/>
+                    <TextBox Grid.Row="2" x:Name="SearchTextBox" 
+                        Height="30" 
+                        Padding="5" 
+                        Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
+                    <ListBox Grid.Row="3" 
+                             ItemsSource="{Binding FilterUnit}"
+                        SelectedItem="{Binding SelectedUnitObj}"
+                        Visibility="{Binding HasSuggestions, Converter={StaticResource BooleanToVisibilityConverter}}"
+                             DisplayMemberPath="Name">
+                        <ListBox.Resources>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Cursor" Value="Hand"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#3498DB"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ListBox.Resources>
+                    </ListBox>
+
 
                     <!-- Вес и единицы измерения в одной строке -->
-                    <StackPanel Grid.Row="3" 
+                    <StackPanel Grid.Row="4" 
                         Orientation="Horizontal" 
                         HorizontalAlignment="Center"
                         Margin="0,2,0,2">
@@ -108,7 +119,7 @@
                     </StackPanel>
 
                     <!-- Нижняя панель со статусом и кнопкой Убрать -->
-                    <Border Grid.Row="4" 
+                    <Border Grid.Row="5" 
                     Background="#2C3E50" 
                     CornerRadius="0,0,5,5" 
                     Margin="-1,-2,-1,-1" 

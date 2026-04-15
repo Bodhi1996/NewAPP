@@ -1,5 +1,7 @@
-﻿using System;
+﻿using NewAPP.Models;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -119,6 +121,77 @@ namespace NewAPP
         // Вычисляемые свойства для UI
         public string StatusText => IsConnected ? "Online" : "Offline";
         public string StatusColor => IsConnected ? "Green" : "Red";
+
+        // ===== ПОИСК НОМЕНКЛАТУРЫ ДЛЯ ДАТЧИКА =====
+        private string _searchText;
+        private NomenclatureUnit _selectedUnitObj;
+        private ObservableCollection<NomenclatureUnit> _filterUnit;
+
+        public bool _isUpdateSurch;
+
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                if (_isUpdateSurch) return;
+                if (_searchText == value) return;
+                _searchText = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasSuggestions));
+                FilterMethod();
+            }
+        }
+
+        public NomenclatureUnit SelectedUnitObj
+        {
+            get => _selectedUnitObj;
+            set
+            {
+                _selectedUnitObj = value;
+                OnPropertyChanged();
+                if (value != null)
+                {
+                    _isUpdateSurch = true;
+                    SelectedNomenclature = value.Name;
+                    SearchText = value.Name;
+                    FilterUnit = new ObservableCollection<NomenclatureUnit>();
+                    _isUpdateSurch = false;
+                }
+            }
+        }
+
+        public ObservableCollection<NomenclatureUnit> FilterUnit
+        {
+            get => _filterUnit ?? (_filterUnit = new ObservableCollection<NomenclatureUnit>());
+            set
+            {
+                if (_filterUnit == value) return;
+                _filterUnit = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasSuggestions));
+            }
+        }
+
+        public bool HasSuggestions => SearchText != null && FilterUnit.Any() && !string.IsNullOrWhiteSpace(SearchText);
+
+        public void FilterMethod ( )
+        {
+            if (string.IsNullOrWhiteSpace(SearchText))
+            {
+                FilterUnit = new ObservableCollection<NomenclatureUnit>();
+                return;
+            }
+            var all = MainViewModel.AllNomenclatureUnits;
+            if (all == null) return;
+            var result = all
+               .Where(p => p.Name != null && p.Name.ToLower().Contains(SearchText.ToLower()))
+               .Take(10)
+               .ToList();
+            FilterUnit = new ObservableCollection<NomenclatureUnit>(result);
+
+        }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged ( [CallerMemberName] string name = null )

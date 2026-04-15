@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Data;
 using System.DirectoryServices;
 using System.Linq;
+using System.Reflection.PortableExecutable;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Data;
@@ -458,6 +459,55 @@ namespace NewAPP
                 OnPropertyChanged();
             }
         }
+        //свойства для поиска наименования для датчика
+        private string _searchTextCell; //переменная для хранения текста
+        private List<NomenclatureUnit> _allUnit;
+        private ObservableCollection<NomenclatureUnit> _filterUnit; //коллекция для хранения результата поиска
+        private NomenclatureUnit _selectedUnit; //свойство для выбранного элемента
+
+        public string SearchTextCell 
+        {
+            get => _searchTextCell;
+            set
+            {
+                _searchTextCell = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasSuggestion));
+
+                FilterMEthod();
+            }
+        }
+        public NomenclatureUnit SelectedUnit 
+        {
+            get => _selectedUnit;
+            set
+            {
+                _selectedUnit = value; OnPropertyChanged();
+                OnPropertyChanged(nameof(HasSuggestion));
+
+                if (value != null)
+                {
+                    SearchTextCell = value.Name;
+
+                }
+            }
+        }
+
+        public ObservableCollection<NomenclatureUnit> FilterUnit
+        {
+            get => _filterUnit;
+            set
+            {
+                _filterUnit = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasSuggestion));
+            }
+        }
+
+        public bool HasSuggestion => FilterUnit != null &&
+            FilterUnit.Any() && !string.IsNullOrWhiteSpace(SearchTextCell);
+
+        public static List<NomenclatureUnit> AllNomenclatureUnits { get; private set; }
 
 
 
@@ -527,6 +577,8 @@ namespace NewAPP
                 TerminalVM.PropertyChanged += TerminalVM_PropertyChanged;
 
                 LoadlNum = new ObservableCollection<NomenclatureUnit>(_dataBase.AllNum());
+                AllNomenclatureUnits = _dataBase.AllNum();
+
                 // Инициализация команд
                 StartStopCommand = new RelayCommand(ExecuteStartStop);
                 SwitchModeCommand = new RelayCommand(ExecuteSwitchMode);
@@ -1129,6 +1181,18 @@ namespace NewAPP
                 VisibleAdmin();
                 VisibleAdminButton();
             }
+        }
+
+        private void FilterMEthod()
+        {
+            if (!string.IsNullOrWhiteSpace(SearchTextCell)) return;
+
+            var result = _allUnit
+                .Where(p => p.Name.ToLower().Contains(SearchText.ToLower()))
+                .Take(10)
+                .ToList();
+            FilterUnit = new ObservableCollection<NomenclatureUnit>(result);
+            OnPropertyChanged(nameof(HasSuggestion));
         }
 
         public bool IsAdmin => CurrentUser?.Role == "Admin";
