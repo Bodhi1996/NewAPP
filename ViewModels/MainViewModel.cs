@@ -627,7 +627,7 @@ namespace NewAPP
                     Row = Row,
                     Shelf = Shelf,
                     Cell = Cell,
-                    Name = $"Датчик {i:D2}",
+                    Name = "Адрес",
                     Weight = 20 + i,
                     RegisterAddress = (ushort)(30 + (i - 1) * 2),
                     IsConnected = false
