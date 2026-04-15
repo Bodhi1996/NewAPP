@@ -1208,22 +1208,16 @@ MaxWidth="850">
                     Binding="{Binding AddressCell}"
                     Width="50" ElementStyle="{StaticResource CenterCellStyle}"/>
 
-                                    <DataGridTextColumn Header="Было"
-                    Binding="{Binding OldQuantity}"
+                                    <DataGridTextColumn Header="Остаток"
+                        Binding="{Binding NewQuantity}"
+                        Width="50" ElementStyle="{StaticResource CenterCellStyle}"/>
+
+                                    <DataGridTextColumn Header="Цена"
+                    Binding="{Binding UnitPrice}"
                     Width="50" ElementStyle="{StaticResource CenterCellStyle}"/>
 
-                                    <DataGridTextColumn Header="Добавили"
-                    Binding="{Binding OperationTypeIn}"
-                    Width="50" ElementStyle="{StaticResource CenterCellStyle}"/>
 
-                                    <DataGridTextColumn Header="Убавили"
-                    Binding="{Binding OperationTypeOut}"
-                    Width="50" ElementStyle="{StaticResource CenterCellStyle}"/>
 
-                                    <DataGridTextColumn Header="Стало"
-                   Binding="{Binding NewQuantity}"
-                   Width="50" ElementStyle="{StaticResource CenterCellStyle}"/>
-                                    
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Border>

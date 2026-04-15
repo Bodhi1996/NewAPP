@@ -772,6 +772,7 @@ namespace NewAPP
                         OperationTypeIn = item.OperationTypeIn,
                         OperationTypeOut = item.OperationTypeOut,
                         NewQuantity = item.NewQuantity,
+                        UnitPrice = item.UnitPrice,
                         OperationDate = null
                     });
                 }
