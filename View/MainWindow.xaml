@@ -209,8 +209,7 @@
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button Content="ОТЧЕТ" Style="{StaticResource TopButtonStyle}" Width="120"/>
                     <Button Content="БАЗА ДАННЫХ" Style="{StaticResource TopButtonStyle}" Width="120"/>
-                    <Button Content="СКЛАД" Style="{StaticResource TopButtonStyle}" Width="120" Command="{Binding SetingSklad}" 
-                            Visibility="{Binding IsVisibleSklad,Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    
                 </StackPanel>
 
                 <!-- Правые настройки -->
@@ -293,6 +292,12 @@
                             Command="{Binding AddUserCommand}"
                             Visibility="{Binding IsAddButtonUsersVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
                             Background="{StaticResource BlueBorderBrush}" x:Name="ButtonAddUsersMenu"/>
+                    <Button Content="СОЗДАНИЕ СКЛАДА" 
+        Style="{StaticResource LeftButtonStyle}"
+        Command="{Binding SetingSklad}" 
+        Background="{StaticResource BlueBorderBrush}"
+        Visibility="{Binding IsVisibleSklad,Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
                 </StackPanel>
             </Border>
 
