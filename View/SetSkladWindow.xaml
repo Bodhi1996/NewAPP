@@ -5,44 +5,223 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NewAPP.View"
         mc:Ignorable="d"
-        Title="SetSkladWindow" Height="300" Width="500">
-    <Grid Background="#2C3E50">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Center">
-            <TextBlock Text="Размещение стелажа склада" FontSize="20" FontWeight="Bold"/>
-        </StackPanel>
-        <Grid Grid.Row="1" Grid.ColumnSpan="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+        Title="SetSkladWindow" 
+       Height="520" 
+        Width="550"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="#2C3E50">
+
+    <Window.Resources>
+        <!-- Стиль для заголовков -->
+        <Style x:Key="FieldLabelStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#BDC3C7"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,0,0,5"/>
+        </Style>
+
+        <!-- Стиль для TextBox (исправлен) -->
+        <Style x:Key="ModernTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#34495E"/>
+            <Setter Property="BorderBrush" Value="#4A6572"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CaretBrush" Value="White"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="6">
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                  Margin="0"
+                                  VerticalAlignment="Stretch"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter Property="BorderBrush" Value="#3498DB"/>
+                                <Setter Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Стиль для кнопки -->
+        <Style x:Key="ModernButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="42"/>
+            <Setter Property="Width" Value="160"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#27AE60"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#2ECC71"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#229954"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Стиль для карточки ввода -->
+        <Style x:Key="InputCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="#34495E"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="20,20"/>
+        </Style>
+    </Window.Resources>
+
+    <Border Background="#2C3E50">
+        <Grid Margin="20">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" Grid.Column="0">
-                <TextBlock Text="Кол-во рядов" FontSize="18" FontWeight="Bold"/> <!--Row наименование-->
-                <TextBox x:Name="RowBox" Margin="10,10,120,0"/>
-            </StackPanel>
-            <StackPanel Grid.Row="1" Grid.Column="0">
-                <TextBlock Text="Кол-во стелажей" FontSize="18" FontWeight="Bold"/> <!--Shelf наименование-->
-                <TextBox x:Name="ShelfBox" Margin="10,10,120,0"/>
-            </StackPanel>
-            <StackPanel Grid.Row="2" Grid.Column="0">
-                <TextBlock Text="Кол-во ячеек" FontSize="18" FontWeight="Bold"/> <!--Cell наименование-->
-                <TextBox x:Name="CellBox" Margin="10,10,120,0"/>
-            </StackPanel>
-            <StackPanel Grid.Row="1" Grid.Column="1">
-                <Button x:Name="SkladButton" Content="Добавить" HorizontalAlignment="Center" Width="100" Height="50" Command="{Binding SkladCommand}"/>
-            </StackPanel>
+
+            <!-- Заголовок -->
+            <Border Grid.Row="0" 
+                    Background="#34495E" 
+                    CornerRadius="8" 
+                    Padding="15" 
+                    Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="🏢 РАЗМЕЩЕНИЕ СТЕЛАЖА СКЛАДА"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Foreground="#3498DB"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="Укажите параметры конфигурации стеллажа"
+                               FontSize="11"
+                               Foreground="#BDC3C7"
+                               HorizontalAlignment="Center"
+                               Margin="0,5,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Основная карточка ввода -->
+            <Border Grid.Row="1" Style="{StaticResource InputCardStyle}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="15"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Левая колонка (поля ввода) -->
+                    <StackPanel Grid.Column="0">
+                        <StackPanel Margin="0,0,0,15">
+                            <TextBlock Text="📊 КОЛИЧЕСТВО РЯДОВ" 
+                                       Style="{StaticResource FieldLabelStyle}"/>
+                            <TextBox x:Name="RowBox" 
+                                     Style="{StaticResource ModernTextBoxStyle}"
+                                     Text="1"/>
+                        </StackPanel>
+
+                        <StackPanel Margin="0,0,0,15">
+                            <TextBlock Text="🏗️ КОЛИЧЕСТВО СТЕЛАЖЕЙ" 
+                                       Style="{StaticResource FieldLabelStyle}"/>
+                            <TextBox x:Name="ShelfBox" 
+                                     Style="{StaticResource ModernTextBoxStyle}"
+                                     Text="1"/>
+                        </StackPanel>
+
+                        <StackPanel>
+                            <TextBlock Text="📦 КОЛИЧЕСТВО ЯЧЕЕК" 
+                                       Style="{StaticResource FieldLabelStyle}"/>
+                            <TextBox x:Name="CellBox" 
+                                     Style="{StaticResource ModernTextBoxStyle}"
+                                     Text="1"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Разделитель -->
+                    <Border Grid.Column="1" 
+                            Background="#4A6572" 
+                            Width="1" 
+                            HorizontalAlignment="Center"/>
+
+                    <!-- Правая колонка (предпросмотр) -->
+                    <Border Grid.Column="2"
+                            Background="#2C3E50"
+                            CornerRadius="8"
+                            Padding="15"
+                            VerticalAlignment="Center">
+                        <StackPanel>
+                            <TextBlock Text="ℹ️ ПРЕДПРОСМОТР" 
+                                       Foreground="#F1C40F"
+                                       FontSize="11"
+                                       FontWeight="Bold"
+                                       Margin="0,0,0,15"/>
+
+                            <TextBlock Text="Ряды" 
+                                       Foreground="#7F8C8D" 
+                                       FontSize="10"/>
+                            <TextBlock x:Name="RowPreview" 
+                                       Text="1" 
+                                       Foreground="#3498DB" 
+                                       FontSize="16" 
+                                       FontWeight="Bold"
+                                       Margin="0,0,0,12"/>
+
+                            <TextBlock Text="Стелажи" 
+                                       Foreground="#7F8C8D" 
+                                       FontSize="10"/>
+                            <TextBlock x:Name="ShelfPreview" 
+                                       Text="1" 
+                                       Foreground="#3498DB" 
+                                       FontSize="16" 
+                                       FontWeight="Bold"
+                                       Margin="0,0,0,12"/>
+
+                            <TextBlock Text="Ячейки" 
+                                       Foreground="#7F8C8D" 
+                                       FontSize="10"/>
+                            <TextBlock x:Name="CellPreview" 
+                                       Text="1" 
+                                       Foreground="#3498DB" 
+                                       FontSize="16" 
+                                       FontWeight="Bold"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- Кнопка -->
+            <Border Grid.Row="2" 
+                    Background="#34495E" 
+                    CornerRadius="8" 
+                    Padding="15" 
+                    Margin="0,10,0,0">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button x:Name="SkladButton" 
+                            Content="ПРИМЕНИТЬ НАСТРОЙКИ"
+                            Command="{Binding SkladCommand}"
+                            Style="{StaticResource ModernButtonStyle}" Cursor="Hand"/>
+                </StackPanel>
+            </Border>
         </Grid>
-    </Grid>
+    </Border>
 </Window>

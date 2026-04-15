@@ -39,6 +39,10 @@ namespace NewAPP.View
             
             this.DataContext = this;
             SkladCommand = new RelayCommand(ExecuteSklad, CanExecuteSklad);
+
+            RowBox.TextChanged += ( s, e ) => RowPreview.Text = RowBox.Text;
+            CellBox.TextChanged += ( s, e ) => CellPreview.Text = CellBox.Text;
+            ShelfBox.TextChanged += ( s, e ) => ShelfPreview.Text = ShelfBox.Text;
         }
 
         public event Action<(int val1, int val2, int val3)> dataCon;
