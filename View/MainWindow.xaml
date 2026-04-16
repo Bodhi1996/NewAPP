@@ -216,23 +216,16 @@
                 <StackPanel Grid.Column="2" Orientation="Horizontal" 
                             Visibility="{Binding IsRightCellsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
 
-                    <TextBlock Text="Датчиков:"
-                             VerticalAlignment="Center"
-                             Foreground="White"
-                             Margin="10,0,5,0"/>
+                    
 
-                    <ComboBox Width="80"
-                              ItemsSource="{Binding AvailableCounts}"
-                              SelectedItem="{Binding SelectedSensorsCount}"/>
-
-                    <TextBlock Text="Колонок:"
+                    <TextBlock Text="Конфигурация:"
                              VerticalAlignment="Center"
                              Foreground="White"
                              Margin="20,0,5,0"/>
 
                     <ComboBox Width="80"
-                              ItemsSource="{Binding AvailableColumns}"
-                              SelectedItem="{Binding SelectedColumns}"/>
+                              ItemsSource="{Binding SensorConfig}"
+                              SelectedItem="{Binding Display}"/>
 
                     <Button Content="{Binding ModeButtonText}"
                             Background="{Binding ModeButtonColor}"

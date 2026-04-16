@@ -39,8 +39,31 @@ namespace NewAPP
         // ===== СВОЙСТВА ДЛЯ КОМБОБОКСОВ =====
         public List<int> AvailableCounts { get; } = new List<int> { 6, 12, 30, 60 };
         public List<int> AvailableColumns { get; } = new List<int> { 1, 2, 3, 6 };
+        public List<DispayConfig> SensorConfig { get; } = new List<DispayConfig>()
+        {
+            new DispayConfig{Name = "4x4", Sensors = 16, Columns = 4 },
+            new DispayConfig{Name = "4x6", Sensors = 24, Columns = 4 },
+            new DispayConfig{Name = "4x8", Sensors = 32, Columns = 4 }
+        };
 
-        private int _selectedSensorsCount = 6;
+        private DispayConfig _display;
+        public DispayConfig Display
+        {
+            get => _display;
+            set
+            {
+                if (_display == value) return;
+                _display = value;
+                OnPropertyChanged();
+                if (value != null)
+                {
+                    SelectedColumns = value.Columns;
+                    SelectedSensorsCount = value.Sensors;
+                }
+            }
+        }
+
+        private int _selectedSensorsCount = 4;
         public int SelectedSensorsCount
         {
             get => _selectedSensorsCount;
@@ -56,7 +79,7 @@ namespace NewAPP
 
 
 
-        private int _selectedColumns = 2;
+        private int _selectedColumns = 4;
         public int SelectedColumns
         {
             get => _selectedColumns;
