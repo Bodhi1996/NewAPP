@@ -618,6 +618,55 @@ namespace NewAPP.Services
             }
         }
         
+        public List<NomenclatureItems> SearchUnit(string searchText)
+        {
+            var result = new List<NomenclatureItems>();
 
+            if(string.IsNullOrWhiteSpace(searchText))
+            {
+                result = new List<NomenclatureItems>();
+                return result;
+            }
+
+            try
+            {
+                var all = AllNum();
+
+                var searchToLower = searchText.Trim().ToLower();
+
+                var filterSearch = all
+                    .Where(x => x.Name != null && x.Name.ToLower().Contains(searchToLower.ToLower()))
+                    .ToList();
+
+                foreach (var items in filterSearch)
+                {
+                    result.Add(new NomenclatureItems()
+                    {
+
+                        Id = items.Id,
+                        Name = items.Name,
+                        InternalArticle = items.InternalArticle,
+                        ExternalArticle = items.ExternalArticle,
+                        Characteristic = items.Characteristic,
+                        SerialNamber = items.SerialNamber,
+                        Unit = items.Unit,
+                        AddressCell = items.AddressCell,
+                        // INTEGER → STRING для модели
+                        OldQuantity = items.OldQuantity,
+                        OperationTypeIn = items.OperationTypeIn,
+                        OperationTypeOut = items.OperationTypeOut,
+                        NewQuantity = items.NewQuantity,
+                        UnitPrice = items.UnitPrice
+
+                    });
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
     }
 }

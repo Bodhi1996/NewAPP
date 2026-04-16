@@ -781,7 +781,7 @@ namespace NewAPP
 
             try
             {
-                var results = _dataBase.SearchNomenclature(SearchText);
+                var results = _dataBase.SearchUnit(SearchText);
 
                 // ПРЕОБРАЗУЕМ NomenclatureItems в NomenclatureUnit для DataGrid
                 var convertedResults = new ObservableCollection<NomenclatureUnit>();
