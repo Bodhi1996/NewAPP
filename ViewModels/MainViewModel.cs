@@ -174,7 +174,13 @@ namespace NewAPP
         public string SearchText
         {
             get => _searchText;
-            set { _searchText = value; OnPropertyChanged(); }
+            set
+            {
+                _searchText = value.Trim();
+                OnPropertyChanged(); 
+
+                
+            }
         }
 
         private bool _isTcpSettingsVisible;
