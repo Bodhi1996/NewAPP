@@ -543,12 +543,12 @@ MaxWidth="850">
                    Margin="0,0,15,0"/>
 
                                         <StackPanel Grid.Column="1">
-                                            <TextBlock Text="ВЫБОР ДАТЧИКА"
+                                            <TextBlock Text="ВЫБОР ЯЧЕЙКИ"
                        Foreground="#7F8C8D"
                        FontSize="11"
                        FontWeight="Bold"
                        Margin="0,0,0,5"/>
-                                            <TextBlock Text="Укажите номер датчика для калибровки"
+                                            <TextBlock Text="Укажите номер ячейки для калибровки"
                        Foreground="#95A5A6"
                        FontSize="12"
                        Margin="0,0,0,8"/>
