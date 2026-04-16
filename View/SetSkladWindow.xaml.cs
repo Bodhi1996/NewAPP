@@ -63,11 +63,6 @@ namespace NewAPP.View
             Shelf = int.Parse(ShelfBox.Text.Trim());
 
             dataCon?.Invoke((Row, Cell,  Shelf));
-
-            //Shelf = ShelfBox?.Text;
-            //Cell = CellBox?.Text;
-            //Row = RowBox?.Text;
-            //flag = true;
             
             MessageBox.Show("параметры переданы");
 
