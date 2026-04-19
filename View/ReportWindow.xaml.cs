@@ -27,6 +27,8 @@ namespace NewAPP.View
         List<NomenclatureUnit> filteredData; //отфильтрованные данные подгружаем
         private Excele Excele; //создаем ексель
         private bool isLoaded = false;
+        private List<NomenclatureUnit> _selectedProductsForReport = new List<NomenclatureUnit>();
+
 
         public ReportWindow ( List<NomenclatureUnit> data )
         {
@@ -125,34 +127,48 @@ namespace NewAPP.View
 
         private void UpdateData ( )
         {
-            if (!isLoaded) return; // Пропускаем, если окно еще не загружено
+            if (!isLoaded) return;
 
             try
             {
-                // Проверяем наличие элементов управления
-                if (StartDatePicker == null || EndDatePicker == null ||
-                    AllProductsRadio == null || PreviewText == null)
-                {
-                    return;
-                }
-
                 var startDate = StartDatePicker.SelectedDate ?? DateTime.Now;
                 var endDate = EndDatePicker.SelectedDate ?? DateTime.Now;
                 var allProducts = AllProductsRadio.IsChecked == true;
 
-                string productName = "";
-                if (ManualEntryCheckBox != null && ManualEntryCheckBox.IsChecked == true)
+                // Фильтр по дате (всегда)
+                var filtered = allData.Where(x =>
+                    x.OperationDate.HasValue &&
+                    x.OperationDate.Value.Date >= startDate.Date &&
+                    x.OperationDate.Value.Date <= endDate.Date).ToList();
+
+                // 👇 Применяем фильтр по товарам
+                if (_selectedProductsForReport.Any())
                 {
-                    productName = ManualProductTextBox?.Text ?? "";
+                    var selectedNames = _selectedProductsForReport.Select(p => p.Name).ToHashSet();
+                    filtered = filtered.Where(x => selectedNames.Contains(x.Name)).ToList();
                 }
-                else
+                else if (!allProducts)
                 {
-                    productName = ProductComboBox?.SelectedItem?.ToString() ?? "";
+                    string productName = "";
+                    if (ManualEntryCheckBox.IsChecked == true)
+                        productName = ManualProductTextBox?.Text ?? "";
+                    else
+                        productName = ProductComboBox?.SelectedItem?.ToString() ?? "";
+
+                    if (!string.IsNullOrEmpty(productName) && productName != "Нет данных")
+                        filtered = filtered.Where(x => x.Name.Equals(productName, StringComparison.OrdinalIgnoreCase)).ToList();
                 }
 
-                // Получаем выбранную периодичность
+                filteredData = filtered;
+                ReportDataGrid.ItemsSource = filteredData;
+
+                // Статистика (как у тебя было)
+                int totalAdded = filtered.Sum(x => int.TryParse(x.OperationTypeIn, out int val) ? val : 0);
+                int totalRemoved = filtered.Sum(x => int.TryParse(x.OperationTypeOut, out int val) ? val : 0);
+                int totalRemaining = filtered.Sum(x => int.TryParse(x.NewQuantity, out int val) ? val : 0);
+
                 string periodName = "Месяц";
-                if (PeriodTypeComboBox != null && PeriodTypeComboBox.SelectedItem is ComboBoxItem selectedItem)
+                if (PeriodTypeComboBox?.SelectedItem is ComboBoxItem selectedItem)
                 {
                     switch (selectedItem.Tag?.ToString())
                     {
@@ -160,44 +176,17 @@ namespace NewAPP.View
                         case "Week": periodName = "Неделя"; break;
                         case "Month": periodName = "Месяц"; break;
                         case "Quarter": periodName = "Квартал"; break;
-                        default: periodName = "Месяц"; break;
                     }
                 }
 
-                // Фильтруем данные по дате
-                var filtered = allData.Where(x =>
-                {
-                    if (x.OperationDate.HasValue)
-                    {
-                        return x.OperationDate.Value.Date >= startDate.Date &&
-                               x.OperationDate.Value.Date <= endDate.Date;
-                    }
-                    return false;
-                }).ToList();
-
-                // Фильтруем по товару
-                if (!allProducts && !string.IsNullOrEmpty(productName) && productName != "Нет данных")
-                {
-                    filtered = filtered.Where(x =>
-                        x.Name.Equals(productName, StringComparison.OrdinalIgnoreCase)).ToList();
-                }
-
-                filteredData = filtered;
-
-                // Отображаем данные в таблице
-                if (ReportDataGrid != null)
-                {
-                    ReportDataGrid.ItemsSource = filteredData;
-                }
-
-                // Обновляем статистику
-                int totalAdded = filtered.Sum(x => int.TryParse(x.OperationTypeIn, out int val) ? val : 0);
-                int totalRemoved = filtered.Sum(x => int.TryParse(x.OperationTypeOut, out int val) ? val : 0);
-                int totalRemaining = filtered.Sum(x => int.TryParse(x.NewQuantity, out int val) ? val : 0);
+                string productInfo = allProducts ? "Все" :
+                    (_selectedProductsForReport.Any() ?
+                        $"{_selectedProductsForReport.Count} товаров" :
+                        (ManualEntryCheckBox.IsChecked == true ? ManualProductTextBox.Text : ProductComboBox?.SelectedItem?.ToString() ?? "Не выбран"));
 
                 PreviewText.Text = $"📊 Найдено записей: {filtered.Count}\n" +
                                   $"📅 Период: {startDate:dd.MM.yyyy} - {endDate:dd.MM.yyyy}\n" +
-                                  $"🏷️ Товар: {(allProducts ? "Все" : productName)}\n" +
+                                  $"🏷️ Товар: {productInfo}\n" +
                                   $"📈 Периодичность: {periodName}\n\n" +
                                   $"➕ Всего добавлено: {totalAdded}\n" +
                                   $"➖ Всего убрано: {totalRemoved}\n" +
@@ -206,10 +195,7 @@ namespace NewAPP.View
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Ошибка UpdateData: {ex.Message}");
-                if (PreviewText != null)
-                {
-                    PreviewText.Text = $"Ошибка: {ex.Message}";
-                }
+                PreviewText.Text = $"Ошибка: {ex.Message}";
             }
         }
 
@@ -243,7 +229,6 @@ namespace NewAPP.View
         {
             try
             {
-                // Проверяем наличие элементов управления
                 if (StartDatePicker == null || EndDatePicker == null || AllProductsRadio == null)
                 {
                     MessageBox.Show("Ошибка инициализации окна!", "Ошибка",
@@ -255,10 +240,8 @@ namespace NewAPP.View
                 var endDate = EndDatePicker.SelectedDate ?? DateTime.Now;
                 var allProducts = AllProductsRadio.IsChecked == true;
 
-                // Получаем выбранную периодичность
                 ReportPeriodType periodType = ReportPeriodType.Month;
-
-                if (PeriodTypeComboBox != null && PeriodTypeComboBox.SelectedItem is ComboBoxItem selectedItem)
+                if (PeriodTypeComboBox?.SelectedItem is ComboBoxItem selectedItem)
                 {
                     switch (selectedItem.Tag?.ToString())
                     {
@@ -269,17 +252,29 @@ namespace NewAPP.View
                     }
                 }
 
-                string productName = "";
+                // ========== ОСНОВНАЯ ЛОГИКА ==========
+                List<NomenclatureUnit> dataForReport = null;
+                string reportTitle = "";
+
+                // Приоритет: если есть выбранные товары через диалог
+                if (_selectedProductsForReport.Any())
+                {
+                    dataForReport = filteredData; // filteredData уже содержит только выбранные товары (по датам)
+                    reportTitle = $"Выбрано товаров: {_selectedProductsForReport.Count}";
+
+                    // Прямой вызов без повторной фильтрации
+                    Excele.ReportToExceleDirect(dataForReport, startDate, endDate, reportTitle, allProducts, periodType);
+                    return;
+                }
+
+                // Старая логика для одного товара или всех
                 if (!allProducts)
                 {
-                    if (ManualEntryCheckBox != null && ManualEntryCheckBox.IsChecked == true)
-                    {
+                    string productName = "";
+                    if (ManualEntryCheckBox.IsChecked == true)
                         productName = ManualProductTextBox?.Text ?? "";
-                    }
                     else
-                    {
                         productName = ProductComboBox?.SelectedItem?.ToString() ?? "";
-                    }
 
                     if (string.IsNullOrEmpty(productName) || productName == "Нет данных")
                     {
@@ -287,35 +282,52 @@ namespace NewAPP.View
                                       MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
                     }
-                }
-
-                if (startDate > endDate)
-                {
-                    MessageBox.Show("Дата начала не может быть позже даты окончания!", "Ошибка",
-                                  MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-
-                if (filteredData != null && filteredData.Count > 0)
-                {
-                    Excele.ReportToExcele(filteredData, startDate, endDate, productName, allProducts, periodType);
+                    reportTitle = productName;
                 }
                 else
                 {
+                    reportTitle = "Все товары";
+                }
+
+                if (filteredData == null || filteredData.Count == 0)
+                {
                     MessageBox.Show("Нет данных для формирования отчета!", "Предупреждение",
                                   MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
                 }
+
+                // Вызов стандартного метода (с фильтрацией по товару)
+                Excele.ReportToExcele(filteredData, startDate, endDate, reportTitle, allProducts, periodType);
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка формирования отчета: {ex.Message}", "Ошибка");
             }
+        
         }
 
         private void RefreshButton_Click ( object sender, RoutedEventArgs e )
         {
             UpdateData();
             MessageBox.Show("Данные обновлены!", "Обновление", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void SelectMultipleButton_Click ( object sender, RoutedEventArgs e )
+        {
+            // Получаем уникальные товары из всех данных (без дублей)
+            var uniqueProducts = allData
+                .GroupBy(x => x.Name)
+                .Select(g => g.First())
+                .ToList();
+
+            var selectionWindow = new SelectWindow(uniqueProducts, _selectedProductsForReport);
+            if (selectionWindow.ShowDialog() == true)
+            {
+                _selectedProductsForReport = selectionWindow.SelectedProductsResult;
+                UpdateData(); // обновляем таблицу и статистику
+                MessageBox.Show($"Выбрано товаров: {_selectedProductsForReport.Count}", "Выбор",
+                                MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
 
         private void CancelButton_Click ( object sender, RoutedEventArgs e )

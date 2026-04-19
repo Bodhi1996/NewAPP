@@ -512,6 +512,11 @@ namespace NewAPP.Services
                     return period.ToString("yyyy-MM-dd");
             }
         }
+        public bool ReportToExceleDirect ( List<NomenclatureUnit> data, DateTime startDate, DateTime endDate,
+                                 string reportTitle, bool allProducts, ReportPeriodType periodType )
+        {
+            return ExportToExele(data, startDate, endDate, reportTitle, allProducts, periodType);
+        }
 
 
     }

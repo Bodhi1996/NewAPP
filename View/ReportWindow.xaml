@@ -126,6 +126,9 @@
                 <Button x:Name="CancelButton" Content="❌ Закрыть" Width="100" Height="35" 
                         Background="#E74C3C" Foreground="White" FontWeight="Bold"
                         Click="CancelButton_Click"/>
+                <Button x:Name="SelectMultipleButton" Content="📋 Выбрать товары" Width="140" Height="35" 
+        Background="#9B59B6" Foreground="White" FontWeight="Bold" Margin="0,0,10,0"
+        Click="SelectMultipleButton_Click"/>
             </StackPanel>
         </Grid>
     </ScrollViewer>
