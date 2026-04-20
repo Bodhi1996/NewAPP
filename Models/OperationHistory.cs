@@ -11,7 +11,7 @@ namespace NewAPP.Models
         public int Id { get; set; }
         public int NomenclatureId { get; set; }
         public string OperationType { get; set; }
-        public int Quntity { get; set; }
+        public int Quantity { get; set; }
         public DateTime OperationDate { get; set; }
         public string UserName { get; set; }
     }

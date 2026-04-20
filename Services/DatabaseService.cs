@@ -168,6 +168,17 @@ namespace NewAPP.Services
                 UNIQUE(TerminalId, SensorNumber)
                 )";
                 createTable.ExecuteNonQuery();
+
+                createTable.CommandText = @"CREATE TABLE IF NOT EXISTS OperationHistory
+                                            Id INTEGER PRIMARY AUTOINCREMENT,
+                                            NomenclatureId INTEGER NOT NULL,
+                                            OperationType TEXT NOT NULL,
+                                            Quantity INTEGER NOT NULL,
+                                            OperationDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                            UserName TEXT,
+                                            FOREIGN KEY (NomenclatureId) REFERENCES nomenclature(Id)
+                                            )";
+                createTable.ExecuteNonQuery();
             }
         }
 
@@ -668,5 +679,60 @@ namespace NewAPP.Services
                 throw;
             }
         }
+
+        public List<OperationHistory> GetOperationType ( int nomenclatureId )
+        {
+            var result = new List<OperationHistory>();
+
+            using (var connection = new SqliteConnection(_connection))
+            {
+                connection.Open();
+                var commanderInsert = connection.CreateCommand();
+
+                commanderInsert.CommandText = @"
+                SELECT Id, NomenclatureId, OperationType, Quantity, OperationDate, UserName
+                FROM OperationHistory
+                WHERE NomenclatureId = @id
+                ORDER BY OperationDate DESC";
+
+                commanderInsert.Parameters.AddWithValue("@id", nomenclatureId);
+
+                using (var reader = commanderInsert.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        result.Add(new OperationHistory
+                        {
+                            Id = reader.GetInt32(0),
+                            NomenclatureId = reader.GetInt32(1),
+                            OperationType = reader.GetString(2),
+                            Quantity = reader.GetInt32(3),
+                            OperationDate = reader.GetDateTime(4),
+                            UserName = reader.IsDBNull(5) ? null : reader.GetString(5)
+                        });
+                    }
+                }
+                return result;
+            }
+        }
+        public void SaveOperation ( int nomenclatureId, string operationType, int quantity, string userName)
+        {
+            using (var connection = new SqliteConnection(_connection))
+            {
+                connection.Open();
+                var commanderInsert = connection.CreateCommand();
+                commanderInsert.CommandText = @"
+                INSERT TO OperationHistory (NomenclatureId, OperationType, Quantity, OperationDate, UserName)
+                VALUES(@id, @type, @qty, @date, @user)";
+                commanderInsert.Parameters.AddWithValue("@id", nomenclatureId);
+                commanderInsert.Parameters.AddWithValue("@type", operationType);
+                commanderInsert.Parameters.AddWithValue("@qty", quantity);
+                commanderInsert.Parameters.AddWithValue("@date", DateTime.Now);
+                commanderInsert.Parameters.AddWithValue("@user", userName);
+
+                commanderInsert.ExecuteNonQuery();
+            }
+        }
+
     }
 }
