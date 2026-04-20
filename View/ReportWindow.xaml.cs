@@ -321,13 +321,25 @@ namespace NewAPP.View
                 .ToList();
 
             var selectionWindow = new SelectWindow(uniqueProducts, _selectedProductsForReport);
-            if (selectionWindow.ShowDialog() == true)
-            {
-                _selectedProductsForReport = selectionWindow.SelectedProductsResult;
-                UpdateData(); // обновляем таблицу и статистику
-                MessageBox.Show($"Выбрано товаров: {_selectedProductsForReport.Count}", "Выбор",
-                                MessageBoxButton.OK, MessageBoxImage.Information);
-            }
+
+            selectionWindow.SelectedProductsChanged -= MultiEvent;
+            selectionWindow.SelectedProductsChanged += MultiEvent;
+           
+
+            selectionWindow.Show();
+            //if (selectionWindow.ShowDialog() == true)
+            //{
+            //    _selectedProductsForReport = selectionWindow.SelectedProductsResult;
+            //    UpdateData(); // обновляем таблицу и статистику
+            //    MessageBox.Show($"Выбрано товаров: {_selectedProductsForReport.Count}", "Выбор",
+            //                    MessageBoxButton.OK, MessageBoxImage.Information);
+            //}
+        }
+
+        private void MultiEvent ( List<NomenclatureUnit> val)
+        {
+            _selectedProductsForReport = val;
+            UpdateData();
         }
 
         private void CancelButton_Click ( object sender, RoutedEventArgs e )
