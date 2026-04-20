@@ -1,4 +1,5 @@
 ﻿using NewAPP.Models;
+using NewAPP.Services;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,6 +21,7 @@ namespace NewAPP.View
     public partial class MainWindow : Window
     {
        private MainViewModel _viewModel;
+        private DatabaseService _dataBase;
 
 
         public MainWindow ( )
@@ -27,6 +29,7 @@ namespace NewAPP.View
             InitializeComponent();
 
             _viewModel = new MainViewModel();
+            _dataBase = new DatabaseService();
             this.DataContext = _viewModel;
             this.Width = 1400;
             this.Height = 800;
@@ -42,6 +45,19 @@ namespace NewAPP.View
             {
                 // Можно добавить команду обновления
                 e.Handled = true;
+            }
+        }
+        private void DataGrid_MouseDoubleClick ( object sender, MouseButtonEventArgs e )
+        {
+            var grid = sender as DataGrid;
+            var selectedProduct = grid.SelectedItem as NomenclatureUnit;
+            if (selectedProduct != null) {
+                {
+                    var History = _dataBase.GetOperationType(selectedProduct.Id);
+                    var historyWindow = new HistoryWindow();
+                    historyWindow.SetData(selectedProduct.Name, History);
+                    historyWindow.Show();
+                }
             }
         }
     }

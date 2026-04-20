@@ -169,15 +169,15 @@ namespace NewAPP.Services
                 )";
                 createTable.ExecuteNonQuery();
 
-                createTable.CommandText = @"CREATE TABLE IF NOT EXISTS OperationHistory
-                                            Id INTEGER PRIMARY AUTOINCREMENT,
-                                            NomenclatureId INTEGER NOT NULL,
-                                            OperationType TEXT NOT NULL,
-                                            Quantity INTEGER NOT NULL,
-                                            OperationDate DATETIME DEFAULT CURRENT_TIMESTAMP,
-                                            UserName TEXT,
-                                            FOREIGN KEY (NomenclatureId) REFERENCES nomenclature(Id)
-                                            )";
+                createTable.CommandText = @"CREATE TABLE IF NOT EXISTS OperationHistory (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    NomenclatureId INTEGER NOT NULL,
+    OperationType TEXT NOT NULL,
+    Quantity INTEGER NOT NULL,
+    OperationDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UserName TEXT,
+    FOREIGN KEY (NomenclatureId) REFERENCES nomenclature(Id)
+)";
                 createTable.ExecuteNonQuery();
             }
         }
@@ -722,7 +722,7 @@ namespace NewAPP.Services
                 connection.Open();
                 var commanderInsert = connection.CreateCommand();
                 commanderInsert.CommandText = @"
-                INSERT TO OperationHistory (NomenclatureId, OperationType, Quantity, OperationDate, UserName)
+                INSERT INTO OperationHistory (NomenclatureId, OperationType, Quantity, OperationDate, UserName)
                 VALUES(@id, @type, @qty, @date, @user)";
                 commanderInsert.Parameters.AddWithValue("@id", nomenclatureId);
                 commanderInsert.Parameters.AddWithValue("@type", operationType);

@@ -45,7 +45,7 @@
                   IsReadOnly="True"
                   AlternatingRowBackground="#34495E"
                   RowBackground="#2C3E50"
-                  Foreground="White"
+                  Foreground="Black"
                   FontSize="12"
                   BorderBrush="#4A6572"
                   BorderThickness="1"

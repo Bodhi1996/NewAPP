@@ -889,7 +889,15 @@ namespace NewAPP
                 }
                 else
                 {
+                    var product = _dataBase.AllNum().FirstOrDefault(x => x.Name == selectedNomenclature);
+
                     _dataBase.DeleteUnit(selectedNomenclature, weight);
+
+                    if (product != null)
+                    {
+                        _dataBase.SaveOperation(product.Id, "Списание", weight, CurrentUser?.Login);
+                    }
+
                 }
 
 
@@ -943,6 +951,14 @@ namespace NewAPP
             NewQuantity = data.val11;
             UnitPrice = data.val12;
             _dataBase.AddNomenclature(Name, InternalArticle, ExternalArticle, Characteristic, SerialNumber, Unit, AdressCell, OldQuantity, OperationTypeIn, OperationTypeOut, NewQuantity, UnitPrice);
+
+            var all = _dataBase.AllNum();
+            var addedProduct = all.FirstOrDefault(x => x.Name == Name);
+
+            if(addedProduct != null)
+            {
+                _dataBase.SaveOperation(addedProduct.Id, "Добавление", NewQuantity, CurrentUser?.Login);
+            }
             MessageBox.Show("Позиция добавлена");
         }
 
@@ -957,6 +973,12 @@ namespace NewAPP
 
         private void DeleteNomenclatute_Action111 ( string name )
         {
+            var product = _dataBase.AllNum().FirstOrDefault(x => x.Name == name);
+            if (product != null)
+            {
+                _dataBase.SaveOperation(product.Id, "Удаление", int.Parse(product.NewQuantity), CurrentUser?.Login);
+            }
+
             DeleteName = name;
             _dataBase.DeleteNomenclature(DeleteName);
             MessageBox.Show("Позиция удалена, обновите список");

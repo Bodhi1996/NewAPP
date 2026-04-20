@@ -1126,9 +1126,10 @@ MaxWidth="850">
                         </StackPanel>
                         <Border Grid.Column="1" >
                             <DataGrid x:Name="NumGride"
+                                      MouseDoubleClick="DataGrid_MouseDoubleClick"
                       AutoGenerateColumns="False"
                       IsReadOnly="True"
-                      SelectionUnit="Cell"
+                      SelectionUnit="FullRow"
                       ClipboardCopyMode="IncludeHeader"
                       AlternatingRowBackground="LightBlue"
                       RowBackground="White"
