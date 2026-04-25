@@ -649,13 +649,13 @@ namespace NewAPP
                 UnitId = byte.Parse(UnitId)
             };
 
-            for (int i = 1; i <= 60; i++)
+            for (int i = 1; i <= Cell; i++)
             {
                 terminal.Sensors.Add(new Sensor
                 {
                     Row = Row,
                     Shelf = Shelf,
-                    Cell = Cell,
+                    Cell = i,
                     Name = "Адрес",
                     Weight = 20 + i,
                     RegisterAddress = (ushort)(30 + (i - 1) * 2),
