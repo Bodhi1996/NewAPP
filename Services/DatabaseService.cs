@@ -682,7 +682,9 @@ namespace NewAPP.Services
                 var searchToLower = searchText.Trim().ToLower();
 
                 var filterSearch = all
-                    .Where(x => x.Name != null && x.Name.ToLower().Contains(searchToLower.ToLower()))
+                    .Where(x => x.Name != null && x.Name.ToLower().Contains(searchToLower.ToLower())||
+                    (x.InternalArticle != null && x.InternalArticle.ToLower().Contains(searchToLower)) ||
+                    (x.SerialNamber != null && x.SerialNamber.ToLower().Contains(searchToLower)))
                     .ToList();
 
                 foreach (var items in filterSearch)
