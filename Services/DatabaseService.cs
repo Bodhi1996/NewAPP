@@ -303,23 +303,59 @@ namespace NewAPP.Services
                     connection.Open();
 
                     var incertResult = connection.CreateCommand();
-                    incertResult.CommandText = "INSERT INTO nomenclature (Name, InternalArticle, ExternalArticle, Characteristic, SerialNumber, Unit, AddressCell, OldQuantity, OperationTypeIn, OperationTypeOut, NewQuantity, UnitPrice) VALUES (@name, @internalArticle, @externalArticle, @characteristic, @serialNumber, @unit, @addressCell, @oldQuantity, @operationTypeIn, @operationTypeOut, @newQuantity, @unitPrice)";
-                    incertResult.Parameters.AddWithValue(@"name", name);
-                    incertResult.Parameters.AddWithValue(@"internalArticle", internalArticle);
-                    incertResult.Parameters.AddWithValue(@"externalArticle", externalArticle);
-                    incertResult.Parameters.AddWithValue(@"characteristic", characteristic);
-                    incertResult.Parameters.AddWithValue(@"serialNumber", serialNumber);
-                    incertResult.Parameters.AddWithValue(@"unit", unit);
-                    incertResult.Parameters.AddWithValue(@"addressCell", addressCell);
+                    incertResult.CommandText = @"UPDATE nomenclature
+                                SET OldQuantity = OldQuantity + @oldQuantity,
+                                    OperationTypeIn = OperationTypeIn + @operationTypeIn,
+                                    OperationTypeOut = @operationTypeOut,
+                                    NewQuantity = NewQuantity + @operationTypeIn,
+                                    UnitPrice = @unitPrice,
+                                    OperationDate = @operationDate
+                                WHERE Name = @name
+                                AND InternalArticle =  @internalArticle
+                                AND ExternalArticle = @externalArticle
+                                AND Characteristic = @characteristic
+                                AND SerialNumber = @serialNumber
+                                AND AddressCell = @addressCell";
+
+                    incertResult.Parameters.AddWithValue("@name", name);
+                    incertResult.Parameters.AddWithValue("@internalArticle", internalArticle);
+                    incertResult.Parameters.AddWithValue("@externalArticle", externalArticle);
+                    incertResult.Parameters.AddWithValue("@characteristic", characteristic);
+                    incertResult.Parameters.AddWithValue("@serialNumber", serialNumber);
+                    incertResult.Parameters.AddWithValue("@unit", unit);
+                    incertResult.Parameters.AddWithValue("@addressCell", addressCell);
                     incertResult.Parameters.AddWithValue("@oldQuantity", oldQuantity);
-                    incertResult.Parameters.AddWithValue("@operationTypeIn",operationTypeIn);
+                    incertResult.Parameters.AddWithValue("@operationTypeIn", operationTypeIn);
                     incertResult.Parameters.AddWithValue("@operationTypeOut", operationTypeOut);
                     incertResult.Parameters.AddWithValue("@newQuantity", newQuantity);
                     incertResult.Parameters.AddWithValue("@unitPrice", unitPrice);
                     incertResult.Parameters.AddWithValue("@operationDate", DateTime.Now);
 
-                    incertResult.ExecuteNonQuery();
+                    int affected = incertResult.ExecuteNonQuery();
+
+                    if (affected == 0)
+                    {
+                        var incertResult1 = connection.CreateCommand();
+                        incertResult1.CommandText = "INSERT INTO nomenclature (Name, InternalArticle, ExternalArticle, Characteristic, SerialNumber, Unit, AddressCell, OldQuantity, OperationTypeIn, OperationTypeOut, NewQuantity, UnitPrice) VALUES (@name, @internalArticle, @externalArticle, @characteristic, @serialNumber, @unit, @addressCell, @oldQuantity, @operationTypeIn, @operationTypeOut, @newQuantity, @unitPrice)";
+                        incertResult1.Parameters.AddWithValue(@"name", name);
+                        incertResult1.Parameters.AddWithValue(@"internalArticle", internalArticle);
+                        incertResult1.Parameters.AddWithValue(@"externalArticle", externalArticle);
+                        incertResult1.Parameters.AddWithValue(@"characteristic", characteristic);
+                        incertResult1.Parameters.AddWithValue(@"serialNumber", serialNumber);
+                        incertResult1.Parameters.AddWithValue(@"unit", unit);
+                        incertResult1.Parameters.AddWithValue(@"addressCell", addressCell);
+                        incertResult1.Parameters.AddWithValue("@oldQuantity", oldQuantity);
+                        incertResult1.Parameters.AddWithValue("@operationTypeIn", operationTypeIn);
+                        incertResult1.Parameters.AddWithValue("@operationTypeOut", operationTypeOut);
+                        incertResult1.Parameters.AddWithValue("@newQuantity", newQuantity);
+                        incertResult1.Parameters.AddWithValue("@unitPrice", unitPrice);
+                        incertResult1.Parameters.AddWithValue("@operationDate", DateTime.Now);
+
+                        incertResult1.ExecuteNonQuery();
+
+                    }
                     return true;
+
                 }
             }
             catch (Exception ex)
