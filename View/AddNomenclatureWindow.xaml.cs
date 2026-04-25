@@ -68,7 +68,7 @@ namespace NewAPP.View
             OldQuantity = oldQyt;
             OperationTypeIn = OperIn;
             OperationTypeOut = OperOut;
-            NewQuantity = NewQ;
+            NewQuantity = OperIn;
             UnitPrice = UnitPri;
             // Закрываем окно с успешным результатом
             peredacha?.Invoke((Name, InternalArticle, ExternalArticle, Characteristic, SerialNumber, Unit, AdressCell, OldQuantity, OperationTypeIn, OperationTypeOut, NewQuantity, UnitPrice));
