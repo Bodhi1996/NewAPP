@@ -1,5 +1,6 @@
 ﻿using NewAPP.Models;
 using NewAPP.Services;
+using System.ComponentModel;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -36,6 +37,60 @@ namespace NewAPP.View
 
             // Подписка на событие Closed (не OnClosing!)
             this.Closed += ( s, e ) => _viewModel.Cleanup();
+            _viewModel.PropertyChanged += OnViewModelPropertyChanged;
+        }
+
+        private void OnViewModelPropertyChanged ( object sender, PropertyChangedEventArgs e )
+        {
+            // При изменении любого свойства видимости обновляем колонки
+            if (e.PropertyName == nameof(MainViewModel.ShowUnit) ||
+                e.PropertyName == nameof(MainViewModel.ShowId) ||
+                e.PropertyName == nameof(MainViewModel.ShowName) ||
+                e.PropertyName == nameof(MainViewModel.ShowInNumber) ||
+                e.PropertyName == nameof(MainViewModel.ShowOutNumber) ||
+                e.PropertyName == nameof(MainViewModel.ShowCharacteristick) ||
+                e.PropertyName == nameof(MainViewModel.ShowAdr) ||
+                e.PropertyName == nameof(MainViewModel.ShowQuantity) ||
+                e.PropertyName == nameof(MainViewModel.ShowUnitPrice))
+            {
+                UpdateColumnsVisibility();
+            }
+        }
+        private void UpdateColumnsVisibility ( )
+        {
+            foreach (var column in NumGride.Columns)
+            {
+                switch (column.Header.ToString())
+                {
+                    case "Номер":
+                        column.Visibility = _viewModel.ShowId;
+                        break;
+                    case "Наименование":
+                        column.Visibility = _viewModel.ShowName;
+                        break;
+                    case "Вн.номер":
+                        column.Visibility = _viewModel.ShowInNumber;
+                        break;
+                    case "Внут.номер":
+                        column.Visibility = _viewModel.ShowOutNumber;
+                        break;
+                    case "Характеристика":
+                        column.Visibility = _viewModel.ShowCharacteristick;
+                        break;
+                    case "Ед.изм.":
+                        column.Visibility = _viewModel.ShowUnit;
+                        break;
+                    case "Адрес":
+                        column.Visibility = _viewModel.ShowAdr;
+                        break;
+                    case "Остаток":
+                        column.Visibility = _viewModel.ShowQuantity;
+                        break;
+                    case "Цена":  // ← ИСПРАВЛЕНО: теперь "Цена", а не "Цена за единицу"
+                        column.Visibility = _viewModel.ShowUnitPrice;
+                        break;
+                }
+            }
         }
 
         // Только специфичные для окна обработчики

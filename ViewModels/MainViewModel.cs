@@ -42,8 +42,8 @@ namespace NewAPP
         public List<DispayConfig> SensorConfig { get; } = new List<DispayConfig>()
         {
             new DispayConfig{Name = "4x4", Sensors = 16, Columns = 4 },
-            new DispayConfig{Name = "4x6", Sensors = 24, Columns = 4 },
-            new DispayConfig{Name = "4x8", Sensors = 32, Columns = 4 }
+            new DispayConfig{Name = "6x4", Sensors = 24, Columns = 6 },
+            new DispayConfig{Name = "8x4", Sensors = 32, Columns = 8 }
         };
 
         private DispayConfig _display;
@@ -538,8 +538,98 @@ namespace NewAPP
 
         public static List<NomenclatureUnit> AllNomenclatureUnits { get; private set; }
 
+        // ===== СВОЙСТВА ВИДИМОСТИ КОЛОНОК =====
+        private Visibility _showId = Visibility.Visible;
+        private Visibility _showName = Visibility.Visible;
+        private Visibility _showInNumber = Visibility.Visible;
+        private Visibility _showOutNumber = Visibility.Visible;
+        private Visibility _showCharacteristick = Visibility.Visible;
+        private Visibility _showUnit = Visibility.Visible;
+        private Visibility _showAdr = Visibility.Visible;
+        private Visibility _showQuantity = Visibility.Visible;
+        private Visibility _showUnitPrice = Visibility.Visible;
 
-
+        public Visibility ShowId 
+        {
+            get => _showId;
+            set
+            {
+                _showId = value;
+                OnPropertyChanged();
+            }
+        }
+        public Visibility ShowName
+        {
+            get => _showName;
+            set
+            {
+                _showName = value;
+                OnPropertyChanged();
+            }
+        }
+        public Visibility ShowInNumber
+        {
+            get => _showInNumber;
+            set
+            {
+                _showInNumber = value;
+                OnPropertyChanged();
+            }
+        }
+        public Visibility ShowOutNumber
+        {
+            get => _showOutNumber;
+            set
+            {
+                _showOutNumber = value;
+                OnPropertyChanged();
+            }
+        }
+        public Visibility ShowCharacteristick
+        {
+            get => _showCharacteristick;
+            set
+            {
+                _showCharacteristick = value;
+                OnPropertyChanged();
+            }
+        }
+        public Visibility ShowUnit
+        {
+            get => _showUnit;
+            set
+            {
+                _showUnit = value;
+                OnPropertyChanged();
+            }
+        }
+        public Visibility ShowAdr
+        {
+            get => _showAdr;
+            set
+            {
+                _showAdr = value;
+                OnPropertyChanged();
+            }
+        }
+        public Visibility ShowQuantity
+        {
+            get => _showQuantity;
+            set
+            {
+                _showQuantity = value;
+                OnPropertyChanged();
+            }
+        }
+        public Visibility ShowUnitPrice
+        {
+            get => _showUnitPrice;
+            set
+            {
+                _showUnitPrice = value;
+                OnPropertyChanged();
+            }
+        }
 
 
         // ===== КОМАНДЫ =====
@@ -563,7 +653,8 @@ namespace NewAPP
         public ICommand ExceleOtchet {  get; } //кнопка открытия отчета
         public ICommand DeleteNomCommand { get; } //команда убирания из номенклатуры чего то
         public ICommand SearchCommand { get; } //поиск по кнопку
-        
+        public ICommand OpenColumnSettingsCommand { get; } //команда для открытия окна настроек
+
 
 
         // ===== КОНСТРУКТОР =====
@@ -629,6 +720,7 @@ namespace NewAPP
                 ExceleOtchet = new RelayCommand(ExecuteExceleOtchet); //кнопка открытия отчета
                 DeleteNomCommand = new RelayCommand(ExecuteDeleteUnitCommand);
                 SearchCommand = new RelayCommand(ExecuteSearchCommand);
+                OpenColumnSettingsCommand = new RelayCommand(OpenColumnSettings); //кнопка открытия
             }
             catch (Exception ex)
             {
@@ -636,6 +728,7 @@ namespace NewAPP
             }
         }
 
+        
 
         // ===== МЕТОДЫ ИНИЦИАЛИЗАЦИИ =====
         private void InitializeTerminals ( )
@@ -969,6 +1062,38 @@ namespace NewAPP
 
             deleteNomenclatute.Show();
             
+        }
+
+
+
+        private void OpenColumnSettings ( object parameter ) //кнопка открытия визуальных настроек
+        {
+            var settingsWindow = new ColumnSettingsWindow();
+
+            // Устанавливаем текущие значения чекбоксов
+            settingsWindow.chkId.IsChecked = ShowId == Visibility.Visible;
+            settingsWindow.chkName.IsChecked = ShowName == Visibility.Visible;
+            settingsWindow.chkInNumber.IsChecked = ShowInNumber == Visibility.Visible;
+            settingsWindow.chkOutNumber.IsChecked = ShowOutNumber == Visibility.Visible;
+            settingsWindow.chkHaracteristick.IsChecked = ShowCharacteristick == Visibility.Visible;
+            settingsWindow.chkUnit.IsChecked = ShowUnit == Visibility.Visible;
+            settingsWindow.chkAdr.IsChecked = ShowAdr == Visibility.Visible;
+            settingsWindow.chkQuntity.IsChecked = ShowQuantity == Visibility.Visible;
+            settingsWindow.chkPrice.IsChecked = ShowUnitPrice == Visibility.Visible;
+
+            if (settingsWindow.ShowDialog() == true)
+            {
+                // Обновляем видимость колонок
+                ShowId = settingsWindow.ShowId ? Visibility.Visible : Visibility.Collapsed;
+                ShowName = settingsWindow.ShowName ? Visibility.Visible : Visibility.Collapsed;
+                ShowInNumber = settingsWindow.ShowInNumber ? Visibility.Visible : Visibility.Collapsed;
+                ShowOutNumber = settingsWindow.ShowOutNumber ? Visibility.Visible : Visibility.Collapsed;
+                ShowCharacteristick = settingsWindow.ShowCharacteristick ? Visibility.Visible : Visibility.Collapsed;
+                ShowUnit = settingsWindow.ShowUnit ? Visibility.Visible : Visibility.Collapsed;
+                ShowAdr = settingsWindow.ShowAdr ? Visibility.Visible : Visibility.Collapsed;
+                ShowQuantity = settingsWindow.ShowQuntity ? Visibility.Visible : Visibility.Collapsed;
+                ShowUnitPrice = settingsWindow.ShowUnitPrice ? Visibility.Visible : Visibility.Collapsed;
+            }
         }
 
         private void DeleteNomenclatute_Action111 ( string name )
