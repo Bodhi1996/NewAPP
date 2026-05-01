@@ -488,6 +488,16 @@ namespace NewAPP
                 OnPropertyChanged();
             }
         }
+
+        private int _weightUnit;
+        public int WeightUnit //свойство веса за единицу
+        {
+            get => _weightUnit;
+            set
+            {
+                _weightUnit = value; OnPropertyChanged();
+            }
+        }
         //свойства для поиска наименования для датчика
         private string _searchTextCell; //переменная для хранения текста
         private List<NomenclatureUnit> _allUnit;
@@ -655,7 +665,9 @@ namespace NewAPP
         public ICommand SearchCommand { get; } //поиск по кнопку
         public ICommand OpenColumnSettingsCommand { get; } //команда для открытия окна настроек
 
-
+        private Dictionary<Sensor, int> _lastValidWeight = new Dictionary<Sensor, int>();
+        private Dictionary<Sensor, int> _consecutiveErrors = new Dictionary<Sensor, int>();
+        private Dictionary<Sensor, int> _zeroCount = new Dictionary<Sensor, int>();
 
         // ===== КОНСТРУКТОР =====
         public MainViewModel ( )
@@ -675,7 +687,7 @@ namespace NewAPP
 
                 // Инициализация таймера
                 _timer = new DispatcherTimer();
-                _timer.Interval = TimeSpan.FromSeconds(0.1);
+                _timer.Interval = TimeSpan.FromSeconds(1);
                 _timer.Tick += Timer_Tick;
                 
 
@@ -1029,7 +1041,7 @@ namespace NewAPP
 
         }
 
-        private void OnDataRecivedAddNomenclature((string val1, string val2, string val3, string val4, string val5, string val6, string val7, int val8, int val9, int val10, int val11, int val12)data)
+        private void OnDataRecivedAddNomenclature((string val1, string val2, string val3, string val4, string val5, string val6, string val7, int val8, int val9, int val10, int val11, int val12, int val13)data)
         {
             Name = data.val1;
             InternalArticle = data.val2;
@@ -1043,7 +1055,8 @@ namespace NewAPP
             OperationTypeOut = data.val10;
             NewQuantity = data.val11;
             UnitPrice = data.val12;
-            _dataBase.AddNomenclature(Name, InternalArticle, ExternalArticle, Characteristic, SerialNumber, Unit, AdressCell, OldQuantity, OperationTypeIn, OperationTypeOut, NewQuantity, UnitPrice);
+            WeightUnit = data.val13;
+            _dataBase.AddNomenclature(Name, InternalArticle, ExternalArticle, Characteristic, SerialNumber, Unit, AdressCell, OldQuantity, OperationTypeIn, OperationTypeOut, NewQuantity, UnitPrice, WeightUnit);
 
             var all = _dataBase.AllNum();
             var addedProduct = all.FirstOrDefault(x => x.Name == Name);
@@ -1224,37 +1237,126 @@ namespace NewAPP
         {
             if (Terminals.Count == 0) return;
             var terminal = Terminals[0];
-
-            // Получаем список видимых датчиков
             var sensors = VisibleSensors.ToList();
 
-            // Создаем задачи для параллельного опроса
-            var tasks = sensors.Select(async sensor =>
+            // Для 32 датчиков лучше опрашивать НЕ все сразу, а с задержкой
+            var results = new List<(Sensor sensor, int weight, bool connected)>();
+
+            foreach (var sensor in sensors)
             {
+                // Небольшая задержка между датчиками (5-10 мс)
+                await Task.Delay(5);
+
                 try
                 {
-                    int weight = await _modbusService.ReadWeightAsync(
-                        terminal.IpAddress,
-                        terminal.Port,
-                        terminal.UnitId,
-                        sensor.RegisterAddress);
-                    return (sensor, weight, connected: true);
+                    int weightInGrams = await ReadWeightWithTimeout(sensor, terminal);
+
+                    int weightInPieces = weightInGrams;
+                    if (!string.IsNullOrEmpty(sensor.SelectedNomenclature))
+                    {
+                        var product = _dataBase.AllNum().FirstOrDefault(x => x.Name == sensor.SelectedNomenclature);
+                        if (product != null && product.WeightUnit > 0)
+                        {
+                            weightInPieces = weightInGrams / product.WeightUnit;
+                            sensor.WeightUnit = product.WeightUnit;
+                        }
+                    }
+
+                    // Сохраняем последний корректный вес
+                    _lastValidWeight[sensor] = weightInPieces;
+                    _consecutiveErrors[sensor] = 0;
+
+                    results.Add((sensor, weightInPieces, true));
                 }
-                catch
+                catch (Exception ex)
                 {
-                    return (sensor, weight: 0, connected: false);
+                    // При ошибке - используем последний известный вес
+                    _consecutiveErrors[sensor] = _consecutiveErrors.GetValueOrDefault(sensor) + 1;
+
+                    int fallbackWeight = _lastValidWeight.GetValueOrDefault(sensor, 0);
+
+                    // Если ошибок больше 5 подряд - считаем датчик отключенным
+                    bool isConnected = _consecutiveErrors[sensor] < 5;
+
+                    results.Add((sensor, fallbackWeight, isConnected));
+
+                    System.Diagnostics.Debug.WriteLine($"Датчик {sensor.Name}: ошибка #{_consecutiveErrors[sensor]}, вес={fallbackWeight}");
                 }
-            });
+            }
 
-            // Ждем завершения всех задач
-            var results = await Task.WhenAll(tasks);
-
-            // Обновляем результаты
+            // Обрабатываем результаты
             foreach (var (sensor, weight, connected) in results)
             {
+                int previousWeight = sensor.Weight;
+
+                // Игнорируем резкие скачки до 0
+                if (weight == 0 && previousWeight > 0 && _zeroCount.GetValueOrDefault(sensor) < 3)
+                {
+                    _zeroCount[sensor] = _zeroCount.GetValueOrDefault(sensor) + 1;
+                    continue;  // Пропускаем обновление, оставляем старый вес
+                }
+                else
+                {
+                    _zeroCount[sensor] = 0;
+                }
+
                 sensor.Weight = weight;
                 sensor.IsConnected = connected;
+
+                // Проверяем изменение для обновления БД (только если датчик стабилен)
+                if (sensor.IsConnected &&
+                    !string.IsNullOrEmpty(sensor.SelectedNomenclature) &&
+                    sensor.WeightUnit > 0 &&
+                    _consecutiveErrors[sensor] == 0)  // ← Обновляем БД только при стабильном соединении
+                {
+                    int difference = sensor.Weight - previousWeight;
+
+                    if (difference != 0)
+                    {
+                        int unitsChanged = Math.Abs(difference);
+
+                        if (difference < 0)
+                        {
+                            _dataBase.DeleteUnit(sensor.SelectedNomenclature, unitsChanged);
+                            var product = _dataBase.AllNum().FirstOrDefault(x => x.Name == sensor.SelectedNomenclature);
+                            if (product != null)
+                            {
+                                _dataBase.SaveOperation(product.Id, "Списание", unitsChanged, CurrentUser?.Login ?? "System");
+                            }
+                        }
+                        else if (difference > 0)
+                        {
+                            //_dataBase.AddUnit(sensor.SelectedNomenclature, unitsChanged);
+                            var product = _dataBase.AllNum().FirstOrDefault(x => x.Name == sensor.SelectedNomenclature);
+                            if (product != null)
+                            {
+                                _dataBase.SaveOperation(product.Id, "Добавление", unitsChanged, CurrentUser?.Login ?? "System");
+                            }
+                        }
+                    }
+                }
             }
+        }
+
+        // Вспомогательный метод с таймаутом
+        private async Task<int> ReadWeightWithTimeout ( Sensor sensor, Terminal terminal, int timeoutMs = 200 )
+        {
+            var task = _modbusService.ReadWeightAsync(
+                terminal.IpAddress,
+                terminal.Port,
+                terminal.UnitId,
+                sensor.RegisterAddress);
+
+            var timeoutTask = Task.Delay(timeoutMs);
+
+            var completedTask = await Task.WhenAny(task, timeoutTask);
+
+            if (completedTask == timeoutTask)
+            {
+                throw new TimeoutException($"Датчик {sensor.Name} не ответил за {timeoutMs} мс");
+            }
+
+            return await task;
         }
         //тут ошибка появляется
         //private async Task ReadRealDataAsync ( )

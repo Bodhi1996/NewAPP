@@ -192,6 +192,16 @@ namespace NewAPP
 
         }
 
+        private int _weightUnit;
+        public int WeightUnit 
+        {
+            get => _weightUnit;
+            set
+            {
+                _weightUnit = value;
+                OnPropertyChanged();
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged ( [CallerMemberName] string name = null )

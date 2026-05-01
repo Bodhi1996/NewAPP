@@ -122,6 +122,9 @@
 
                         <TextBlock Text="💰 ЦЕНА ЗА ЕДИНИЦУ" Style="{StaticResource FieldLabel}"/>
                         <TextBox x:Name="UnitPriceBox" Style="{StaticResource ModernTextBox}" Margin="0,0,0,15"/>
+
+                        <TextBlock Text="💰 ВЕС ЕДИНИЦЫ" Style="{StaticResource FieldLabel}"/>
+                        <TextBox x:Name="WeightUnitBox" Style="{StaticResource ModernTextBox}" Margin="0,0,0,15"/>
                     </StackPanel>
 
                     <!-- ========== ПРАВАЯ КОЛОНКА ========== -->

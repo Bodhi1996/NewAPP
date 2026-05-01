@@ -22,6 +22,7 @@ namespace NewAPP.Models
         public string NewQuantity { get; set; } = string.Empty; //остаток
         public string UnitPrice { get; set; } //цена за ед.товара
         public string TotalPrice { get; set; } //цена за общее кол-во товара
+        public int WeightUnit { get; set; } //цена за общее кол-во товара
         public DateTime? OperationDate { get; set; }
     }
 }

@@ -37,6 +37,7 @@ namespace NewAPP.View
         public int OperationTypeOut { get; set; } //убавили
         public int NewQuantity { get; set; } //остаток
         public int UnitPrice { get; set; } //цена за единицу товара
+        public int WeightUnit { get; set; } //вес за единицу
 
         public AddNomenclatureWindow ()
         {
@@ -46,7 +47,7 @@ namespace NewAPP.View
 
             AddNumButton1 = new RelayCommand(ExecuteAddNomenclature, CanExecuteAddNomenclature);
         }
-        public event Action<(string val1, string val2, string val3, string val4, string val5, string val6, string val7, int val8, int val9, int val10, int val11, int val12)> peredacha;
+        public event Action<(string val1, string val2, string val3, string val4, string val5, string val6, string val7, int val8, int val9, int val10, int val11, int val12, int val13)> peredacha;
         public ICommand AddNumButton1 { get; }
 
         private void ExecuteAddNomenclature ( object param )
@@ -64,14 +65,16 @@ namespace NewAPP.View
             int.TryParse(OutNomenclatureBox.Text.Trim(), out int OperOut); //val10
             int.TryParse(NewNomenclatureBox.Text.Trim(), out int NewQ); //val11
             int.TryParse(UnitPriceBox.Text.Trim(), out int UnitPri); //val12
+            int.TryParse(WeightUnitBox.Text.Trim(), out int WeUnit); //val13
 
             OldQuantity = oldQyt;
             OperationTypeIn = OperIn;
             OperationTypeOut = OperOut;
             NewQuantity = OperIn;
             UnitPrice = UnitPri;
+            WeightUnit = WeUnit;
             // Закрываем окно с успешным результатом
-            peredacha?.Invoke((Name, InternalArticle, ExternalArticle, Characteristic, SerialNumber, Unit, AdressCell, OldQuantity, OperationTypeIn, OperationTypeOut, NewQuantity, UnitPrice));
+            peredacha?.Invoke((Name, InternalArticle, ExternalArticle, Characteristic, SerialNumber, Unit, AdressCell, OldQuantity, OperationTypeIn, OperationTypeOut, NewQuantity, UnitPrice, WeightUnit));
         }
 
         // Метод проверки - возвращает bool, доступна ли команда
@@ -89,7 +92,8 @@ namespace NewAPP.View
                     !string.IsNullOrWhiteSpace(InNomenclatureBox?.Text) &&
                     !string.IsNullOrWhiteSpace(OutNomenclatureBox?.Text) &&
                     !string.IsNullOrWhiteSpace(UnitPriceBox?.Text) &&
-                    !string.IsNullOrWhiteSpace(NewNomenclatureBox?.Text);
+                    !string.IsNullOrWhiteSpace(NewNomenclatureBox?.Text) &&
+                    !string.IsNullOrWhiteSpace(WeightUnitBox?.Text);
         }
     }
 }

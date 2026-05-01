@@ -1227,6 +1227,11 @@ MaxWidth="850">
                     Binding="{Binding UnitPrice}"
                     Width="50" ElementStyle="{StaticResource CenterCellStyle}"/>
 
+                                    <DataGridTextColumn Header="Вес ед."
+                    Binding="{Binding WeightUnit}"
+                    Width="50" ElementStyle="{StaticResource CenterCellStyle}"/>
+
+
 
 
                                 </DataGrid.Columns>

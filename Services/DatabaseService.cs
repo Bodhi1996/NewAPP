@@ -76,31 +76,34 @@ namespace NewAPP.Services
                                             OperationTypeOut INTEGER DEFAULT 0,
                                             NewQuantity INTEGER DEFAULT 0,
                                             UnitPrice INTEGER DEFAULT 0,
+                                            WeightUnit INTEGER DEFAULT 0,
                                             OperationDate DATETIME DEFAULT CURRENT_TIMESTAMP
             )";
 
 
                 createTable.ExecuteNonQuery();
 
+                //MigrateDatabase();
+
                 var bolts = new List<(string Name, string InternalArticle, string ExternalArticle,
                                           string Characteristic, string SerialNumber, string Unit,
                                           string AddressCell, int OldQuantity, int OperationTypeIn,
-                                          int OperationTypeOut, int NewQuantity, int UnitPrice)>
+                                          int OperationTypeOut, int NewQuantity, int UnitPrice, int WeightUnit)>
 
             {
-                ("Болт М1", "111111", "131313", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10),
-                ("Болт М2", "222222", "121212", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10),
-                ("Болт М3", "333333", "111115", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10),
-                ("Болт М4", "444444", "101010", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10),
-                ("Болт М5", "555555", "999999", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10),
-                ("Болт М6", "666666", "888888", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10),
-                ("Болт М7", "777777", "777777", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10),
-                ("Болт М8", "888888", "666666", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10),
-                ("Болт М9", "999999", "555555", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10),
-                ("Болт М10", "101010", "444444", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10),
-                ("Болт М11", "111112", "333333", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10),
-                ("Болт М12", "131313", "222222", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10),
-                ("Болт М13", "141414", "111111", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10)
+                ("Болт М1", "111111", "131313", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10, 20),
+                ("Болт М2", "222222", "121212", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10, 10),
+                ("Болт М3", "333333", "111115", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10, 10),
+                ("Болт М4", "444444", "101010", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10, 10),
+                ("Болт М5", "555555", "999999", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10, 10),
+                ("Болт М6", "666666", "888888", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10, 10),
+                ("Болт М7", "777777", "777777", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10, 10),
+                ("Болт М8", "888888", "666666", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10, 10),
+                ("Болт М9", "999999", "555555", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10, 10),
+                ("Болт М10", "101010", "444444", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10, 10),
+                ("Болт М11", "111112", "333333", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10, 10),
+                ("Болт М12", "131313", "222222", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10, 10),
+                ("Болт М13", "141414", "111111", "DIN7", "435435", "ШТ", "1-1-1", 100, 0, 10, 90, 10, 10)
 
             };
 
@@ -114,11 +117,11 @@ namespace NewAPP.Services
                     insertCommand.CommandText = @"INSERT OR IGNORE INTO nomenclature 
                                             (Name, InternalArticle, ExternalArticle, Characteristic, 
                                              SerialNumber, Unit, AddressCell, OldQuantity, 
-                                             OperationTypeIn, OperationTypeOut, NewQuantity, UnitPrice, OperationDate) 
+                                             OperationTypeIn, OperationTypeOut, NewQuantity, UnitPrice, WeightUnit, OperationDate) 
                                             VALUES ($name, $internalArticle, $externalArticle, 
                                                     $characteristic, $serialNumber, $unit, $addressCell, 
                                                     $oldQuantity, $operationTypeIn, $operationTypeOut, 
-                                                    $newQuantity, $unitPrice, $operationDate)";
+                                                    $newQuantity, $unitPrice, $weightUnit, $operationDate)";
                     insertCommand.Parameters.AddWithValue("$name", bolt.Name);
                     insertCommand.Parameters.AddWithValue("$internalArticle", bolt.InternalArticle);
                     insertCommand.Parameters.AddWithValue("$externalArticle", bolt.ExternalArticle);
@@ -131,6 +134,7 @@ namespace NewAPP.Services
                     insertCommand.Parameters.AddWithValue("$operationTypeOut", bolt.OperationTypeOut);
                     insertCommand.Parameters.AddWithValue("$newQuantity", bolt.NewQuantity);
                     insertCommand.Parameters.AddWithValue("$unitPrice", bolt.UnitPrice);
+                    insertCommand.Parameters.AddWithValue("$weightUnit", bolt.WeightUnit);
                     insertCommand.Parameters.AddWithValue("$operationDate", DateTime.Now);
 
                     int result = insertCommand.ExecuteNonQuery();
@@ -179,6 +183,7 @@ namespace NewAPP.Services
     FOREIGN KEY (NomenclatureId) REFERENCES nomenclature(Id)
 )";
                 createTable.ExecuteNonQuery();
+                
             }
         }
 
@@ -263,7 +268,7 @@ namespace NewAPP.Services
 
                 var incertResult = connection.CreateCommand();
 
-                incertResult.CommandText = "SELECT Id, Name, InternalArticle, ExternalArticle, Characteristic, SerialNumber, Unit, AddressCell, OldQuantity, OperationTypeIn, OperationTypeOut, NewQuantity, UnitPrice, OperationDate FROM nomenclature";
+                incertResult.CommandText = "SELECT Id, Name, InternalArticle, ExternalArticle, Characteristic, SerialNumber, Unit, AddressCell, OldQuantity, OperationTypeIn, OperationTypeOut, NewQuantity, UnitPrice, WeightUnit, OperationDate FROM nomenclature";
 
                 using (var reader = incertResult.ExecuteReader())
                 {
@@ -285,7 +290,8 @@ namespace NewAPP.Services
                                 OperationTypeOut = reader.GetInt32(10).ToString(),
                                 NewQuantity = reader.GetInt32(11).ToString(),
                                 UnitPrice = reader.GetInt32(12).ToString(),
-                                OperationDate = reader.IsDBNull(13) ? (DateTime?)null : reader.GetDateTime(13)
+                                WeightUnit = reader.GetInt32(13),
+                                OperationDate = reader.IsDBNull(14) ? (DateTime?)null : reader.GetDateTime(14)
 
                             });
                     }
@@ -294,7 +300,7 @@ namespace NewAPP.Services
             return result;
         } //вывод всего содержания
 
-        public bool AddNomenclature ( string name, string internalArticle, string externalArticle, string characteristic, string serialNumber, string unit, string addressCell, int oldQuantity, int operationTypeIn, int operationTypeOut, int newQuantity, int unitPrice) //добавление чего либо
+        public bool AddNomenclature ( string name, string internalArticle, string externalArticle, string characteristic, string serialNumber, string unit, string addressCell, int oldQuantity, int operationTypeIn, int operationTypeOut, int newQuantity, int unitPrice, int weightUnit) //добавление чего либо
         {
             try
             {
@@ -309,6 +315,7 @@ namespace NewAPP.Services
                                     OperationTypeOut = @operationTypeOut,
                                     NewQuantity = NewQuantity + @operationTypeIn,
                                     UnitPrice = @unitPrice,
+                                    WeightUnit = @weightUnit,
                                     OperationDate = @operationDate
                                 WHERE Name = @name
                                 AND InternalArticle =  @internalArticle
@@ -329,6 +336,7 @@ namespace NewAPP.Services
                     incertResult.Parameters.AddWithValue("@operationTypeOut", operationTypeOut);
                     incertResult.Parameters.AddWithValue("@newQuantity", newQuantity);
                     incertResult.Parameters.AddWithValue("@unitPrice", unitPrice);
+                    incertResult.Parameters.AddWithValue("@weightUnit", weightUnit);
                     incertResult.Parameters.AddWithValue("@operationDate", DateTime.Now);
 
                     int affected = incertResult.ExecuteNonQuery();
@@ -336,7 +344,7 @@ namespace NewAPP.Services
                     if (affected == 0)
                     {
                         var incertResult1 = connection.CreateCommand();
-                        incertResult1.CommandText = "INSERT INTO nomenclature (Name, InternalArticle, ExternalArticle, Characteristic, SerialNumber, Unit, AddressCell, OldQuantity, OperationTypeIn, OperationTypeOut, NewQuantity, UnitPrice) VALUES (@name, @internalArticle, @externalArticle, @characteristic, @serialNumber, @unit, @addressCell, @oldQuantity, @operationTypeIn, @operationTypeOut, @newQuantity, @unitPrice)";
+                        incertResult1.CommandText = "INSERT INTO nomenclature (Name, InternalArticle, ExternalArticle, Characteristic, SerialNumber, Unit, AddressCell, OldQuantity, OperationTypeIn, OperationTypeOut, NewQuantity, UnitPrice, WeightUnit) VALUES (@name, @internalArticle, @externalArticle, @characteristic, @serialNumber, @unit, @addressCell, @oldQuantity, @operationTypeIn, @operationTypeOut, @newQuantity, @unitPrice, @weightUnit)";
                         incertResult1.Parameters.AddWithValue(@"name", name);
                         incertResult1.Parameters.AddWithValue(@"internalArticle", internalArticle);
                         incertResult1.Parameters.AddWithValue(@"externalArticle", externalArticle);
@@ -349,6 +357,7 @@ namespace NewAPP.Services
                         incertResult1.Parameters.AddWithValue("@operationTypeOut", operationTypeOut);
                         incertResult1.Parameters.AddWithValue("@newQuantity", newQuantity);
                         incertResult1.Parameters.AddWithValue("@unitPrice", unitPrice);
+                        incertResult1.Parameters.AddWithValue("@weightUnit", weightUnit);
                         incertResult1.Parameters.AddWithValue("@operationDate", DateTime.Now);
 
                         incertResult1.ExecuteNonQuery();
@@ -705,7 +714,8 @@ namespace NewAPP.Services
                         OperationTypeIn = items.OperationTypeIn,
                         OperationTypeOut = items.OperationTypeOut,
                         NewQuantity = items.NewQuantity,
-                        UnitPrice = items.UnitPrice
+                        UnitPrice = items.UnitPrice,
+                        WeightUnit = items.WeightUnit.ToString(),
 
                     });
                 }
@@ -769,6 +779,52 @@ namespace NewAPP.Services
                 commanderInsert.Parameters.AddWithValue("@user", userName);
 
                 commanderInsert.ExecuteNonQuery();
+            }
+        }
+
+        private void MigrateDatabase ( )
+        {
+            using (var connection = new SqliteConnection(_connection))
+            {
+                connection.Open();
+
+                // Проверяем, существует ли колонка WeightUnit
+                var checkColumn = connection.CreateCommand();
+                checkColumn.CommandText = "PRAGMA table_info(nomenclature)";
+
+                bool hasWeightUnit = false;
+                using (var reader = checkColumn.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string columnName = reader.GetString(1);
+                        if (columnName == "WeightUnit")
+                        {
+                            hasWeightUnit = true;
+                            break;
+                        }
+                    }
+                }
+
+                // Если колонки нет - добавляем
+                if (!hasWeightUnit)
+                {
+                    try
+                    {
+                        var addColumn = connection.CreateCommand();
+                        addColumn.CommandText = "ALTER TABLE nomenclature ADD COLUMN WeightUnit INTEGER DEFAULT 0";
+                        addColumn.ExecuteNonQuery();
+                        System.Diagnostics.Debug.WriteLine("Колонка WeightUnit успешно добавлена");
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Ошибка добавления колонки: {ex.Message}");
+                    }
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("Колонка WeightUnit уже существует");
+                }
             }
         }
 
