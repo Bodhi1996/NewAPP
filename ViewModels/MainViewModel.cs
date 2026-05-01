@@ -127,21 +127,21 @@ namespace NewAPP
         public string UserText => IsAdmin ? "Администратор" : "Пользователь";
 
         // ===== СВОЙСТВА ДЛЯ НАСТРОЕК =====
-        private string _ipAddress = "192.168.0.56";
+        private string _ipAddress;
         public string IpAddress
         {
             get => _ipAddress;
             set { _ipAddress = value; OnPropertyChanged(); }
         }
 
-        private string _port = "5000";
+        private string _port ;
         public string Port
         {
             get => _port;
             set { _port = value; OnPropertyChanged(); }
         }
 
-        private string _unitId = "1";
+        private string _unitId;
         public string UnitId
         {
             get => _unitId;
@@ -703,16 +703,22 @@ namespace NewAPP
                 IsTopControlsVisible = false;
                 IsRightCellsVisible = false;
 
+                TerminalVM = new TerminalViewModel(_dataBase); 
+         TerminalVM.PropertyChanged += TerminalVM_PropertyChanged;
 
+                TerminalVM.IpAddress = "192.168.0.56";
+                TerminalVM.Port = "5000";
+                TerminalVM.UnitId = "1";
+                TerminalVM.TerminalName = "Терминал 1";
 
                 // Загрузка данных
                 InitializeTerminals();
                 UpdateVisibleSensors();
-                TerminalVM = new TerminalViewModel(_dataBase);
-                TerminalVM.PropertyChanged += TerminalVM_PropertyChanged;
+
 
                 LoadlNum = new ObservableCollection<NomenclatureUnit>(_dataBase.AllNum());
                 AllNomenclatureUnits = _dataBase.AllNum();
+                AutoCheckConnectionOnStartup();
 
                 // Инициализация команд
                 StartStopCommand = new RelayCommand(ExecuteStartStop);
@@ -748,13 +754,19 @@ namespace NewAPP
         // ===== МЕТОДЫ ИНИЦИАЛИЗАЦИИ =====
         private void InitializeTerminals ( )
         {
+            string terminalIp = TerminalVM.IpAddress;
+            string terminalPort = TerminalVM.Port;
+            string terminalUnitId = TerminalVM.UnitId;
+            string terminalName = TerminalVM.TerminalName;
+
+
             var terminal = new Terminal
             {
                 Id = 1,
-                Name = "Терминал MODBUS",
-                IpAddress = IpAddress,
-                Port = int.Parse(Port),
-                UnitId = byte.Parse(UnitId)
+                Name = terminalName,
+                IpAddress = terminalIp,
+                Port = int.Parse(terminalPort),
+                UnitId = byte.Parse(terminalUnitId)
             };
 
             for (int i = 1; i <= Cell; i++)
@@ -1340,6 +1352,71 @@ namespace NewAPP
                 }
             }
         }
+
+        private async Task AutoCheckConnectionOnStartup ( )
+        {
+            try
+            {
+                // Получаем терминал из TerminalVM
+                var terminal = TerminalVM?.SelectedTerminal ?? TerminalVM?.Terminals.FirstOrDefault();
+
+                if (terminal == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("Нет доступных терминалов для проверки");
+                    StatusText = "Нет настроенных терминалов. Добавьте терминал в разделе 'Сеть'";
+                    return;
+                }
+
+                // Проверяем корректность данных
+                if (string.IsNullOrWhiteSpace(terminal.IpAddress))
+                {
+                    System.Diagnostics.Debug.WriteLine("IP адрес терминала не задан");
+                    StatusText = "IP адрес терминала не задан. Настройте терминал в разделе 'Сеть'";
+                    return;
+                }
+
+
+
+                if (terminal.Port <= 0 || terminal.Port > 65535)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Некорректный порт: {terminal.Port}");
+                    StatusText = $"Некорректный порт: {terminal.Port}. Проверьте настройки терминала";
+                    return;
+                }
+
+                StatusText = $"Проверка подключения к терминалу {terminal.Name} ({terminal.IpAddress}:{terminal.Port})...";
+
+                // Выполняем проверку подключения
+                bool connected = await _modbusService.TestConnectionAsync(terminal.IpAddress, terminal.Port);
+
+                // Обновляем статус терминала
+                terminal.IsConnected = connected;
+                terminal.StatusText = connected ? "Online" : "Offline";
+                terminal.StatusColor = connected ? "Green" : "Red";
+
+                // Обновляем статистику в TerminalVM
+                TerminalVM.OnPropertyChanged(nameof(TerminalVM.ActivaTerminal));
+                TerminalVM.OnPropertyChanged(nameof(TerminalVM.TotalTerminal));
+
+                // Обновляем общий статус
+                if (connected)
+                {
+                    StatusText = $"✅ Терминал {terminal.Name} подключен. Готов к работе.";
+                    System.Diagnostics.Debug.WriteLine($"Автопроверка: терминал {terminal.IpAddress}:{terminal.Port} - ДОСТУПЕН");
+                }
+                else
+                {
+                    StatusText = $"❌ Терминал {terminal.Name} недоступен. Проверьте подключение.";
+                    System.Diagnostics.Debug.WriteLine($"Автопроверка: терминал {terminal.IpAddress}:{terminal.Port} - НЕДОСТУПЕН");
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusText = $"Ошибка при проверке подключения: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine($"Ошибка автопроверки: {ex.Message}");
+            }
+        }
+
 
         // Вспомогательный метод с таймаутом
         private async Task<int> ReadWeightWithTimeout ( Sensor sensor, Terminal terminal, int timeoutMs = 200 )

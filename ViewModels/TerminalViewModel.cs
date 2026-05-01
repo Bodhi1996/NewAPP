@@ -30,6 +30,7 @@ namespace NewAPP.ViewModels
                 _terminals = value;
                 OnPropertyChanged(nameof(Terminals));
                 OnPropertyChanged(nameof(TotalTerminal));
+                OnPropertyChanged(nameof(ActivaTerminal));
             }
         }
         private Terminal _selectedTerminal; //выбранный терминал
@@ -144,7 +145,7 @@ namespace NewAPP.ViewModels
             SelectTerminalCommand = new RelayCommand(ExecuteSelectTerminal);
         }
 
-        public void ExecuteAddTerminal(object param) //метод для добавления терминала
+        public async void ExecuteAddTerminal(object param) //метод для добавления терминала
         {
             var terminal = new Terminal
             {
@@ -168,6 +169,8 @@ namespace NewAPP.ViewModels
                 terminal.AddSensor(sens);
             }
             _dataBase.SaveTerminal(terminal);
+            bool isConnected = await _modbusTCP.TestConnectionAsync(terminal.IpAddress, terminal.Port);
+            terminal.IsConnected = isConnected;
             Terminals.Add(terminal);
             ClearForm();
 
