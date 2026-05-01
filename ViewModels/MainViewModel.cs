@@ -1154,7 +1154,7 @@ namespace NewAPP
                     return;
                 }
                 //await _modbusService.TareAfterExternal(TerminalVM.IpAddress,int.Parse(TerminalVM.Port), byte.Parse(TerminalVM.UnitId));
-                await _calibration.CalibZero("192.168.0.56", 5000, terminalAddress);
+                await _calibration.CalibZero(TerminalVM.IpAddress, int.Parse(TerminalVM.Port), terminalAddress);
                 MessageBox.Show("Калибровка нуля выполнена успешно", "Успех");
             }
             catch (Exception ex)
@@ -1204,12 +1204,13 @@ namespace NewAPP
 
         private async void ExecuteEtalonPoint ( object param )
         {
+            var terminal = TerminalVM.SelectedTerminal ?? TerminalVM.Terminals.FirstOrDefault();
             try
             {
                 //await _calibration.CalibWeight("192.168.0.56", 5000, 1, int.Parse(EtalonWeight));
                 //await _calibration.CalibWeight("192.168.0.56", 5000, 1, int.Parse(EtalonWeight));
-                await _calibration.CalibrationPoint("192.168.0.56", 5000, 1, int.Parse(EtalonWeight));
-                await _calibration.CalibrationPoint("192.168.0.56", 5000, 1, int.Parse(EtalonWeight));
+                await _calibration.CalibrationPoint(terminal.IpAddress, terminal.Port, terminal.UnitId, int.Parse(EtalonWeight));
+                await _calibration.CalibrationPoint(terminal.IpAddress, terminal.Port, terminal.UnitId, int.Parse(EtalonWeight));
 
                 MessageBox.Show("Вес успешно выставлен");
             }
@@ -1251,7 +1252,14 @@ namespace NewAPP
         private async Task ReadRealDataAsync ( )
         {
             if (Terminals.Count == 0) return;
-            var terminal = Terminals[0];
+            var terminal = TerminalVM.SelectedTerminal ?? TerminalVM.Terminals.FirstOrDefault();
+
+            // Проверяем, что терминал существует
+            if (terminal == null)
+            {
+                System.Diagnostics.Debug.WriteLine("Нет доступных терминалов");
+                return;
+            }
             var sensors = VisibleSensors.ToList();
 
             // Для 32 датчиков лучше опрашивать НЕ все сразу, а с задержкой
