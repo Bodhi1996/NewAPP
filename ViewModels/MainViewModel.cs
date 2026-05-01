@@ -680,6 +680,9 @@ namespace NewAPP
                 _calibration = new Calibration();
                 _dataBase = new DatabaseService(); // создание экземпляра базы данных
 
+                Row = 1;
+                Cell = 32;
+                Shelf = 1;
 
                 // Инициализация коллекций
                 Terminals = new ObservableCollection<Terminal>();
@@ -1326,7 +1329,7 @@ namespace NewAPP
                         }
                         else if (difference > 0)
                         {
-                            //_dataBase.AddUnit(sensor.SelectedNomenclature, unitsChanged);
+                            _dataBase.AddUnit(sensor.SelectedNomenclature, unitsChanged);
                             var product = _dataBase.AllNum().FirstOrDefault(x => x.Name == sensor.SelectedNomenclature);
                             if (product != null)
                             {
