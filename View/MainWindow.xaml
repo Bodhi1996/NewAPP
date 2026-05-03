@@ -1081,15 +1081,25 @@ MaxWidth="850">
                                     BorderThickness="0"
                                     Cursor="Hand" Height="40"/>
 
-                            <Button Content="НАСТРОЙКА КОЛОНОК" 
-        Height="40" 
-        Margin="0 0 0 10" 
-        Background="#001545" 
-        Foreground="White" 
-        FontWeight="Bold" 
-        BorderThickness="0"
-        Cursor="Hand"
-        Command="{Binding OpenColumnSettingsCommand}"/>
+                            <Button Content="Настройка колонок" 
+                    Height="40" 
+                    Margin="0 0 0 10" 
+                    Background="#001545" 
+                    Foreground="White" 
+                    FontWeight="Bold" 
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Command="{Binding OpenColumnSettingsCommand}"/>
+
+                            <Button Content="Коррекция остатков" 
+                    Height="40" 
+                    Margin="0 0 0 10" 
+                    Background="#001545" 
+                    Foreground="White" 
+                    FontWeight="Bold" 
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Command="{Binding CorrectQuantityCommand}"/>
 
 
                             <Border Height="1"

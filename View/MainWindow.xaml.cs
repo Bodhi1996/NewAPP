@@ -90,7 +90,7 @@ namespace NewAPP.View
                     case "Цена":  // ← ИСПРАВЛЕНО: теперь "Цена", а не "Цена за единицу"
                         column.Visibility = _viewModel.ShowUnitPrice;
                         break;
-                    case "Вес ед.":  // ← ИСПРАВЛЕНО: теперь "Цена", а не "Цена за единицу"
+                    case "Вес ед.":
                         column.Visibility = _viewModel.ShowWeightUnit;
                         break;
                 }

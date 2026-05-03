@@ -675,6 +675,7 @@ namespace NewAPP
         public ICommand DeleteNomCommand { get; } //команда убирания из номенклатуры чего то
         public ICommand SearchCommand { get; } //поиск по кнопку
         public ICommand OpenColumnSettingsCommand { get; } //команда для открытия окна настроек
+        public ICommand CorrectQuantityCommand { get; } //команда для открытия окна корректировок остатков
 
         private Dictionary<Sensor, int> _lastValidWeight = new Dictionary<Sensor, int>();
         private Dictionary<Sensor, int> _consecutiveErrors = new Dictionary<Sensor, int>();
@@ -753,6 +754,7 @@ namespace NewAPP
                 DeleteNomCommand = new RelayCommand(ExecuteDeleteUnitCommand);
                 SearchCommand = new RelayCommand(ExecuteSearchCommand);
                 OpenColumnSettingsCommand = new RelayCommand(OpenColumnSettings); //кнопка открытия
+                CorrectQuantityCommand = new RelayCommand(ExecuteCorrectQuantity); //открытия окна корректировки остатков
             }
             catch (Exception ex)
             {
@@ -1486,6 +1488,12 @@ namespace NewAPP
         //        await Task.Delay(10);
         //    }
         //}
+
+        private void ExecuteCorrectQuantity (object param) 
+        {
+            var currectWindow = new CurrectQuantityWindow();
+            currectWindow.Show();
+        }
 
         private void UpdateConnectedCount ( )
         {
