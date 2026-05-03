@@ -870,5 +870,47 @@ namespace NewAPP.Services
             }
         }
 
+        public bool CorrectUnit ( string name, int amount )
+        {
+            using (var connection = new SqliteConnection(_connection))
+            {
+                connection.Open();
+                var insertDel = connection.CreateCommand();
+                insertDel.CommandText = @"SELECT NewQuantity
+                                          FROM nomenclature
+                                          WHERE Name LIKE @name";
+                insertDel.Parameters.AddWithValue("@name", name);
+
+                var startQuantity = 0;
+
+                using (var reader = insertDel.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        startQuantity = reader.GetInt32(0);
+                    }
+
+                }
+                if (startQuantity < 0) startQuantity = 0;
+
+                var newQuantity = amount;
+                var createTable = connection.CreateCommand();
+                createTable.CommandText = @"UPDATE nomenclature
+                                           SET NewQuantity = @newQuantity,
+                                           
+                                           OperationDate = @operationDate
+                                           WHERE name = @name";
+
+                createTable.Parameters.AddWithValue("@newQuantity", newQuantity);
+                createTable.Parameters.AddWithValue("@amount", amount);
+                createTable.Parameters.AddWithValue("@operationDate", DateTime.Now);
+                createTable.Parameters.AddWithValue("@name", name);
+
+                var result = createTable.ExecuteNonQuery();
+                return result > 0;
+
+            }
+        }
+
     }
 }

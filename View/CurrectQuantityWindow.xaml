@@ -7,6 +7,27 @@
         mc:Ignorable="d"
         Title="CurrectQuantityWindow" Height="450" Width="800">
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="1" Grid.Column="0">
+            <TextBlock Text="Наименование" />
+            <TextBox x:Name="NameNomenclatureBox" Width="200" Height="50" Margin="20"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="1">
+            <TextBlock Text="Кол-во"/>
+            <TextBox x:Name="AmountTextBox" Width="200" Height="50" Margin="20"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="2">
+            <Button x:Name="CurrentButton" Command="{Binding CurrentQuantityCommand}" Width="100" Height="50" Margin="40" Content="Передать"/>
+        </StackPanel>
     </Grid>
 </Window>

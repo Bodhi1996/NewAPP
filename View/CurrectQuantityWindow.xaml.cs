@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NewAPP.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,9 +20,36 @@ namespace NewAPP.View
     /// </summary>
     public partial class CurrectQuantityWindow : Window
     {
+        DatabaseService _db;
+        public string Name { get; set; }
+        public int Amount { get; set; }
+
         public CurrectQuantityWindow ( )
         {
             InitializeComponent();
+            _db = new DatabaseService();
+            this.DataContext = this;
+            CurrentQuantityCommand = new RelayCommand(ExecuteCorrectQuantity, CanExecuteCorrectQuantity);
         }
+
+        public ICommand CurrentQuantityCommand { get; }
+
+        public void ExecuteCorrectQuantity ( object param )
+        {
+            Name = NameNomenclatureBox.Text.Trim();
+            Amount = int.Parse(AmountTextBox.Text.Trim());
+            _db.CorrectUnit(Name, Amount);
+        }
+
+        private bool CanExecuteCorrectQuantity (object param)
+        {
+            return !string.IsNullOrWhiteSpace(NameNomenclatureBox?.Text);
+        }
+        //public void Current_Click ( object sender, RoutedEventArgs e )
+        //{
+        //    Name = NameNomenclatureBox.Text.Trim();
+        //    Amount = int.Parse(AmountTextBox.Text.Trim());
+        //    _db.CorrectUnit(Name, Amount);
+        //}
     }
 }
