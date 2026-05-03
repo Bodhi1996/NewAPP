@@ -558,6 +558,17 @@ namespace NewAPP
         private Visibility _showAdr = Visibility.Visible;
         private Visibility _showQuantity = Visibility.Visible;
         private Visibility _showUnitPrice = Visibility.Visible;
+        private Visibility _showWeightUnit { get; set; }
+
+        public Visibility ShowWeightUnit 
+        {
+            get => _showWeightUnit;
+            set
+            {
+                _showWeightUnit = value;
+                OnPropertyChanged();
+            }
+        }
 
         public Visibility ShowId 
         {
@@ -1108,6 +1119,7 @@ namespace NewAPP
             settingsWindow.chkAdr.IsChecked = ShowAdr == Visibility.Visible;
             settingsWindow.chkQuntity.IsChecked = ShowQuantity == Visibility.Visible;
             settingsWindow.chkPrice.IsChecked = ShowUnitPrice == Visibility.Visible;
+            settingsWindow.chkWeightUnit.IsChecked = ShowWeightUnit == Visibility.Visible;
 
             if (settingsWindow.ShowDialog() == true)
             {
@@ -1121,6 +1133,7 @@ namespace NewAPP
                 ShowAdr = settingsWindow.ShowAdr ? Visibility.Visible : Visibility.Collapsed;
                 ShowQuantity = settingsWindow.ShowQuntity ? Visibility.Visible : Visibility.Collapsed;
                 ShowUnitPrice = settingsWindow.ShowUnitPrice ? Visibility.Visible : Visibility.Collapsed;
+                ShowWeightUnit = settingsWindow.ShowWeightUnit ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 

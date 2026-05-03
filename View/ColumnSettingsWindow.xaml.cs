@@ -28,8 +28,9 @@ namespace NewAPP.View
         public bool ShowAdr { get; private set; }
         public bool ShowQuntity { get; private set; }
         public bool ShowUnitPrice { get; private set; }
+        public bool ShowWeightUnit { get; set; }    
 
-        public ColumnSettingsWindow( bool currentShowId = true,
+        public ColumnSettingsWindow ( bool currentShowId = true,
                                     bool currentShowName = true,
                                     bool currentShowInNumber = true,
                                     bool currentShowOutNumber = true,
@@ -37,7 +38,8 @@ namespace NewAPP.View
                                     bool currentShowUnit = true,
                                     bool currentShowAdr = true,
                                     bool currentShowQuantity = true,
-                                    bool currentShowUnitPrice = true )
+                                    bool currentShowUnitPrice = true,
+                                    bool showWeightUnit = true )
         {
             InitializeComponent();
 
@@ -50,11 +52,12 @@ namespace NewAPP.View
             chkAdr.IsChecked = currentShowAdr;
             chkQuntity.IsChecked = currentShowQuantity;
             chkPrice.IsChecked = currentShowUnitPrice;
+            ShowWeightUnit = showWeightUnit;
 
             // Обновляем свойства
             UpdatePropertiesFromCheckboxes();
-
-        }
+            
+         }
         private void CheckBox_Changed ( object sender, RoutedEventArgs e )
         {
             UpdatePropertiesFromCheckboxes();
@@ -72,6 +75,7 @@ namespace NewAPP.View
             ShowAdr = chkAdr?.IsChecked ?? true;
             ShowQuntity = chkQuntity?.IsChecked ?? true;
             ShowUnitPrice = chkPrice?.IsChecked ?? true;
+            ShowWeightUnit = chkWeightUnit?.IsChecked ?? true;
         }
 
         private void OkButton_Click ( object sender, RoutedEventArgs e )

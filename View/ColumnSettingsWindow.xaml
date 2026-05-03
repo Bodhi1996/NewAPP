@@ -29,6 +29,8 @@
                       Margin="0,5" Checked="CheckBox_Changed" Unchecked="CheckBox_Changed"/>
             <CheckBox x:Name="chkPrice" Content="Цена" IsChecked="True" 
                       Margin="0,5" Checked="CheckBox_Changed" Unchecked="CheckBox_Changed"/>
+            <CheckBox x:Name="chkWeightUnit" Content="Вес единицы" IsChecked="True" 
+                      Margin="0,5" Checked="CheckBox_Changed" Unchecked="CheckBox_Changed"/>
 
             <StackPanel Orientation="Horizontal" Margin="0,20,0,0" 
                         HorizontalAlignment="Center">

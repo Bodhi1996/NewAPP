@@ -51,7 +51,8 @@ namespace NewAPP.View
                 e.PropertyName == nameof(MainViewModel.ShowCharacteristick) ||
                 e.PropertyName == nameof(MainViewModel.ShowAdr) ||
                 e.PropertyName == nameof(MainViewModel.ShowQuantity) ||
-                e.PropertyName == nameof(MainViewModel.ShowUnitPrice))
+                e.PropertyName == nameof(MainViewModel.ShowUnitPrice) ||
+                e.PropertyName == nameof(MainViewModel.ShowWeightUnit))
             {
                 UpdateColumnsVisibility();
             }
@@ -88,6 +89,9 @@ namespace NewAPP.View
                         break;
                     case "Цена":  // ← ИСПРАВЛЕНО: теперь "Цена", а не "Цена за единицу"
                         column.Visibility = _viewModel.ShowUnitPrice;
+                        break;
+                    case "Вес ед.":  // ← ИСПРАВЛЕНО: теперь "Цена", а не "Цена за единицу"
+                        column.Visibility = _viewModel.ShowWeightUnit;
                         break;
                 }
             }
