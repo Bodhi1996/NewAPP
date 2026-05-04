@@ -25,6 +25,8 @@ namespace NewAPP.View
     public partial class AddNomenclatureWindow : Window
     {
         private DatabaseService dataBase;
+        private static List<bool> visibilitySettings = new List<bool>();
+        private static bool isInitialized = false;
 
         public string Name { get; set; } //имя
         public string InternalArticle { get; set; } //внешний номер 
@@ -46,10 +48,83 @@ namespace NewAPP.View
             dataBase = new DatabaseService ();
             this.DataContext = this;
 
+            if (!isInitialized)
+            {
+                InitDefaultSettings();
+                isInitialized = true;
+            }
+
+            // Загружаем сохраненные настройки
+            LoadSettingsFromList();
+
             AddNumButton1 = new RelayCommand(ExecuteAddNomenclature, CanExecuteAddNomenclature);
         }
         public event Action<(string val1, string val2, string val3, string val4, string val5, string val6, string val7, int val8, int val9, int val10, int val11, int val12, int val13)> peredacha;
         public ICommand AddNumButton1 { get; }
+
+
+        private void InitDefaultSettings ( )
+        {
+            visibilitySettings.Clear();
+            visibilitySettings.Add(true);  // Name
+            visibilitySettings.Add(true);  // InNumber
+            visibilitySettings.Add(true);  // OutNumber
+            visibilitySettings.Add(true);  // Characteristick
+            visibilitySettings.Add(true);  // SerialNumber
+            visibilitySettings.Add(true);  // Price
+            visibilitySettings.Add(true);  // Weight
+            visibilitySettings.Add(true);  // Unit
+            visibilitySettings.Add(true);  // Adr
+            visibilitySettings.Add(true);  // OldQuantity
+            visibilitySettings.Add(true);  // OperationIn
+            visibilitySettings.Add(true);  // OperationOut
+            visibilitySettings.Add(true);  // Quantity
+        }
+
+        private void LoadSettingsFromList ( )
+        {
+            if (visibilitySettings.Count < 13) return;
+
+            NameLable.Visibility = visibilitySettings[0] ? Visibility.Visible : Visibility.Collapsed;
+            NameNomenclatureBox.Visibility = visibilitySettings[0] ? Visibility.Visible : Visibility.Collapsed;
+
+            InterLable.Visibility = visibilitySettings[1] ? Visibility.Visible : Visibility.Collapsed;
+            InterNomenclatureBox.Visibility = visibilitySettings[1] ? Visibility.Visible : Visibility.Collapsed;
+
+            ExterLable.Visibility = visibilitySettings[2] ? Visibility.Visible : Visibility.Collapsed;
+            ExterNomenclatureBox.Visibility = visibilitySettings[2] ? Visibility.Visible : Visibility.Collapsed;
+
+            CharLable.Visibility = visibilitySettings[3] ? Visibility.Visible : Visibility.Collapsed;
+            CharNomenclatureBox.Visibility = visibilitySettings[3] ? Visibility.Visible : Visibility.Collapsed;
+
+            SNLable.Visibility = visibilitySettings[4] ? Visibility.Visible : Visibility.Collapsed;
+            SNNomenclatureBox.Visibility = visibilitySettings[4] ? Visibility.Visible : Visibility.Collapsed;
+
+            UnitPriceLable.Visibility = visibilitySettings[5] ? Visibility.Visible : Visibility.Collapsed;
+            UnitPriceBox.Visibility = visibilitySettings[5] ? Visibility.Visible : Visibility.Collapsed;
+
+            WeightLable.Visibility = visibilitySettings[6] ? Visibility.Visible : Visibility.Collapsed;
+            WeightUnitBox.Visibility = visibilitySettings[6] ? Visibility.Visible : Visibility.Collapsed;
+
+            UnitNomLable.Visibility = visibilitySettings[7] ? Visibility.Visible : Visibility.Collapsed;
+            UnitNomenclatureBox.Visibility = visibilitySettings[7] ? Visibility.Visible : Visibility.Collapsed;
+
+            AdrLable.Visibility = visibilitySettings[8] ? Visibility.Visible : Visibility.Collapsed;
+            AdrNomenclatureBox.Visibility = visibilitySettings[8] ? Visibility.Visible : Visibility.Collapsed;
+
+            OldLable.Visibility = visibilitySettings[9] ? Visibility.Visible : Visibility.Collapsed;
+            OldNomenclatureBox.Visibility = visibilitySettings[9] ? Visibility.Visible : Visibility.Collapsed;
+
+            InNomLable.Visibility = visibilitySettings[10] ? Visibility.Visible : Visibility.Collapsed;
+            InNomenclatureBox.Visibility = visibilitySettings[10] ? Visibility.Visible : Visibility.Collapsed;
+
+            OutNomLAble.Visibility = visibilitySettings[11] ? Visibility.Visible : Visibility.Collapsed;
+            OutNomenclatureBox.Visibility = visibilitySettings[11] ? Visibility.Visible : Visibility.Collapsed;
+
+            NewNomLable.Visibility = visibilitySettings[12] ? Visibility.Visible : Visibility.Collapsed;
+            NewNomenclatureBox.Visibility = visibilitySettings[12] ? Visibility.Visible : Visibility.Collapsed;
+
+        }
 
         private void ExecuteAddNomenclature ( object param )
         {
@@ -81,6 +156,20 @@ namespace NewAPP.View
         private void InputField_Click(object sender, EventArgs e)
         {
             var inputVisibleField = new InputVisibleField();
+
+            inputVisibleField.chkName.IsChecked = visibilitySettings[0];
+            inputVisibleField.chkInNumber.IsChecked = visibilitySettings[1];
+            inputVisibleField.chkOutNumber.IsChecked = visibilitySettings[2];
+            inputVisibleField.chkHaracteristick.IsChecked = visibilitySettings[3];
+            inputVisibleField.chkSerialNumber.IsChecked = visibilitySettings[4];
+            inputVisibleField.chkPrice.IsChecked = visibilitySettings[5];
+            inputVisibleField.chkWeight.IsChecked = visibilitySettings[6];
+            inputVisibleField.chkUnit.IsChecked = visibilitySettings[7];
+            inputVisibleField.chkAdr.IsChecked = visibilitySettings[8];
+            inputVisibleField.chkOldQuantity.IsChecked = visibilitySettings[9];
+            inputVisibleField.chkOperationIn.IsChecked = visibilitySettings[10];
+            inputVisibleField.chkOperationOut.IsChecked = visibilitySettings[11];
+            inputVisibleField.chkQuntity.IsChecked = visibilitySettings[12];
 
             inputVisibleField.visibleAction += ( showName, showInNumber, showOutNumber, showHaracteristick,
                 showSerialNumber, showPrice, showWeight, showUnit, showAdr, showOldQuantity, showOperationIn, showOperationOut, showQuantity ) =>
@@ -124,6 +213,12 @@ namespace NewAPP.View
                 NewNomLable.Visibility = showQuantity ? Visibility.Visible : Visibility.Collapsed;
                 NewNomenclatureBox.Visibility = showQuantity ? Visibility.Visible : Visibility.Collapsed;
 
+                SaveSettingsToList(showName, showInNumber, showOutNumber,
+                                 showHaracteristick, showSerialNumber,
+                                 showPrice, showWeight, showUnit,
+                                 showAdr, showOldQuantity, showOperationIn,
+                                 showOperationOut, showQuantity);
+
                 (AddNumButton1 as RelayCommand)?.RaiseCanExecuteChanged();
 
                 MessageBox.Show("Настройки видимости применены!", "Успех",
@@ -132,6 +227,29 @@ namespace NewAPP.View
 
             };
             inputVisibleField.ShowDialog();
+        }
+
+        private void SaveSettingsToList ( bool showName, bool showInNumber, bool showOutNumber,
+                                       bool showCharacteristick, bool showSerialNumber,
+                                       bool showPrice, bool showWeight, bool showUnit,
+                                       bool showAdr, bool showOldQuantity, bool showOperationIn,
+                                       bool showOperationOut, bool showQuantity )
+        {
+            visibilitySettings[0] = showName;
+            visibilitySettings[1] = showInNumber;
+            visibilitySettings[2] = showOutNumber;
+            visibilitySettings[3] = showCharacteristick;
+            visibilitySettings[4] = showSerialNumber;
+            visibilitySettings[5] = showPrice;
+            visibilitySettings[6] = showWeight;
+            visibilitySettings[7] = showUnit;
+            visibilitySettings[8] = showAdr;
+            visibilitySettings[9] = showOldQuantity;
+            visibilitySettings[10] = showOperationIn;
+            visibilitySettings[11] = showOperationOut;
+            visibilitySettings[12] = showQuantity;
+
+            System.Diagnostics.Debug.WriteLine($"Сохранено: Name={showName}, Unit={showUnit}");
         }
 
         // Метод проверки - возвращает bool, доступна ли команда

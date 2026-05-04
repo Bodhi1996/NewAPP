@@ -65,18 +65,18 @@ namespace NewAPP.Services
                 createTable.CommandText = @"CREATE TABLE IF NOT EXISTS nomenclature ( 
                                             Id INTEGER PRIMARY KEY AUTOINCREMENT,
                                             Name TEXT UNIQUE NOT NULL,
-                                            InternalArticle TEXT NOT NULL,
-                                            ExternalArticle TEXT NOT NULL,
-                                            Characteristic TEXT NOT NULL,
-                                            SerialNumber TEXT NOT NULL,
-                                            Unit TEXT NOT NULL,
-                                            AddressCell TEXT NOT NULL,
-                                            OldQuantity INTEGER DEFAULT 0,
-                                            OperationTypeIn INTEGER DEFAULT 0,
-                                            OperationTypeOut INTEGER DEFAULT 0,
-                                            NewQuantity INTEGER DEFAULT 0,
-                                            UnitPrice INTEGER DEFAULT 0,
-                                            WeightUnit INTEGER DEFAULT 0,
+                                            InternalArticle TEXT,
+                                            ExternalArticle TEXT,
+                                            Characteristic TEXT,
+                                            SerialNumber TEXT,
+                                            Unit TEXT,
+                                            AddressCell TEXT,
+                                            OldQuantity INTEGER,
+                                            OperationTypeIn INTEGER,
+                                            OperationTypeOut INTEGER,
+                                            NewQuantity INTEGER,
+                                            UnitPrice INTEGER,
+                                            WeightUnit INTEGER,
                                             OperationDate DATETIME DEFAULT CURRENT_TIMESTAMP
             )";
 
@@ -300,7 +300,10 @@ namespace NewAPP.Services
             return result;
         } //вывод всего содержания
 
-        public bool AddNomenclature ( string name, string internalArticle, string externalArticle, string characteristic, string serialNumber, string unit, string addressCell, int oldQuantity, int operationTypeIn, int operationTypeOut, int newQuantity, int unitPrice, int weightUnit) //добавление чего либо
+        public bool AddNomenclature ( string name, string internalArticle, string externalArticle,
+    string characteristic, string serialNumber, string unit, string addressCell,
+    int oldQuantity, int operationTypeIn, int operationTypeOut, int newQuantity,
+    int unitPrice, int weightUnit )
         {
             try
             {
@@ -308,72 +311,191 @@ namespace NewAPP.Services
                 {
                     connection.Open();
 
-                    var incertResult = connection.CreateCommand();
-                    incertResult.CommandText = @"UPDATE nomenclature
-                                SET OldQuantity = OldQuantity + @oldQuantity,
-                                    OperationTypeIn = OperationTypeIn + @operationTypeIn,
-                                    OperationTypeOut = @operationTypeOut,
-                                    NewQuantity = NewQuantity + @operationTypeIn,
-                                    UnitPrice = @unitPrice,
-                                    WeightUnit = @weightUnit,
-                                    OperationDate = @operationDate
-                                WHERE Name = @name
-                                AND InternalArticle =  @internalArticle
-                                AND ExternalArticle = @externalArticle
-                                AND Characteristic = @characteristic
-                                AND SerialNumber = @serialNumber
-                                AND AddressCell = @addressCell";
+                    // Включаем FOREIGN KEY
+                    var pragmaCmd = connection.CreateCommand();
+                    pragmaCmd.CommandText = "PRAGMA foreign_keys = ON;";
+                    pragmaCmd.ExecuteNonQuery();
 
-                    incertResult.Parameters.AddWithValue("@name", name);
-                    incertResult.Parameters.AddWithValue("@internalArticle", internalArticle);
-                    incertResult.Parameters.AddWithValue("@externalArticle", externalArticle);
-                    incertResult.Parameters.AddWithValue("@characteristic", characteristic);
-                    incertResult.Parameters.AddWithValue("@serialNumber", serialNumber);
-                    incertResult.Parameters.AddWithValue("@unit", unit);
-                    incertResult.Parameters.AddWithValue("@addressCell", addressCell);
-                    incertResult.Parameters.AddWithValue("@oldQuantity", oldQuantity);
-                    incertResult.Parameters.AddWithValue("@operationTypeIn", operationTypeIn);
-                    incertResult.Parameters.AddWithValue("@operationTypeOut", operationTypeOut);
-                    incertResult.Parameters.AddWithValue("@newQuantity", newQuantity);
-                    incertResult.Parameters.AddWithValue("@unitPrice", unitPrice);
-                    incertResult.Parameters.AddWithValue("@weightUnit", weightUnit);
-                    incertResult.Parameters.AddWithValue("@operationDate", DateTime.Now);
-
-                    int affected = incertResult.ExecuteNonQuery();
-
-                    if (affected == 0)
+                    using (var transaction = connection.BeginTransaction())
                     {
-                        var incertResult1 = connection.CreateCommand();
-                        incertResult1.CommandText = "INSERT INTO nomenclature (Name, InternalArticle, ExternalArticle, Characteristic, SerialNumber, Unit, AddressCell, OldQuantity, OperationTypeIn, OperationTypeOut, NewQuantity, UnitPrice, WeightUnit) VALUES (@name, @internalArticle, @externalArticle, @characteristic, @serialNumber, @unit, @addressCell, @oldQuantity, @operationTypeIn, @operationTypeOut, @newQuantity, @unitPrice, @weightUnit)";
-                        incertResult1.Parameters.AddWithValue(@"name", name);
-                        incertResult1.Parameters.AddWithValue(@"internalArticle", internalArticle);
-                        incertResult1.Parameters.AddWithValue(@"externalArticle", externalArticle);
-                        incertResult1.Parameters.AddWithValue(@"characteristic", characteristic);
-                        incertResult1.Parameters.AddWithValue(@"serialNumber", serialNumber);
-                        incertResult1.Parameters.AddWithValue(@"unit", unit);
-                        incertResult1.Parameters.AddWithValue(@"addressCell", addressCell);
-                        incertResult1.Parameters.AddWithValue("@oldQuantity", oldQuantity);
-                        incertResult1.Parameters.AddWithValue("@operationTypeIn", operationTypeIn);
-                        incertResult1.Parameters.AddWithValue("@operationTypeOut", operationTypeOut);
-                        incertResult1.Parameters.AddWithValue("@newQuantity", newQuantity);
-                        incertResult1.Parameters.AddWithValue("@unitPrice", unitPrice);
-                        incertResult1.Parameters.AddWithValue("@weightUnit", weightUnit);
-                        incertResult1.Parameters.AddWithValue("@operationDate", DateTime.Now);
+                        try
+                        {
+                            // Ищем существующую запись
+                            var findCmd = connection.CreateCommand();
+                            findCmd.CommandText = @"SELECT Id, OldQuantity, NewQuantity 
+                                   FROM nomenclature 
+                                   WHERE Name = @name 
+                                   AND InternalArticle = @internalArticle 
+                                   AND ExternalArticle = @externalArticle 
+                                   AND Characteristic = @characteristic 
+                                   AND SerialNumber = @serialNumber 
+                                   AND AddressCell = @addressCell";
+                            findCmd.Parameters.AddWithValue("@name", name);
+                            findCmd.Parameters.AddWithValue("@internalArticle", internalArticle ?? "");
+                            findCmd.Parameters.AddWithValue("@externalArticle", externalArticle ?? "");
+                            findCmd.Parameters.AddWithValue("@characteristic", characteristic ?? "");
+                            findCmd.Parameters.AddWithValue("@serialNumber", serialNumber ?? "");
+                            findCmd.Parameters.AddWithValue("@addressCell", addressCell ?? "");
 
-                        incertResult1.ExecuteNonQuery();
+                            int nomenclatureId;
+                            string operationType;
+                            int quantityChange = 0;
+                            bool isUpdate = false;
 
+                            using (var reader = findCmd.ExecuteReader())
+                            {
+                                if (reader.Read())
+                                {
+                                    // Существующая запись - ОБНОВЛЕНИЕ
+                                    isUpdate = true;
+                                    nomenclatureId = reader.GetInt32(0);
+                                    int currentOldQty = reader.GetInt32(1);
+                                    int currentNewQty = reader.GetInt32(2);
+
+                                    System.Diagnostics.Debug.WriteLine($"UPDATE: Найден ID={nomenclatureId}, OldQty={currentOldQty}, NewQty={currentNewQty}");
+
+                                    // Определяем тип операции
+                                    if (operationTypeIn > 0)
+                                    {
+                                        operationType = "ADD";
+                                        quantityChange = operationTypeIn;
+                                    }
+                                    else if (operationTypeOut > 0)
+                                    {
+                                        operationType = "REMOVE";
+                                        quantityChange = operationTypeOut;
+                                    }
+                                    else
+                                    {
+                                        operationType = "UPDATE";
+                                        quantityChange = 0;
+                                    }
+
+                                    // Обновляем запись
+                                    var updateCmd = connection.CreateCommand();
+                                    updateCmd.CommandText = @"UPDATE nomenclature
+                                            SET OldQuantity = @oldQuantity,
+                                                OperationTypeIn = @operationTypeIn,
+                                                OperationTypeOut = @operationTypeOut,
+                                                NewQuantity = @newQuantity,
+                                                UnitPrice = @unitPrice,
+                                                WeightUnit = @weightUnit,
+                                                OperationDate = @operationDate
+                                            WHERE Id = @id";
+                                    updateCmd.Parameters.AddWithValue("@id", nomenclatureId);
+                                    updateCmd.Parameters.AddWithValue("@oldQuantity", currentOldQty + oldQuantity);
+                                    updateCmd.Parameters.AddWithValue("@operationTypeIn", operationTypeIn);
+                                    updateCmd.Parameters.AddWithValue("@operationTypeOut", operationTypeOut);
+                                    updateCmd.Parameters.AddWithValue("@newQuantity", currentNewQty + operationTypeIn - operationTypeOut);
+                                    updateCmd.Parameters.AddWithValue("@unitPrice", unitPrice);
+                                    updateCmd.Parameters.AddWithValue("@weightUnit", weightUnit);
+                                    updateCmd.Parameters.AddWithValue("@operationDate", DateTime.Now);
+
+                                    int rowsAffected = updateCmd.ExecuteNonQuery();
+                                    System.Diagnostics.Debug.WriteLine($"UPDATE выполнено, затронуто строк: {rowsAffected}");
+                                }
+                                else
+                                {
+                                    // Новая запись - ВСТАВКА
+                                    isUpdate = false;
+                                    operationType = "CREATE";
+                                    quantityChange = oldQuantity;
+
+                                    var insertCmd = connection.CreateCommand();
+                                    insertCmd.CommandText = @"INSERT INTO nomenclature 
+                                            (Name, InternalArticle, ExternalArticle, Characteristic, 
+                                             SerialNumber, Unit, AddressCell, OldQuantity, 
+                                             OperationTypeIn, OperationTypeOut, NewQuantity, 
+                                             UnitPrice, WeightUnit, OperationDate) 
+                                            VALUES 
+                                            (@name, @internalArticle, @externalArticle, @characteristic,
+                                             @serialNumber, @unit, @addressCell, @oldQuantity,
+                                             @operationTypeIn, @operationTypeOut, @newQuantity,
+                                             @unitPrice, @weightUnit, @operationDate);
+                                            SELECT last_insert_rowid();";
+                                    insertCmd.Parameters.AddWithValue("@name", name);
+                                    insertCmd.Parameters.AddWithValue("@internalArticle", internalArticle ?? "");
+                                    insertCmd.Parameters.AddWithValue("@externalArticle", externalArticle ?? "");
+                                    insertCmd.Parameters.AddWithValue("@characteristic", characteristic ?? "");
+                                    insertCmd.Parameters.AddWithValue("@serialNumber", serialNumber ?? "");
+                                    insertCmd.Parameters.AddWithValue("@unit", unit ?? "");
+                                    insertCmd.Parameters.AddWithValue("@addressCell", addressCell ?? "");
+                                    insertCmd.Parameters.AddWithValue("@oldQuantity", oldQuantity);
+                                    insertCmd.Parameters.AddWithValue("@operationTypeIn", operationTypeIn);
+                                    insertCmd.Parameters.AddWithValue("@operationTypeOut", operationTypeOut);
+                                    insertCmd.Parameters.AddWithValue("@newQuantity", newQuantity);
+                                    insertCmd.Parameters.AddWithValue("@unitPrice", unitPrice);
+                                    insertCmd.Parameters.AddWithValue("@weightUnit", weightUnit);
+                                    insertCmd.Parameters.AddWithValue("@operationDate", DateTime.Now);
+
+                                    nomenclatureId = Convert.ToInt32(insertCmd.ExecuteScalar());
+                                    System.Diagnostics.Debug.WriteLine($"INSERT: Создан новый ID={nomenclatureId}");
+                                }
+                            }
+
+                            // ПРОВЕРКА: существует ли запись перед добавлением в историю
+                            var checkCmd = connection.CreateCommand();
+                            checkCmd.CommandText = "SELECT COUNT(*) FROM nomenclature WHERE Id = @id";
+                            checkCmd.Parameters.AddWithValue("@id", nomenclatureId);
+                            long exists = (long)checkCmd.ExecuteScalar();
+
+                            System.Diagnostics.Debug.WriteLine($"Проверка: ID={nomenclatureId}, Существует={exists}, isUpdate={isUpdate}");
+
+                            if (exists == 0)
+                            {
+                                System.Diagnostics.Debug.WriteLine($"ОШИБКА: Номенклатура с ID {nomenclatureId} не найдена!");
+                                transaction.Rollback();
+                                return false;
+                            }
+
+                            // Добавляем в историю
+                            var historyCmd = connection.CreateCommand();
+                            historyCmd.CommandText = @"INSERT INTO OperationHistory 
+                                     (NomenclatureId, OperationType, Quantity, OperationDate, UserName) 
+                                     VALUES 
+                                     (@id, @type, @quantity, @date, @user)";
+                            historyCmd.Parameters.AddWithValue("@id", nomenclatureId);
+                            historyCmd.Parameters.AddWithValue("@type", operationType);
+
+                            int historyQuantity = quantityChange;
+                            if (operationType == "REMOVE")
+                                historyQuantity = operationTypeOut;
+                            else if (operationType == "ADD")
+                                historyQuantity = operationTypeIn;
+                            else if (operationType == "CREATE")
+                                historyQuantity = oldQuantity;
+
+                            historyCmd.Parameters.AddWithValue("@quantity", historyQuantity);
+                            historyCmd.Parameters.AddWithValue("@date", DateTime.Now);
+                            historyCmd.Parameters.AddWithValue("@user", Environment.UserName);
+
+                            historyCmd.ExecuteNonQuery();
+                            System.Diagnostics.Debug.WriteLine($"История добавлена: ID={nomenclatureId}, Type={operationType}, Quantity={historyQuantity}");
+
+                            transaction.Commit();
+                            return true;
+                        }
+                        catch (SqliteException ex) when (ex.Message.Contains("FOREIGN KEY"))
+                        {
+                            transaction.Rollback();
+                            System.Diagnostics.Debug.WriteLine($"FOREIGN KEY ошибка: {ex.Message}");
+                            return false;
+                        }
+                        catch (Exception ex)
+                        {
+                            transaction.Rollback();
+                            System.Diagnostics.Debug.WriteLine($"Ошибка транзакции: {ex.Message}");
+                            return false;
+                        }
                     }
-                    return true;
-
                 }
             }
             catch (Exception ex)
             {
-
+                System.Diagnostics.Debug.WriteLine($"Ошибка AddNomenclature: {ex.Message}");
                 return false;
             }
         }
-
         public bool DeleteNomenclature ( string name )
         {
             try
