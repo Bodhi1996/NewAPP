@@ -1,0 +1,52 @@
+﻿<Window x:Class="NewAPP.View.InputVisibleField"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NewAPP.View"
+        mc:Ignorable="d"
+        Title="InputVisibleField" Height="450" Width="800">
+    <Grid Margin="10">
+        <StackPanel>
+            <TextBlock Text="Выберите обязателньые для заполнения поля:" 
+                   FontWeight="Bold" Margin="0,0,0,10"/>
+
+
+            <CheckBox x:Name="chkName" Content="Наименование" IsChecked="True" 
+                  Margin="0,5" Checked="CheckBox_Changed" Unchecked="CheckBox_Changed"/>
+            <CheckBox x:Name="chkInNumber" Content="Внешний номер" IsChecked="True" 
+                  Margin="0,5" Checked="CheckBox_Changed" Unchecked="CheckBox_Changed"/>
+            <CheckBox x:Name="chkOutNumber" Content="Внутренний номер" IsChecked="True" 
+                  Margin="0,5" Checked="CheckBox_Changed" Unchecked="CheckBox_Changed"/>
+            <CheckBox x:Name="chkHaracteristick" Content="Характеристика" IsChecked="True" 
+                  Margin="0,5" Checked="CheckBox_Changed" Unchecked="CheckBox_Changed"/>
+            <CheckBox x:Name="chkSerialNumber" Content="Серийный номер" IsChecked="True" 
+                  Margin="0,5" Checked="CheckBox_Changed" Unchecked="CheckBox_Changed"/>
+            <CheckBox x:Name="chkPrice" Content="Цена за единицу" IsChecked="True" 
+                  Margin="0,5" Checked="CheckBox_Changed" Unchecked="CheckBox_Changed"/>
+            <CheckBox x:Name="chkWeight" Content="Вес единицы" IsChecked="True" 
+      Margin="0,5" Checked="CheckBox_Changed" Unchecked="CheckBox_Changed"/>
+            <CheckBox x:Name="chkUnit" Content="Единицы измерения" IsChecked="True" 
+                  Margin="0,5" Checked="CheckBox_Changed" Unchecked="CheckBox_Changed"/>
+            <CheckBox x:Name="chkAdr" Content="Адрес ячейки" IsChecked="True" 
+                  Margin="0,5" Checked="CheckBox_Changed" Unchecked="CheckBox_Changed"/>
+            <CheckBox x:Name="chkOldQuantity" Content="Было" IsChecked="True" 
+                  Margin="0,5" Checked="CheckBox_Changed" Unchecked="CheckBox_Changed"/>
+            <CheckBox x:Name="chkOperationIn" Content="Добавили" IsChecked="True" 
+                  Margin="0,5" Checked="CheckBox_Changed" Unchecked="CheckBox_Changed"/>
+            <CheckBox x:Name="chkOperationOut" Content="Убрали" IsChecked="True" 
+                  Margin="0,5" Checked="CheckBox_Changed" Unchecked="CheckBox_Changed"/>
+            <CheckBox x:Name="chkQuntity" Content="Остаток" IsChecked="True" 
+                  Margin="0,5" Checked="CheckBox_Changed" Unchecked="CheckBox_Changed"/>
+
+
+            <StackPanel Orientation="Horizontal" Margin="0,20,0,0" 
+                    HorizontalAlignment="Center">
+                <Button Content="OK" Width="80" Height="30" 
+                    Click="OkButton_Click" Margin="0,0,10,0"/>
+
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+
+</Window>

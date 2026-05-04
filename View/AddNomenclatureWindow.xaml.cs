@@ -1,5 +1,7 @@
 ﻿using NewAPP.Models;
 using NewAPP.Services;
+using NewAPP.Services;
+using NewAPP.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,8 +15,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using NewAPP.Services;
-using NewAPP.ViewModels;
+using System.Xml;
 
 namespace NewAPP.View
 {
@@ -77,23 +78,108 @@ namespace NewAPP.View
             peredacha?.Invoke((Name, InternalArticle, ExternalArticle, Characteristic, SerialNumber, Unit, AdressCell, OldQuantity, OperationTypeIn, OperationTypeOut, NewQuantity, UnitPrice, WeightUnit));
         }
 
+        private void InputField_Click(object sender, EventArgs e)
+        {
+            var inputVisibleField = new InputVisibleField();
+
+            inputVisibleField.visibleAction += ( showName, showInNumber, showOutNumber, showHaracteristick,
+                showSerialNumber, showPrice, showWeight, showUnit, showAdr, showOldQuantity, showOperationIn, showOperationOut, showQuantity ) =>
+            {
+                NameLable.Visibility = showName ? Visibility.Visible : Visibility.Collapsed;
+                NameNomenclatureBox.Visibility = showName ? Visibility.Visible : Visibility.Collapsed;
+
+                InterLable.Visibility = showInNumber ? Visibility.Visible : Visibility.Collapsed;
+                InterNomenclatureBox.Visibility = showInNumber ? Visibility.Visible : Visibility.Collapsed;
+
+                ExterLable.Visibility = showOutNumber ? Visibility.Visible : Visibility.Collapsed;
+                ExterNomenclatureBox.Visibility = showOutNumber ? Visibility.Visible : Visibility.Collapsed;
+
+                CharLable.Visibility = showHaracteristick ? Visibility.Visible : Visibility.Collapsed;
+                CharNomenclatureBox.Visibility = showHaracteristick ? Visibility.Visible : Visibility.Collapsed;
+
+                SNLable.Visibility = showSerialNumber ? Visibility.Visible : Visibility.Collapsed;
+                SNNomenclatureBox.Visibility = showSerialNumber ? Visibility.Visible : Visibility.Collapsed;
+
+                UnitPriceLable.Visibility = showPrice ? Visibility.Visible : Visibility.Collapsed;
+                UnitPriceBox.Visibility = showPrice ? Visibility.Visible : Visibility.Collapsed;
+
+                WeightLable.Visibility = showWeight ? Visibility.Visible : Visibility.Collapsed;
+                WeightUnitBox.Visibility = showWeight ? Visibility.Visible : Visibility.Collapsed;
+
+                UnitNomLable.Visibility = showUnit ? Visibility.Visible : Visibility.Collapsed;
+                UnitNomenclatureBox.Visibility = showUnit ? Visibility.Visible : Visibility.Collapsed;
+
+                AdrLable.Visibility = showAdr ? Visibility.Visible : Visibility.Collapsed;
+                AdrNomenclatureBox.Visibility = showAdr ? Visibility.Visible : Visibility.Collapsed;
+
+                OldLable.Visibility = showOldQuantity ? Visibility.Visible : Visibility.Collapsed;
+                OldNomenclatureBox.Visibility = showOldQuantity ? Visibility.Visible : Visibility.Collapsed;
+
+                InNomLable.Visibility = showOperationIn ? Visibility.Visible : Visibility.Collapsed;
+                InNomenclatureBox.Visibility = showOperationIn ? Visibility.Visible : Visibility.Collapsed;
+
+                OutNomLAble.Visibility = showOperationOut ? Visibility.Visible : Visibility.Collapsed;
+                OutNomenclatureBox.Visibility = showOperationOut ? Visibility.Visible : Visibility.Collapsed;
+
+                NewNomLable.Visibility = showQuantity ? Visibility.Visible : Visibility.Collapsed;
+                NewNomenclatureBox.Visibility = showQuantity ? Visibility.Visible : Visibility.Collapsed;
+
+                (AddNumButton1 as RelayCommand)?.RaiseCanExecuteChanged();
+
+                MessageBox.Show("Настройки видимости применены!", "Успех",
+                               MessageBoxButton.OK, MessageBoxImage.Information);
+
+
+            };
+            inputVisibleField.ShowDialog();
+        }
+
         // Метод проверки - возвращает bool, доступна ли команда
         private bool CanExecuteAddNomenclature ( object param )
         {
             // Проверяем, заполнены ли все поля
-            return !string.IsNullOrWhiteSpace(NameNomenclatureBox?.Text) &&
-                    !string.IsNullOrWhiteSpace(InterNomenclatureBox?.Text) &&
-                    !string.IsNullOrWhiteSpace(ExterNomenclatureBox?.Text) &&
-                    !string.IsNullOrWhiteSpace(CharNomenclatureBox?.Text) &&
-                    !string.IsNullOrWhiteSpace(SNNomenclatureBox?.Text) &&
-                    !string.IsNullOrWhiteSpace(UnitNomenclatureBox?.Text) &&
-                    !string.IsNullOrWhiteSpace(AdrNomenclatureBox?.Text) &&
-                    !string.IsNullOrWhiteSpace(OldNomenclatureBox?.Text) &&
-                    !string.IsNullOrWhiteSpace(InNomenclatureBox?.Text) &&
-                    !string.IsNullOrWhiteSpace(OutNomenclatureBox?.Text) &&
-                    !string.IsNullOrWhiteSpace(UnitPriceBox?.Text) &&
-                    !string.IsNullOrWhiteSpace(NewNomenclatureBox?.Text) &&
-                    !string.IsNullOrWhiteSpace(WeightUnitBox?.Text);
+            if (NameLable.Visibility == Visibility.Visible && string.IsNullOrWhiteSpace(NameNomenclatureBox?.Text))
+                return false;
+
+            if (InterLable.Visibility == Visibility.Visible && string.IsNullOrWhiteSpace(InterNomenclatureBox?.Text))
+                return false;
+
+            if (ExterLable.Visibility == Visibility.Visible && string.IsNullOrWhiteSpace(ExterNomenclatureBox?.Text))
+                return false;
+
+            if (CharLable.Visibility == Visibility.Visible && string.IsNullOrWhiteSpace(CharNomenclatureBox?.Text))
+                return false;
+
+            if (SNLable.Visibility == Visibility.Visible && string.IsNullOrWhiteSpace(SNNomenclatureBox?.Text))
+                return false;
+
+            if (UnitPriceLable.Visibility == Visibility.Visible && string.IsNullOrWhiteSpace(UnitPriceBox?.Text))
+                return false;
+
+            if (WeightLable.Visibility == Visibility.Visible && string.IsNullOrWhiteSpace(WeightUnitBox?.Text))
+                return false;
+
+            // Проверяем только видимые поля (правая колонка)
+            if (UnitNomLable.Visibility == Visibility.Visible && string.IsNullOrWhiteSpace(UnitNomenclatureBox?.Text))
+                return false;
+
+            if (AdrLable.Visibility == Visibility.Visible && string.IsNullOrWhiteSpace(AdrNomenclatureBox?.Text))
+                return false;
+
+            if (OldLable.Visibility == Visibility.Visible && string.IsNullOrWhiteSpace(OldNomenclatureBox?.Text))
+                return false;
+
+            if (InNomLable.Visibility == Visibility.Visible && string.IsNullOrWhiteSpace(InNomenclatureBox?.Text))
+                return false;
+
+            if (OutNomLAble.Visibility == Visibility.Visible && string.IsNullOrWhiteSpace(OutNomenclatureBox?.Text))
+                return false;
+
+            if (NewNomLable.Visibility == Visibility.Visible && string.IsNullOrWhiteSpace(NewNomenclatureBox?.Text))
+                return false;
+
+            return true;
+
         }
     }
 }

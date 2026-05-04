@@ -105,46 +105,46 @@
 
                     <!-- ========== ЛЕВАЯ КОЛОНКА ========== -->
                     <StackPanel Grid.Column="0">
-                        <TextBlock Text="📝 НАИМЕНОВАНИЕ" Style="{StaticResource FieldLabel}"/>
+                        <TextBlock x:Name="NameLable" Text="📝 НАИМЕНОВАНИЕ" Style="{StaticResource FieldLabel}"/>
                         <TextBox x:Name="NameNomenclatureBox" Style="{StaticResource ModernTextBox}" Margin="0,0,0,15"/>
 
-                        <TextBlock Text="🔢 ВНЕШНИЙ НОМЕР" Style="{StaticResource FieldLabel}"/>
+                        <TextBlock x:Name="InterLable" Text="🔢 ВНЕШНИЙ НОМЕР" Style="{StaticResource FieldLabel}"/>
                         <TextBox x:Name="InterNomenclatureBox" Style="{StaticResource ModernTextBox}" Margin="0,0,0,15"/>
 
-                        <TextBlock Text="🔢 ВНУТРЕННИЙ НОМЕР" Style="{StaticResource FieldLabel}"/>
+                        <TextBlock x:Name="ExterLable" Text="🔢 ВНУТРЕННИЙ НОМЕР" Style="{StaticResource FieldLabel}"/>
                         <TextBox x:Name="ExterNomenclatureBox" Style="{StaticResource ModernTextBox}" Margin="0,0,0,15"/>
 
-                        <TextBlock Text="⚙️ ХАРАКТЕРИСТИКА" Style="{StaticResource FieldLabel}"/>
+                        <TextBlock x:Name="CharLable" Text="⚙️ ХАРАКТЕРИСТИКА" Style="{StaticResource FieldLabel}"/>
                         <TextBox x:Name="CharNomenclatureBox" Style="{StaticResource ModernTextBox}" Margin="0,0,0,15"/>
 
-                        <TextBlock Text="🔖 СЕРИЙНЫЙ НОМЕР" Style="{StaticResource FieldLabel}"/>
+                        <TextBlock x:Name="SNLable" Text="🔖 СЕРИЙНЫЙ НОМЕР" Style="{StaticResource FieldLabel}"/>
                         <TextBox x:Name="SNNomenclatureBox" Style="{StaticResource ModernTextBox}" Margin="0,0,0,15"/>
 
-                        <TextBlock Text="💰 ЦЕНА ЗА ЕДИНИЦУ" Style="{StaticResource FieldLabel}"/>
+                        <TextBlock x:Name="UnitPriceLable" Text="💰 ЦЕНА ЗА ЕДИНИЦУ" Style="{StaticResource FieldLabel}"/>
                         <TextBox x:Name="UnitPriceBox" Style="{StaticResource ModernTextBox}" Margin="0,0,0,15"/>
 
-                        <TextBlock Text="💰 ВЕС ЕДИНИЦЫ" Style="{StaticResource FieldLabel}"/>
+                        <TextBlock x:Name="WeightLable" Text="💰 ВЕС ЕДИНИЦЫ" Style="{StaticResource FieldLabel}"/>
                         <TextBox x:Name="WeightUnitBox" Style="{StaticResource ModernTextBox}" Margin="0,0,0,15"/>
                     </StackPanel>
 
                     <!-- ========== ПРАВАЯ КОЛОНКА ========== -->
                     <StackPanel Grid.Column="2">
-                        <TextBlock Text="📏 ЕДИНИЦА ИЗМЕРЕНИЯ" Style="{StaticResource FieldLabel}"/>
+                        <TextBlock x:Name="UnitNomLable" Text="📏 ЕДИНИЦА ИЗМЕРЕНИЯ" Style="{StaticResource FieldLabel}"/>
                         <TextBox x:Name="UnitNomenclatureBox" Style="{StaticResource ModernTextBox}" Margin="0,0,0,15" Text="шт"/>
 
-                        <TextBlock Text="📍 АДРЕС ЯЧЕЙКИ" Style="{StaticResource FieldLabel}"/>
+                        <TextBlock x:Name="AdrLable" Text="📍 АДРЕС ЯЧЕЙКИ" Style="{StaticResource FieldLabel}"/>
                         <TextBox x:Name="AdrNomenclatureBox" Style="{StaticResource ModernTextBox}" Margin="0,0,0,15" Text="1-1-1"/>
 
-                        <TextBlock Text="📊 БЫЛО (НАЧАЛЬНОЕ)" Style="{StaticResource FieldLabel}"/>
+                        <TextBlock x:Name="OldLable" Text="📊 БЫЛО (НАЧАЛЬНОЕ)" Style="{StaticResource FieldLabel}"/>
                         <TextBox x:Name="OldNomenclatureBox" Style="{StaticResource ModernTextBox}" Margin="0,0,0,15" Text="0"/>
 
-                        <TextBlock Text="➕ ДОБАВИЛИ" Style="{StaticResource FieldLabel}"/>
+                        <TextBlock x:Name="InNomLable" Text="➕ ДОБАВИЛИ" Style="{StaticResource FieldLabel}"/>
                         <TextBox x:Name="InNomenclatureBox" Style="{StaticResource ModernTextBox}" Margin="0,0,0,15" Text="0"/>
 
-                        <TextBlock Text="➖ УБРАЛИ" Style="{StaticResource FieldLabel}"/>
+                        <TextBlock x:Name="OutNomLAble" Text="➖ УБРАЛИ" Style="{StaticResource FieldLabel}"/>
                         <TextBox x:Name="OutNomenclatureBox" Style="{StaticResource ModernTextBox}" Margin="0,0,0,15" Text="0"/>
 
-                        <TextBlock Text="📦 ОСТАТОК" Style="{StaticResource FieldLabel}"/>
+                        <TextBlock x:Name="NewNomLable" Text="📦 ОСТАТОК" Style="{StaticResource FieldLabel}"/>
                         <TextBox x:Name="NewNomenclatureBox" Style="{StaticResource ModernTextBox}" Margin="0,0,0,15" Text="0"/>
                     </StackPanel>
                 </Grid>
@@ -166,6 +166,14 @@
                                 Background="#E74C3C" 
                                 Foreground="White"
                                 />
+                        <Button x:Name="InputFieldButton" 
+                        Content="✅ Настройки" 
+                        Style="{StaticResource ModernButton}"
+                        Background="#27AE60" 
+                        Foreground="White"
+                        Click="InputField_Click"
+                        Margin="0,0,15,0"/>
+
                     </StackPanel>
                 </Border>
             </Grid>
