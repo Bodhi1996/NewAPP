@@ -382,19 +382,39 @@ namespace NewAPP.Services
                 {
                     connection.Open();
 
-                    var insertDelete = connection.CreateCommand();
-                    insertDelete.CommandText = "DELETE FROM nomenclature WHERE Name = @name";
-                    insertDelete.Parameters.AddWithValue("@name", name);
+                    // 1. Сначала находим ID товара
+                    var getIdCmd = connection.CreateCommand();
+                    getIdCmd.CommandText = "SELECT Id FROM nomenclature WHERE Name = @name";
+                    getIdCmd.Parameters.AddWithValue("@name", name);
+                    var productId = getIdCmd.ExecuteScalar();
 
-                    int rowAffected = insertDelete.ExecuteNonQuery();
-                    return rowAffected > 0;
+                    if (productId != null)
+                    {
+                        int id = Convert.ToInt32(productId);
+
+                        // 2. Удаляем связанные записи из истории
+                        var deleteHistoryCmd = connection.CreateCommand();
+                        deleteHistoryCmd.CommandText = "DELETE FROM OperationHistory WHERE NomenclatureId = @id";
+                        deleteHistoryCmd.Parameters.AddWithValue("@id", id);
+                        deleteHistoryCmd.ExecuteNonQuery();
+
+                        // 3. Теперь удаляем сам товар
+                        var deleteProductCmd = connection.CreateCommand();
+                        deleteProductCmd.CommandText = "DELETE FROM nomenclature WHERE Id = @id";
+                        deleteProductCmd.Parameters.AddWithValue("@id", id);
+                        int rowsAffected = deleteProductCmd.ExecuteNonQuery();
+
+                        return rowsAffected > 0;
+                    }
+                    return false;
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Ошибка удаления номенклатуры: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Ошибка удаления: {ex.Message}");
                 return false;
             }
+
         } //удаление
 
         public List<NomenclatureItems> SearchNomenclature ( string searchText )

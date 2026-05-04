@@ -1099,6 +1099,7 @@ MaxWidth="850">
                     FontWeight="Bold" 
                     BorderThickness="0"
                     Cursor="Hand"
+                    Visibility="{Binding ExecuteShowCorrectVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
                     Command="{Binding CorrectQuantityCommand}"/>
 
 

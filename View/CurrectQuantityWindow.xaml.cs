@@ -38,7 +38,8 @@ namespace NewAPP.View
         {
             Name = NameNomenclatureBox.Text.Trim();
             Amount = int.Parse(AmountTextBox.Text.Trim());
-            _db.CorrectUnit(Name, Amount);
+            this.DialogResult = true;
+            this.Close();
         }
 
         private bool CanExecuteCorrectQuantity (object param)

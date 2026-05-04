@@ -209,6 +209,16 @@ namespace NewAPP
             get => _isAddUsersVisible;
             set { _isAddUsersVisible = value; OnPropertyChanged(); }
         }
+        private bool _executeShowCorrectVisible;
+        public bool ExecuteShowCorrectVisible 
+        {
+            get => _executeShowCorrectVisible;
+            set
+            {
+                _executeShowCorrectVisible = value;
+                OnPropertyChanged();
+            }
+        }
 
         private string _isAddUsersLogin; //новый логин
         public string IsAddUsersLogin
@@ -676,6 +686,7 @@ namespace NewAPP
         public ICommand SearchCommand { get; } //поиск по кнопку
         public ICommand OpenColumnSettingsCommand { get; } //команда для открытия окна настроек
         public ICommand CorrectQuantityCommand { get; } //команда для открытия окна корректировок остатков
+        public ICommand IsCorrectButtonVisible { get; } //видимость кнопки коррекции остатков
 
         private Dictionary<Sensor, int> _lastValidWeight = new Dictionary<Sensor, int>();
         private Dictionary<Sensor, int> _consecutiveErrors = new Dictionary<Sensor, int>();
@@ -755,6 +766,7 @@ namespace NewAPP
                 SearchCommand = new RelayCommand(ExecuteSearchCommand);
                 OpenColumnSettingsCommand = new RelayCommand(OpenColumnSettings); //кнопка открытия
                 CorrectQuantityCommand = new RelayCommand(ExecuteCorrectQuantity); //открытия окна корректировки остатков
+                //IsCorrectButtonVisible = new RelayCommand(ExecuteShowCorrectVisible);
             }
             catch (Exception ex)
             {
@@ -1492,7 +1504,13 @@ namespace NewAPP
         private void ExecuteCorrectQuantity (object param) 
         {
             var currectWindow = new CurrectQuantityWindow();
-            currectWindow.Show();
+            currectWindow.ShowDialog();
+            if(currectWindow.DialogResult == true)
+            {
+                string name = currectWindow.Name;
+                int amount = currectWindow.Amount;
+                _dataBase.CorrectUnit(name, amount);
+            }
         }
 
         private void UpdateConnectedCount ( )
@@ -1592,12 +1610,14 @@ namespace NewAPP
         {
             IsAddUsersVisible = IsAdmin;
             
+            
         }
         private void VisibleAdminButton() // метод для видимости кнопки добавления и кнопки склада
         {
             IsAddButtonUsersVisible = IsAdmin;
             IsVisibleSklad = IsAdmin;
             IsDataBaseButtonVisible = IsAdmin;
+            ExecuteShowCorrectVisible = IsAdmin;
         }
 
     }
