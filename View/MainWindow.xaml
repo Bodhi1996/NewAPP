@@ -208,7 +208,7 @@
                 <!-- Центральные кнопки -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button Content="ОТЧЕТ" Style="{StaticResource TopButtonStyle}" Width="120"/>
-                    <Button Content="БАЗА ДАННЫХ" Style="{StaticResource TopButtonStyle}" Width="120"/>
+                    <Button Content="{Binding ButtonContent}" Style="{StaticResource TopButtonStyle}" Command="{Binding OpenComand}" Width="120" Cursor=""/>
                     
                 </StackPanel>
 
@@ -276,9 +276,9 @@
                             Background="{StaticResource BlueBorderBrush}"
                             Visibility="{Binding IsDataBaseButtonVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
-                    <Button Content="ИСТОРИЯ" 
+                    <Button Content="ГОРЯЧИЕ КЛАВИШИ" 
                             Style="{StaticResource LeftButtonStyle}"
-                            Command="{Binding ShowHistoryCommand}"
+                            Command="{Binding ShowBindCommand}"
                             Background="{StaticResource BlueBorderBrush}"/>
                     <Button Content="Добавление юзера"
                             Style="{StaticResource LeftButtonStyle}"
@@ -1251,6 +1251,197 @@ MaxWidth="850">
 
                     </Grid>
 
+                    <Grid Visibility="{Binding IsHotkeysVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Cursor="" d:Visibility="Collapsed">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Заголовок -->
+                        <TextBlock Text="Настройка горячих клавиш" 
+               Grid.Row="0"
+               HorizontalAlignment="Center" 
+               FontSize="28" 
+               FontWeight="Bold"
+               Margin="0,20,0,30" 
+               Foreground="{StaticResource WhiteBrush}"/>
+
+                        <!-- Основная карточка -->
+                        <Border Grid.Row="1" 
+            Background="#344955" 
+            CornerRadius="15" 
+            Margin="50,0,50,50" 
+            Padding="30"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            MinWidth="600"
+            MaxWidth="800">
+
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="40"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Горячая клавиша 1 -->
+                                <Grid Grid.Row="0" Margin="0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="30"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Блок с двумя клавишами -->
+                                    <Border Grid.Column="0" 
+                        Background="#2C3E50" 
+                        CornerRadius="8" 
+                        Padding="15,10"
+                        BorderBrush="#4A6572"
+                        BorderThickness="1">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Background="#1A252F" CornerRadius="5" Padding="12,8" Margin="0,0,5,0">
+                                                <TextBlock Text="КНОПКА 1" 
+                                       Foreground="#27AE60" 
+                                       FontSize="14" 
+                                       FontWeight="Bold"
+                                       FontFamily="Consolas"/>
+                                            </Border>
+
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- Стрелка/плюс -->
+                                    <TextBlock Grid.Column="1" 
+                           Text="→" 
+                           Foreground="White" 
+                           FontSize="20" 
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+
+                                    <!-- Выпадающий список для выбора действия -->
+                                    <ComboBox Grid.Column="2" 
+                          SelectedItem="{Binding Hotkey1Action}"
+                          ItemsSource="{Binding AvailableActions}"
+                          Background="#2C3E50"
+                          Foreground="Black"
+                          BorderBrush="#4A6572"
+                          Padding="12,8"
+                          FontSize="14">
+                                        <ComboBox.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="8"/>
+                                            </Style>
+                                        </ComboBox.Resources>
+                                    </ComboBox>
+                                </Grid>
+
+                                <!-- Разделитель -->
+                                <Border Grid.Row="1" 
+                    Height="1" 
+                    Background="#4A6572" 
+                    Margin="0,15"/>
+
+                                <!-- Горячая клавиша 2 -->
+                                <Grid Grid.Row="2" Margin="0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="30"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Блок с двумя клавишами -->
+                                    <Border Grid.Column="0" 
+                        Background="#2C3E50" 
+                        CornerRadius="8" 
+                        Padding="15,10"
+                        BorderBrush="#4A6572"
+                        BorderThickness="1">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Background="#1A252F" CornerRadius="5" Padding="12,8" Margin="0,0,5,0">
+                                                <TextBlock Text="КНОПКА 2" 
+                                       Foreground="#27AE60" 
+                                       FontSize="14" 
+                                       FontWeight="Bold"
+                                       FontFamily="Consolas"/>
+                                            </Border>
+
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- Стрелка/плюс -->
+                                    <TextBlock Grid.Column="1" 
+                           Text="→" 
+                           Foreground="White" 
+                           FontSize="20" 
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+
+                                    <!-- Выпадающий список для выбора действия -->
+                                    <ComboBox Grid.Column="2" 
+                          SelectedItem="{Binding Hotkey2Action}"
+                          ItemsSource="{Binding AvailableActions}"
+                          Background="#2C3E50"
+                          Foreground="White"
+                          BorderBrush="#4A6572"
+                          Padding="12,8"
+                          FontSize="14">
+                                        <ComboBox.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="8"/>
+                                            </Style>
+                                        </ComboBox.Resources>
+                                    </ComboBox>
+                                </Grid>
+
+                                <!-- Пустое пространство -->
+                                <Grid Grid.Row="3"/>
+
+                                <!-- Кнопка применения -->
+                                <Button Grid.Row="4" 
+                    Content="ПРИМЕНИТЬ НАСТРОЙКИ"
+                    Command="{Binding ApplyHotkeysCommand}"
+                    Background="#27AE60"
+                    Foreground="White"
+                    FontSize="16"
+                    FontWeight="Bold"
+                    Height="50"
+                    Width="250"
+                    HorizontalAlignment="Center"
+                    Cursor="Hand">
+                                    <Button.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="8"/>
+                                        </Style>
+                                    </Button.Resources>
+                                    <Button.Triggers>
+                                        <EventTrigger RoutedEvent="Button.MouseEnter">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <ColorAnimation Storyboard.TargetProperty="Background.Color"
+                                              To="#2ECC71"
+                                              Duration="0:0:0.2"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+                                        <EventTrigger RoutedEvent="Button.MouseLeave">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <ColorAnimation Storyboard.TargetProperty="Background.Color"
+                                              To="#27AE60"
+                                              Duration="0:0:0.2"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+                                    </Button.Triggers>
+                                </Button>
+                            </Grid>
+                        </Border>
+                    </Grid>
                 </Grid>
             </Border>
         </Grid>

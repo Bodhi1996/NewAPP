@@ -183,6 +183,16 @@ namespace NewAPP
             }
         }
 
+        private bool _isHotkeysVisible;
+        public bool IsHotkeysVisible 
+        {
+            get => _isHotkeysVisible;
+            set
+            {
+                _isHotkeysVisible = value; OnPropertyChanged();
+            }
+        }
+
         private bool _isTcpSettingsVisible;
         public bool IsTcpSettingsVisible
         {
@@ -662,6 +672,62 @@ namespace NewAPP
             }
         }
 
+        private ObservableCollection<ActionItem> _availableAction;
+        public ObservableCollection<ActionItem> AvailableActions
+        {
+            get => _availableAction;
+            set
+            {
+                _availableAction = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private ActionItem _selectedAction;
+        public ActionItem SelectedAction 
+        {
+            get => _selectedAction;
+            set
+            {
+                _selectedAction = value; OnPropertyChanged();
+            }
+        }
+
+        private ActionItem _hot1key;
+        public ActionItem Hotkey1Action
+        {
+            get => _hot1key;
+            set
+            {
+                _hot1key = value;
+                OnPropertyChanged();
+
+                if (_hot1key != null)
+                {
+                    ButtonContent = value.Name;
+                    OpenComand = value.Command;
+                }
+            }
+        }
+
+        private string _buttonContent;
+        public string ButtonContent 
+        {
+            get => _buttonContent;
+            set
+            {
+                _buttonContent = value; OnPropertyChanged();
+            }
+        }
+        private ICommand _openComand;
+        public ICommand OpenComand 
+        {
+            get => _openComand;
+            set
+            {
+                _openComand = value; OnPropertyChanged();
+            }
+        }
 
         // ===== КОМАНДЫ =====
         public ICommand StartStopCommand { get; }
@@ -671,7 +737,7 @@ namespace NewAPP
         public ICommand ShowSettingsCommand { get; }
         public ICommand ShowNetworkCommand { get; }
         public ICommand ShowNomenclatureCommand { get; }
-        public ICommand ShowHistoryCommand { get; }
+        public ICommand ShowBindCommand { get; }
         public ICommand ZeroPointCommand { get; }
         public ICommand EtalonPointCommand { get; }
         public ICommand AddUserCommand { get; }
@@ -687,6 +753,7 @@ namespace NewAPP
         public ICommand OpenColumnSettingsCommand { get; } //команда для открытия окна настроек
         public ICommand CorrectQuantityCommand { get; } //команда для открытия окна корректировок остатков
         public ICommand IsCorrectButtonVisible { get; } //видимость кнопки коррекции остатков
+        public ICommand ApplyHotkeysCommand { get; }
 
         private Dictionary<Sensor, int> _lastValidWeight = new Dictionary<Sensor, int>();
         private Dictionary<Sensor, int> _consecutiveErrors = new Dictionary<Sensor, int>();
@@ -751,7 +818,7 @@ namespace NewAPP
                 ShowSettingsCommand = new RelayCommand(ExecuteShowSettings);
                 ShowNetworkCommand = new RelayCommand(ExecuteShowNetwork);
                 //ShowNomenclatureCommand = new RelayCommand(ExecuteShowNomenclature);
-                ShowHistoryCommand = new RelayCommand(ExecuteShowHistory);
+                ShowBindCommand = new RelayCommand(ExecuteShowBind);
                 ZeroPointCommand = new RelayCommand(ExecuteZeroPoint);
                 EtalonPointCommand = new RelayCommand(ExecuteEtalonPoint);
                 AddUserCommand = new RelayCommand(ExecuteAddUsers); //видимость
@@ -767,6 +834,11 @@ namespace NewAPP
                 OpenColumnSettingsCommand = new RelayCommand(OpenColumnSettings); //кнопка открытия
                 CorrectQuantityCommand = new RelayCommand(ExecuteCorrectQuantity); //открытия окна корректировки остатков
                 //IsCorrectButtonVisible = new RelayCommand(ExecuteShowCorrectVisible);
+                ApplyHotkeysCommand = new RelayCommand(ExecuteApplyHotkeys);
+                AvailableActions = new ObservableCollection<ActionItem>
+                {
+                    new ActionItem {Name = "добавить номенклатуру", Command = AddNomenclatureButton}
+                };
             }
             catch (Exception ex)
             {
@@ -986,6 +1058,7 @@ namespace NewAPP
             IsTopControlsVisible = false;
             IsNomenclatureVisible = false;
             IsRightCellsVisible = false;
+            IsHotkeysVisible = false;
 
         }
 
@@ -999,6 +1072,7 @@ namespace NewAPP
             IsRightCellsVisible = false;
             IsNomenclatureVisible = false;
             IsAddUsersVisible = false;
+            IsHotkeysVisible = false;
             // VisibleAdminButton();
 
             StatusText = "Настройки калибровки";
@@ -1015,6 +1089,7 @@ namespace NewAPP
             IsWelcomeVisible = false;
             IsSensorsVisible = false;
             IsSettingsVisible = false;
+            IsHotkeysVisible = false;
             // VisibleAdminButton();
 
             StatusText = "Настройки сети";
@@ -1051,6 +1126,20 @@ namespace NewAPP
 
         }
 
+        private void ExecuteApplyHotkeys ( object param )
+        {
+            if (Hotkey1Action != null && Hotkey1Action.Command != null)
+            {
+                OpenComand = Hotkey1Action.Command;
+                ButtonContent = Hotkey1Action.Name;
+            }
+            else
+            {
+                // Если ничего не выбрано или команда отсутствует
+                MessageBox.Show("Пожалуйста, выберите действие из списка");
+            }
+
+        }
 
         private void ExecuteSetSklad ( object param )  // настройки склада
         {
@@ -1164,11 +1253,20 @@ namespace NewAPP
             MessageBox.Show("Позиция удалена, обновите список");
         }
 
-        private void ExecuteShowHistory ( object param )
+        private void ExecuteShowBind ( object param )
         {
-            StatusText = "История";
-            //MessageBox.Show("История измерений и событий", "История");
+            IsHotkeysVisible = true;
+            IsTcpSettingsVisible = false; //false
+            IsTopControlsVisible = false;
+            IsRightCellsVisible = false;
+            IsNomenclatureVisible = false;
+            IsAddUsersVisible = false;
+            IsWelcomeVisible = false;
+            IsSensorsVisible = false;
+            IsSettingsVisible = false;
+
         }
+
 
         private async void ExecuteZeroPoint ( object param )
         {
@@ -1226,6 +1324,7 @@ namespace NewAPP
             IsTopControlsVisible = false;
             IsRightCellsVisible = false;
             IsAddUsersVisible = false;
+            IsHotkeysVisible = false;
             LoadAllNomenclature();
         }
 
