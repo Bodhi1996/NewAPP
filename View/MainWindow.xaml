@@ -207,8 +207,8 @@
 
                 <!-- Центральные кнопки -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button Content="ОТЧЕТ" Style="{StaticResource TopButtonStyle}" Width="120"/>
-                    <Button Content="{Binding ButtonContent}" Style="{StaticResource TopButtonStyle}" Command="{Binding OpenComand}" Width="120" Cursor=""/>
+                    <Button Content="{Binding ButtonContent2}" Style="{StaticResource TopButtonStyle}" Command="{Binding OpenComand2}" Width="120"/>
+                    <Button Content="{Binding ButtonContent1}" Style="{StaticResource TopButtonStyle}" Command="{Binding OpenComand1}" Width="120" Cursor=""/>
                     
                 </StackPanel>
 
@@ -1386,7 +1386,7 @@ MaxWidth="850">
                           SelectedItem="{Binding Hotkey2Action}"
                           ItemsSource="{Binding AvailableActions}"
                           Background="#2C3E50"
-                          Foreground="White"
+                          Foreground="Black"
                           BorderBrush="#4A6572"
                           Padding="12,8"
                           FontSize="14">

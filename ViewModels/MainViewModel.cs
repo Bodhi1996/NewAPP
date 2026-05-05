@@ -704,28 +704,62 @@ namespace NewAPP
 
                 if (_hot1key != null)
                 {
-                    ButtonContent = value.Name;
-                    OpenComand = value.Command;
+                    ButtonContent2 = value.Name;
+                    OpenComand2 = value.Command;
+                }
+            }
+        }
+        private ActionItem _hotkey2Action;
+        public ActionItem Hotkey2Action 
+        {
+            get => _hotkey2Action;
+            set
+            {
+                _hotkey2Action = value;
+                OnPropertyChanged();
+                if (_hotkey2Action != null)
+                {
+                    ButtonContent1 = value.Name;
+                    OpenComand1 = value.Command;
                 }
             }
         }
 
-        private string _buttonContent;
-        public string ButtonContent 
+        private string _buttonContent1;
+        public string ButtonContent1
         {
-            get => _buttonContent;
+            get => _buttonContent1;
             set
             {
-                _buttonContent = value; OnPropertyChanged();
+                _buttonContent1 = value; OnPropertyChanged();
             }
         }
-        private ICommand _openComand;
-        public ICommand OpenComand 
+        private ICommand _openComand1;
+        public ICommand OpenComand1
         {
-            get => _openComand;
+            get => _openComand1;
             set
             {
-                _openComand = value; OnPropertyChanged();
+                _openComand1 = value; OnPropertyChanged();
+            }
+        }
+
+        private string _buttonContent2;
+        public string ButtonContent2
+        {
+            get => _buttonContent2;
+            set
+            {
+                _buttonContent2 = value; OnPropertyChanged();
+            }
+        }
+        private ICommand _openComand2;
+        public ICommand OpenComand2 
+        {
+            get => _openComand2;
+            set
+            {
+                _openComand2 = value; OnPropertyChanged();
             }
         }
 
@@ -837,7 +871,10 @@ namespace NewAPP
                 ApplyHotkeysCommand = new RelayCommand(ExecuteApplyHotkeys);
                 AvailableActions = new ObservableCollection<ActionItem>
                 {
-                    new ActionItem {Name = "добавить номенклатуру", Command = AddNomenclatureButton}
+                    new ActionItem {Name = "добавить номенклатуру", Command = AddNomenclatureButton},
+                    new ActionItem {Name = "убрать номенклатуру", Command = DeleteCommand},
+                    new ActionItem {Name = "отчет", Command = ExceleOtchet},
+                    new ActionItem {Name = "настройки склада", Command = SetingSklad}
                 };
             }
             catch (Exception ex)
@@ -958,6 +995,8 @@ namespace NewAPP
             IsRightCellsVisible = true;
             IsAddUsersVisible = false;
             IsNomenclatureVisible = false;
+            IsHotkeysVisible = false;
+
 
             //VisibleAdminButton();
             UpdateVisibleSensors();
@@ -1130,8 +1169,10 @@ namespace NewAPP
         {
             if (Hotkey1Action != null && Hotkey1Action.Command != null)
             {
-                OpenComand = Hotkey1Action.Command;
-                ButtonContent = Hotkey1Action.Name;
+                OpenComand1 = Hotkey1Action.Command;
+                ButtonContent1 = Hotkey1Action.Name;
+                OpenComand2 = Hotkey2Action.Command;
+                ButtonContent2 = Hotkey2Action.Name;
             }
             else
             {
