@@ -20,6 +20,8 @@ namespace NewAPP
         private bool _isConnected;
         private string _lastError;
 
+        public bool IsFirstRead = true;
+
         private int _id;
         public int Id
         {

@@ -16,6 +16,7 @@ namespace NewAPP.Services
 {
     class Excele
     {
+        DatabaseService _db;
         public enum ReportPeriodType
         {
             Day,      // по дням
@@ -27,6 +28,7 @@ namespace NewAPP.Services
         public Excele() 
         {
             ExcelPackage.License.SetNonCommercialPersonal("<LolKek123>");
+            _db = new DatabaseService();
         }
 
         public bool ReportToExcele ( List<NomenclatureUnit> data, DateTime startDate, DateTime endDate,
@@ -45,6 +47,7 @@ namespace NewAPP.Services
                 }).ToList();
 
                 List<NomenclatureUnit> name;
+                int? productId = null;
                 if (!allProducts && !string.IsNullOrEmpty(searchName))
                 {
                     name = filter.Where(x => x.Name.Equals(searchName, StringComparison.OrdinalIgnoreCase)).ToList();
@@ -54,6 +57,7 @@ namespace NewAPP.Services
                               "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
                         return false;
                     }
+                    productId = name.First().Id;
                 }
                 else
                 {
@@ -67,7 +71,7 @@ namespace NewAPP.Services
                     return false;
                 }
 
-                return ExportToExele(name, startDate, endDate, searchName, allProducts, periodType);
+                return ExportToExele(name, startDate, endDate, searchName, allProducts, periodType, productId);
             }
             catch (Exception ex)
             {
@@ -75,7 +79,7 @@ namespace NewAPP.Services
             }
         } //фильтрация
         private bool ExportToExele ( List<NomenclatureUnit> data, DateTime startDate, DateTime endDate,
-                                   string searchName, bool allProducts, ReportPeriodType periodType )
+                                   string searchName, bool allProducts, ReportPeriodType periodType, int? productId = null )
         {
             try
             {
@@ -121,41 +125,147 @@ namespace NewAPP.Services
                         }
 
                         int row = headerRow + 1;
-                        foreach (var item in data)
+                        if (!allProducts && productId.HasValue)
                         {
-                            worksheet1.Cells[row, 1].Value = item.Id;
-                            worksheet1.Cells[row, 2].Value = item.Name;
-                            worksheet1.Cells[row, 3].Value = item.InternalArticle;
-                            worksheet1.Cells[row, 4].Value = item.ExternalArticle;
-                            worksheet1.Cells[row, 5].Value = item.Characteristic;
-                            worksheet1.Cells[row, 6].Value = item.SerialNamber;
-                            worksheet1.Cells[row, 7].Value = item.Unit;
-                            worksheet1.Cells[row, 8].Value = item.AddressCell;
-                            worksheet1.Cells[row, 9].Value = item.OldQuantity;
-                            worksheet1.Cells[row, 10].Value = item.OperationTypeIn;
-                            worksheet1.Cells[row, 11].Value = item.OperationTypeOut;
-                            worksheet1.Cells[row, 12].Value = item.NewQuantity;
-                            worksheet1.Cells[row, 13].Value = item.UnitPrice;
-                            worksheet1.Cells[row, 14].Value = item.OperationDate?.ToString("dd.MM.yyyy HH:mm:ss") ?? "Не указана";
-                            row++;
+                            var product = data.FirstOrDefault(x => x.Id == productId.Value);
+                            if (product != null)
+                            {
+                                var history = _db.GetOperationType(productId.Value)
+                                    .Where(x => x.OperationDate.Date >= startDate.Date &&
+                                    x.OperationDate.Date <= endDate.Date)
+                                    .OrderBy(x => x.OperationDate)
+                                    .ToList();
+                                decimal runningBalance = 0;
+
+                                if (!string.IsNullOrEmpty(product.OperationTypeIn))
+                                    decimal.TryParse(product.OperationTypeIn, out runningBalance);
+                                if (runningBalance == 0 && !string.IsNullOrEmpty(product.NewQuantity))
+                                    decimal.TryParse(product.NewQuantity, out runningBalance);
+
+                                var beforeHistory = _db.GetOperationType(productId.Value)
+                                    .Where(x => x.OperationDate < startDate.Date).ToList();
+
+                                foreach (var op in beforeHistory)
+                                {
+                                    if (op.OperationType == "добавление")
+                                        runningBalance += op.Quantity;
+                                    else if (op.OperationType == "списание" || op.OperationType == "удаление")
+                                        runningBalance -= op.Quantity;
+
+                                }
+                                worksheet1.Cells[row, 1].Value = product.Id;
+                                worksheet1.Cells[row, 2].Value = product.Name;
+                                worksheet1.Cells[row, 3].Value = product.InternalArticle;
+                                worksheet1.Cells[row, 4].Value = product.ExternalArticle;
+                                worksheet1.Cells[row, 5].Value = product.Characteristic;
+                                worksheet1.Cells[row, 6].Value = product.SerialNamber;
+                                worksheet1.Cells[row, 7].Value = product.Unit;
+                                worksheet1.Cells[row, 8].Value = product.AddressCell;
+                                worksheet1.Cells[row, 9].Value = runningBalance;                 // нач. кол-во
+                                worksheet1.Cells[row, 12].Value = runningBalance;               // остаток
+                                worksheet1.Cells[row, 13].Value = product.UnitPrice;
+                                worksheet1.Cells[row, 14].Value = "Нажмите [-] слева, чтобы увидеть историю";
+                                for (int col = 1; col <= 14; col++)
+                                {
+                                    worksheet1.Cells[row, col].Style.Font.Bold = true;
+                                }
+                                for (int col = 1; col <= 14; col++)
+
+                                    worksheet1.Cells[row, col].Style.Fill.PatternType = ExcelFillStyle.Solid;
+
+                                worksheet1.Cells[row, 1, row, 14].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(210, 230, 250));
+                                row++;
+                                int startRow = row;
+
+                                foreach (var operation in history)
+                                {
+                                    worksheet1.Cells[row, 1].Value = product.Id;
+                                    worksheet1.Cells[row, 2].Value = product.Name;
+                                    worksheet1.Cells[row, 3].Value = product.InternalArticle;
+                                    worksheet1.Cells[row, 4].Value = product.ExternalArticle;
+                                    worksheet1.Cells[row, 5].Value = product.Characteristic;
+                                    worksheet1.Cells[row, 6].Value = product.SerialNamber;
+                                    worksheet1.Cells[row, 7].Value = product.Unit;
+                                    worksheet1.Cells[row, 8].Value = product.AddressCell;
+                                    worksheet1.Cells[row, 9].Value = runningBalance;
+                                    worksheet1.Cells[row, 14].Value = operation.OperationDate.ToString("dd.MM.yyyy HH:mm:ss");
+
+                                    if (operation.OperationType == "Добавление")
+                                    {
+                                        worksheet1.Cells[row, 10].Value = operation.Quantity;
+                                        worksheet1.Cells[row, 11].Value = null;
+                                        runningBalance += operation.Quantity;
+                                    }
+                                    else if (operation.OperationType == "Списание" || operation.OperationType == "удаление")
+                                    {
+                                        worksheet1.Cells[row, 10].Value = null;
+                                        worksheet1.Cells[row, 11].Value = operation.Quantity;
+                                        runningBalance -= operation.Quantity;
+                                    }
+
+                                    worksheet1.Cells[row, 12].Value = runningBalance;
+                                    worksheet1.Cells[row, 13].Value = product.UnitPrice;
+                                    row++;
+                                }
+                                if (history.Count > 0)
+                                {
+                                    for (int r = startRow; r < row; r++)
+                                    {
+                                        worksheet1.Row(r).OutlineLevel = 1;
+                                    }
+
+                                    // Сворачиваем по умолчанию (пробуем оба способа)
+
+
+
+                                    // Если первый способ не работает, используем второй
+                                    for (int r = startRow; r < row; r++)
+                                    {
+                                        worksheet1.Row(r).Hidden = true;
+                                    }
+
+                                }
+                            }
+
                         }
 
-                        // Итоговая строка для листа 1
-                        worksheet1.Cells[row, 1].Value = "ИТОГО:";
-                        worksheet1.Cells[row, 1].Style.Font.Bold = true;
+                        else
+                        {
+                            foreach (var item in data)
+                            {
+                                worksheet1.Cells[row, 1].Value = item.Id;
+                                worksheet1.Cells[row, 2].Value = item.Name;
+                                worksheet1.Cells[row, 3].Value = item.InternalArticle;
+                                worksheet1.Cells[row, 4].Value = item.ExternalArticle;
+                                worksheet1.Cells[row, 5].Value = item.Characteristic;
+                                worksheet1.Cells[row, 6].Value = item.SerialNamber;
+                                worksheet1.Cells[row, 7].Value = item.Unit;
+                                worksheet1.Cells[row, 8].Value = item.AddressCell;
+                                worksheet1.Cells[row, 9].Value = item.OldQuantity;
+                                worksheet1.Cells[row, 10].Value = item.OperationTypeIn;
+                                worksheet1.Cells[row, 11].Value = item.OperationTypeOut;
+                                worksheet1.Cells[row, 12].Value = item.NewQuantity;
+                                worksheet1.Cells[row, 13].Value = item.UnitPrice;
+                                worksheet1.Cells[row, 14].Value = item.OperationDate?.ToString("dd.MM.yyyy HH:mm:ss") ?? "Не указана";
+                                row++;
+                            }
 
-                        int totalAdded = data.Sum(x => int.TryParse(x.OperationTypeIn, out int val) ? val : 0);
-                        int totalRemoved = data.Sum(x => int.TryParse(x.OperationTypeOut, out int val) ? val : 0);
-                        int totalRemaining = data.Sum(x => int.TryParse(x.NewQuantity, out int val) ? val : 0);
-                        int totalPrice = data.Sum(x => (int.TryParse(x.UnitPrice, out int val) ? val : 0) *
-                            (int.TryParse(x.NewQuantity, out int p) ? p : 0)) ;
+                            // Итоговая строка для листа 1
+                            worksheet1.Cells[row, 1].Value = "ИТОГО:";
+                            worksheet1.Cells[row, 1].Style.Font.Bold = true;
 
-                        worksheet1.Cells[row, 10].Value = totalAdded;
-                        worksheet1.Cells[row, 11].Value = totalRemoved;
-                        worksheet1.Cells[row, 12].Value = totalRemaining;
-                        worksheet1.Cells[row, 13].Value = totalPrice;
-                        worksheet1.Cells[row, 10, row, 12].Style.Font.Bold = true;
+                            int totalAdded = data.Sum(x => int.TryParse(x.OperationTypeIn, out int val) ? val : 0);
+                            int totalRemoved = data.Sum(x => int.TryParse(x.OperationTypeOut, out int val) ? val : 0);
+                            int totalRemaining = data.Sum(x => int.TryParse(x.NewQuantity, out int val) ? val : 0);
+                            int totalPrice = data.Sum(x => (int.TryParse(x.UnitPrice, out int val) ? val : 0) *
+                                (int.TryParse(x.NewQuantity, out int p) ? p : 0));
 
+                            worksheet1.Cells[row, 10].Value = totalAdded;
+                            worksheet1.Cells[row, 11].Value = totalRemoved;
+                            worksheet1.Cells[row, 12].Value = totalRemaining;
+                            worksheet1.Cells[row, 13].Value = totalPrice;
+                            worksheet1.Cells[row, 10, row, 12].Style.Font.Bold = true;
+                        }
                         worksheet1.Cells.AutoFitColumns();
 
                         // ========== ЛИСТ 2: Сводный отчет по периодам ==========

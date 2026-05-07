@@ -1171,8 +1171,8 @@ namespace NewAPP
             {
                 OpenComand1 = Hotkey1Action.Command;
                 ButtonContent1 = Hotkey1Action.Name;
-                OpenComand2 = Hotkey2Action.Command;
-                ButtonContent2 = Hotkey2Action.Name;
+                //OpenComand2 = Hotkey2Action.Command;
+                //ButtonContent2 = Hotkey2Action.Name;
             }
             else
             {
@@ -1490,8 +1490,18 @@ namespace NewAPP
                     _zeroCount[sensor] = 0;
                 }
 
+
+
+
                 sensor.Weight = weight;
                 sensor.IsConnected = connected;
+
+                bool wasFirstRead = sensor.IsFirstRead;
+                if (wasFirstRead)
+                {
+                    sensor.IsFirstRead = false;
+                    continue;
+                }
 
                 // Проверяем изменение для обновления БД (только если датчик стабилен)
                 if (sensor.IsConnected &&
