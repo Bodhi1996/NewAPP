@@ -27,11 +27,15 @@ jobs:
       - name: Install Velopack
         run: dotnet tool install -g vpk
 
-      - name: Download previous release
-        run: vpk download github --repoUrl https://github.com/${{ github.repository }}
+      - name: Download previous release (if exists)
+        run: |
+          set +e
+          vpk download github --repoUrl https://github.com/Bodhi1996/NewAPP --token ${{ secrets.GH_TOKEN }}
+          exit 0
+        shell: pwsh
 
       - name: Create Velopack release
         run: vpk pack -u NewAPP -v ${GITHUB_REF_NAME#v} -p ./publish --mainExe NewAPP.exe
 
       - name: Upload to GitHub Release
-        run: vpk upload github --repoUrl https://github.com/${{ github.repository }} --publish --releaseName "v${GITHUB_REF_NAME#v}"
+        run: vpk upload github --repoUrl https://github.com/Bodhi1996/NewAPP --token ${{ secrets.GH_TOKEN }} --publish --releaseName "v${GITHUB_REF_NAME#v}"
