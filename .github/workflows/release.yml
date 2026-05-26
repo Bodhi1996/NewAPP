@@ -21,7 +21,7 @@ jobs:
           dotnet-version: '8.0.x' 
 
       - name: Публикуем приложение
-        run: dotnet publish YourProject.csproj -c Release -r win-x64 --self-contained true -o ./publish
+        run: dotnet publish NewAPP/NewAPP.csproj -c Release -r win-x64 --self-contained -o ./publish
 
       - name: Устанавливаем vpk и создаем релиз
         run: |
