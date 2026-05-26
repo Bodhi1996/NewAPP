@@ -1,16 +1,17 @@
-name: Release and Update MyApp
+name: Release and Update
 
 on:
   push:
     tags:
-      - 'v*' # Скрипт запустится, когда вы создадите новый Git-тег, например, v1.0.1
+      - 'v*'
 
 permissions:
-  contents: write # Это разрешение нужно, чтобы скрипт мог создать Release на GitHub
+  contents: write
 
 jobs:
   release:
     runs-on: windows-latest
+    
     steps:
       - name: Клонируем код
         uses: actions/checkout@v4
@@ -18,14 +19,14 @@ jobs:
       - name: Устанавливаем .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x' 
+          dotnet-version: '8.0.x'
 
       - name: Публикуем приложение
         run: dotnet publish NewAPP/NewAPP.csproj -c Release -r win-x64 --self-contained -o ./publish
 
-      - name: Устанавливаем vpk и создаем релиз
+      - name: Устанавливаем vpk и создаём релиз
         run: |
           dotnet tool install -g vpk
           vpk download github --repoUrl https://github.com/${{ github.repository }}
-          vpk pack -u YourAppUniqueId -v ${GITHUB_REF_NAME#v} -p ./publish --mainExe YourApp.exe
+          vpk pack -u NewAPP -v ${GITHUB_REF_NAME#v} -p ./publish --mainExe NewAPP.exe
           vpk upload github --repoUrl https://github.com/${{ github.repository }} --publish --releaseName "v${GITHUB_REF_NAME#v}"
