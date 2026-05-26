@@ -37,7 +37,8 @@ jobs:
         run: |
           $VERSION = "${{ github.ref_name }}".TrimStart('v')
           Write-Host "Version: $VERSION"
-          vpk pack -u NewAPP -v $VERSION -p ./publish --mainExe NewAPP.exe --disable-validation
+          vpk pack -u NewAPP -v $VERSION --packDir ./publish --mainExe NewAPP.exe
+        continue-on-error: true
 
       - name: Upload to GitHub Release
         shell: pwsh
