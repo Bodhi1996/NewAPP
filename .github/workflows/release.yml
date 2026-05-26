@@ -24,18 +24,22 @@ jobs:
       - name: Publish application
         run: dotnet publish NewAPP.csproj -c Release -r win-x64 --self-contained -o ./publish
 
+      - name: List files in publish (debug)
+        run: dir ./publish
+
       - name: Install Velopack
         run: dotnet tool install -g vpk
 
       - name: Download previous release (if exists)
         run: |
-          set +e
-          vpk download github --repoUrl https://github.com/Bodhi1996/NewAPP --token ${{ secrets.GH_TOKEN }}
-          exit 0
-        shell: pwsh
+          vpk download github --repoUrl https://github.com/Bodhi1996/NewAPP --token ${{ secrets.GH_TOKEN }} || true
+        shell: bash
 
       - name: Create Velopack release
-        run: vpk pack -u NewAPP -v ${GITHUB_REF_NAME#v} -p ./publish --mainExe NewAPP.exe
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          echo "Version: $VERSION"
+          vpk pack -u NewAPP -v $VERSION -p ./publish --mainExe NewAPP.exe
 
       - name: Upload to GitHub Release
         run: vpk upload github --repoUrl https://github.com/Bodhi1996/NewAPP --token ${{ secrets.GH_TOKEN }} --publish --releaseName "v${GITHUB_REF_NAME#v}"
