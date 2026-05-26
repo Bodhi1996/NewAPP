@@ -32,14 +32,18 @@ jobs:
 
       - name: Download previous release (if exists)
         run: |
-          vpk download github --repoUrl https://github.com/Bodhi1996/NewAPP --token ${{ secrets.GH_TOKEN }} || true
-        shell: bash
+          vpk download github --repoUrl https://github.com/Bodhi1996/NewAPP --token ${{ secrets.GH_TOKEN }}
+        continue-on-error: true
 
       - name: Create Velopack release
+        shell: pwsh
         run: |
-          VERSION=${GITHUB_REF_NAME#v}
-          echo "Version: $VERSION"
+          $VERSION = "${{ github.ref_name }}".TrimStart('v')
+          Write-Host "Version: $VERSION"
           vpk pack -u NewAPP -v $VERSION -p ./publish --mainExe NewAPP.exe
 
       - name: Upload to GitHub Release
-        run: vpk upload github --repoUrl https://github.com/Bodhi1996/NewAPP --token ${{ secrets.GH_TOKEN }} --publish --releaseName "v${GITHUB_REF_NAME#v}"
+        shell: pwsh
+        run: |
+          $VERSION = "${{ github.ref_name }}".TrimStart('v')
+          vpk upload github --repoUrl https://github.com/Bodhi1996/NewAPP --token ${{ secrets.GH_TOKEN }} --publish --releaseName "v$VERSION"
