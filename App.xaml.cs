@@ -1,14 +1,18 @@
-﻿using System.Windows;
-using NewAPP.Views;
+﻿using NewAPP.View;
 using NewAPP.ViewModels;
-using NewAPP.View;
+using NewAPP.Views;
+using System.Windows;
+using Velopack;
 
 namespace NewAPP
 {
     public partial class App : Application
     {
+
         protected override void OnStartup ( StartupEventArgs e )
         {
+            VelopackApp.Build().Run();
+
             base.OnStartup(e);
 
             // Отключаем автоматическое закрытие

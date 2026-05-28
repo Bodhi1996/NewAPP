@@ -203,6 +203,14 @@
                             Foreground="White"
                             FontWeight="Bold"
                             Margin="5,0"/>
+
+                    <Button Content="🔄️ОБНОВЛЕНИЕ"
+                            Command="{Binding UpdateProgrammCommand}"
+                            Width="120"
+                            Background="#FF00008B"
+                            Foreground="White"
+                            FontWeight="Bold"
+                            Margin="5,0"/>
                 </StackPanel>
 
                 <!-- Центральные кнопки -->

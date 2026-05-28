@@ -12,11 +12,14 @@ using System.DirectoryServices;
 using System.Linq;
 using System.Reflection.PortableExecutable;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using Velopack;
+using Velopack.Sources;
 
 
 namespace NewAPP
@@ -788,6 +791,7 @@ namespace NewAPP
         public ICommand CorrectQuantityCommand { get; } //команда для открытия окна корректировок остатков
         public ICommand IsCorrectButtonVisible { get; } //видимость кнопки коррекции остатков
         public ICommand ApplyHotkeysCommand { get; }
+        public ICommand UpdateProgrammCommand { get; }
 
         private Dictionary<Sensor, int> _lastValidWeight = new Dictionary<Sensor, int>();
         private Dictionary<Sensor, int> _consecutiveErrors = new Dictionary<Sensor, int>();
@@ -869,6 +873,8 @@ namespace NewAPP
                 CorrectQuantityCommand = new RelayCommand(ExecuteCorrectQuantity); //открытия окна корректировки остатков
                 //IsCorrectButtonVisible = new RelayCommand(ExecuteShowCorrectVisible);
                 ApplyHotkeysCommand = new RelayCommand(ExecuteApplyHotkeys);
+                UpdateProgrammCommand = new RelayCommand(ExecuteProgrammCommand);
+
                 AvailableActions = new ObservableCollection<ActionItem>
                 {
                     new ActionItem {Name = "добавить номенклатуру", Command = AddNomenclatureButton},
@@ -1099,6 +1105,58 @@ namespace NewAPP
             IsRightCellsVisible = false;
             IsHotkeysVisible = false;
 
+        }
+
+        private async void ExecuteProgrammCommand ( object param )
+        {
+            try
+            {
+                // Создаём менеджер обновлений, указывая на GitHub репозиторий
+                var updateManager = new UpdateManager(
+                    new GithubSource(
+                        repoUrl: "https://github.com/Bodhi1996/NewAPP",
+                        accessToken: null,        // для публичного репозитория токен не нужен
+                        prerelease: false
+                    )
+                );
+
+                // Проверяем наличие новой версии
+                var newVersion = await updateManager.CheckForUpdatesAsync();
+
+                if (newVersion == null)
+                {
+                    MessageBox.Show("У Вас последняя версия", "Обновление",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                // Спрашиваем пользователя
+                var result = MessageBox.Show(
+                    $"Доступна новая версия {newVersion.TargetFullRelease.Version}!\n\n" +
+                    $"Текущая версия: {updateManager.CurrentVersion?.ToString() ?? "Неизвестно"}\n\n" +
+                    "Обновить сейчас?",
+                    "Доступно обновление",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    // Показываем прогресс (опционально)
+                    //StatusText = "Загрузка обновления...";
+
+                    // Скачиваем обновление
+                    await updateManager.DownloadUpdatesAsync(newVersion);
+
+                    // Применяем и перезапускаем
+                    updateManager.ApplyUpdatesAndRestart(newVersion);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при проверке обновлений: {ex.Message}",
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        
         }
 
         private void ExecuteShowSettings ( object param )
