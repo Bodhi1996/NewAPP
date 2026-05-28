@@ -792,6 +792,7 @@ namespace NewAPP
         public ICommand IsCorrectButtonVisible { get; } //видимость кнопки коррекции остатков
         public ICommand ApplyHotkeysCommand { get; }
         public ICommand UpdateProgrammCommand { get; }
+        public ICommand LoggerCommand {  get; }
 
         private Dictionary<Sensor, int> _lastValidWeight = new Dictionary<Sensor, int>();
         private Dictionary<Sensor, int> _consecutiveErrors = new Dictionary<Sensor, int>();
@@ -874,6 +875,7 @@ namespace NewAPP
                 //IsCorrectButtonVisible = new RelayCommand(ExecuteShowCorrectVisible);
                 ApplyHotkeysCommand = new RelayCommand(ExecuteApplyHotkeys);
                 UpdateProgrammCommand = new RelayCommand(ExecuteProgrammCommand);
+                LoggerCommand = new RelayCommand(ExecuteLoggerCommand);
 
                 AvailableActions = new ObservableCollection<ActionItem>
                 {
@@ -1008,7 +1010,10 @@ namespace NewAPP
             UpdateVisibleSensors();
             StatusText = "Мониторинг датчиков";
         }
-
+        public void ExecuteLoggerCommand(object param)
+        {
+            MessageBox.Show("Логгер");
+        }
         private void LoadAllNomenclature() //подгружает номенклатуру 
         {
             try

@@ -298,6 +298,12 @@
         Command="{Binding SetingSklad}" 
         Background="{StaticResource BlueBorderBrush}"
         Visibility="{Binding IsVisibleSklad,Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    <Button Content="ЖУРНАЛ ЛОГОВ" 
+                            Style="{StaticResource LeftButtonStyle}"
+                            Command="{Binding LoggerCommand}" 
+                            Background="{StaticResource BlueBorderBrush}"
+                            Visibility="{Binding IsVisibleSklad,Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
 
                 </StackPanel>
             </Border>
