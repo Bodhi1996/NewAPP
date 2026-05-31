@@ -1012,7 +1012,7 @@ namespace NewAPP
         }
         public void ExecuteLoggerCommand(object param)
         {
-            MessageBox.Show("Тут возможен журнал ошибок");
+            MessageBox.Show("Тут возможен журнал");
         }
         private void LoadAllNomenclature() //подгружает номенклатуру 
         {
