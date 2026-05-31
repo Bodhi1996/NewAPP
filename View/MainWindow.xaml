@@ -289,7 +289,7 @@
                             Style="{StaticResource LeftButtonStyle}"
                             Command="{Binding ShowBindCommand}"
                             Background="{StaticResource LightGreenBrush}"/>
-                    <Button Content="Добавление юзера"
+                    <Button Content="ДОБАВЛЕНИЕ ЮЗЕРА"
                             Style="{StaticResource LeftButtonStyle}"
                             Command="{Binding AddUserCommand}"
                             Visibility="{Binding IsAddButtonUsersVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
