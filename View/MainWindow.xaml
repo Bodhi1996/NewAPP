@@ -26,6 +26,23 @@
         <SolidColorBrush x:Key="WhiteBrush" Color="{StaticResource WhiteColor}"/>
         <SolidColorBrush x:Key="LightGrayBrush" Color="{StaticResource LightGrayColor}"/>
 
+        <LinearGradientBrush x:Key="GreenGradient" StartPoint="0,0" EndPoint="1,0">
+            <GradientStop Color="#00c0a5" Offset="0"/>
+            <GradientStop Color="#005c4d" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="GrayGradient" StartPoint="0,0" EndPoint="1,0">
+            <GradientStop Color="#C0BFBF" Offset="0"/>
+            <GradientStop Color="#363636" Offset="1"/>
+        </LinearGradientBrush>
+
+        <SolidColorBrush x:Key="LightGreenBrush" Color="#00C0A5"/>
+        <!-- яркая мята -->
+        <SolidColorBrush x:Key="DarkGreenBrush" Color="#005C4D"/>
+        <!-- тёмный нефрит -->
+        <SolidColorBrush x:Key="DarkGrayBrush" Color="#363636"/>
+        <SolidColorBrush x:Key="MidGrayBrush" Color="#9A9A9A"/>
+
         <!-- Стили для кнопок (оставь как у тебя) -->
         <Style x:Key="TopButtonStyle" TargetType="Button">
             <!-- ... твой стиль ... -->
@@ -125,7 +142,7 @@
                     Margin="-1,-2,-1,-1" 
                     Padding="5,2"
                     VerticalAlignment="Bottom">
-                        <Grid>
+                        <Grid Cursor="">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
@@ -142,23 +159,7 @@
                             </StackPanel>
 
                             <!-- Кнопка "Убрать" -->
-                            <Button Grid.Column="1" 
-                            Content="Убрать"
-                            Background="#E74C3C" 
-                            Foreground="White"
-                            BorderThickness="0"
-                            Padding="8,3"
-                            FontSize="9"
-                            FontWeight="Bold"
-                            Command="{Binding DataContext.DeleteNomCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                            CommandParameter="{Binding}"
-                            Cursor="Hand">
-                                <Button.Resources>
-                                    <Style TargetType="Border">
-                                        <Setter Property="CornerRadius" Value="3"/>
-                                    </Style>
-                                </Button.Resources>
-                            </Button>
+
                         </Grid>
                     </Border>
                 </Grid>
@@ -174,7 +175,7 @@
         </Grid.RowDefinitions>
 
         <!-- Верхняя панель -->
-        <Border Grid.Row="0" Background="{StaticResource DarkBlueBrush}" 
+        <Border Grid.Row="0" Background="{StaticResource DarkGreenBrush}" 
                 BorderBrush="{StaticResource BlueBorderBrush}" BorderThickness="0,0,0,2"
                 Padding="10">
             <Grid>
@@ -255,7 +256,7 @@
             </Grid.ColumnDefinitions>
 
             <!-- Левое меню -->
-            <Border Grid.Column="0" Background="{StaticResource DarkBlueBrush}" 
+            <Border Grid.Column="0" Background="{StaticResource DarkGreenBrush}" 
                     BorderBrush="{StaticResource BlueBorderBrush}" BorderThickness="0,0,2,0"
                     Padding="10">
                 <StackPanel>
@@ -266,42 +267,42 @@
                     <Button Content="ГЛАВНОЕ ОКНО" 
                             Style="{StaticResource LeftButtonStyle}"
                             Command="{Binding ShowSensorsCommand}"
-                            Background="{StaticResource BlueBorderBrush}"/>
+                            Background="{StaticResource LightGreenBrush}"/>
 
                     <Button Content="НАСТРОЙКИ" 
                             Style="{StaticResource LeftButtonStyle}"
                             Command="{Binding ShowSettingsCommand}"
-                            Background="{StaticResource BlueBorderBrush}"/>
+                            Background="{StaticResource LightGreenBrush}"/>
 
                     <Button Content="СЕТЬ" 
                             Style="{StaticResource LeftButtonStyle}"
                             Command="{Binding ShowNetworkCommand}"
-                            Background="{StaticResource BlueBorderBrush}"/>
+                            Background="{StaticResource LightGreenBrush}"/>
 
                     <Button Content="НОМЕНКЛАТУРА" 
                             Style="{StaticResource LeftButtonStyle}"
                             Command="{Binding ButtonDataBase}"
-                            Background="{StaticResource BlueBorderBrush}"
+                            Background="{StaticResource LightGreenBrush}"
                             Visibility="{Binding IsDataBaseButtonVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
                     <Button Content="ГОРЯЧИЕ КЛАВИШИ" 
                             Style="{StaticResource LeftButtonStyle}"
                             Command="{Binding ShowBindCommand}"
-                            Background="{StaticResource BlueBorderBrush}"/>
+                            Background="{StaticResource LightGreenBrush}"/>
                     <Button Content="Добавление юзера"
                             Style="{StaticResource LeftButtonStyle}"
                             Command="{Binding AddUserCommand}"
                             Visibility="{Binding IsAddButtonUsersVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
-                            Background="{StaticResource BlueBorderBrush}" x:Name="ButtonAddUsersMenu"/>
+                            Background="{StaticResource LightGreenBrush}" x:Name="ButtonAddUsersMenu"/>
                     <Button Content="СОЗДАНИЕ СКЛАДА" 
         Style="{StaticResource LeftButtonStyle}"
         Command="{Binding SetingSklad}" 
-        Background="{StaticResource BlueBorderBrush}"
+        Background="{StaticResource LightGreenBrush}"
         Visibility="{Binding IsVisibleSklad,Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     <Button Content="ЖУРНАЛ ЛОГОВ" 
                             Style="{StaticResource LeftButtonStyle}"
                             Command="{Binding LoggerCommand}" 
-                            Background="{StaticResource BlueBorderBrush}"
+                            Background="{StaticResource LightGreenBrush}"
                             Visibility="{Binding IsVisibleSklad,Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
 
@@ -309,7 +310,7 @@
             </Border>
 
             <!-- Центральная область -->
-            <Border Grid.Column="1" Background="{StaticResource DarkBlueBrush}" Padding="15">
+            <Border Grid.Column="1" Background="{StaticResource MidGrayBrush}" Padding="15">
                 <Grid>
                     <!-- Приветствие -->
                     <TextBlock Text="Выберите пункт меню слева" 
@@ -1036,13 +1037,13 @@ MaxWidth="850">
                     </Grid>
 
                     <!--База данных/номенклатура-->
-                    <Grid Background="#2C3E50" Margin="10" Visibility="{Binding IsNomenclatureVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Grid Background="{StaticResource MidGrayBrush}" Margin="10" Visibility="{Binding IsNomenclatureVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="150"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0" Margin="0,0,10,0" VerticalAlignment="Top" Background="#2C3E50">
-                            <Border Background="#2C3E50" CornerRadius="5"
+                        <StackPanel Grid.Column="0" Margin="0,0,10,0" VerticalAlignment="Top" Background="{StaticResource MidGrayBrush}">
+                            <Border Background="{StaticResource MidGrayBrush}" CornerRadius="5"
                     Padding="10" Margin="0,0,0,10">
                                 <TextBlock Text="Управление" 
                            Foreground="White" 
@@ -1053,7 +1054,7 @@ MaxWidth="850">
                             <Button  Content=" + Добавить"
                                    Height="40" 
                     Margin="0 0 0 10" 
-                    Background="#001545" 
+                    Background="{StaticResource DarkGrayBrush}" 
                     Foreground="White" 
                     FontWeight="Bold" 
                     BorderThickness="0"
@@ -1069,7 +1070,7 @@ MaxWidth="850">
                             <Button x:Name="DeleteButton" Content="- Удалить"
                                    Height="40" 
                     Margin="0 0 0 10" 
-                    Background="#001545" 
+                    Background="{StaticResource DarkGrayBrush}" 
                     Foreground="White" 
                     FontWeight="Bold" 
                     BorderThickness="0"
@@ -1084,13 +1085,13 @@ MaxWidth="850">
                             <Button  Content="Обновить" Command="{Binding UpdateButtonNum}"
                                    Height="40" 
                     Margin="0 0 0 10" 
-                    Background="#001545" 
+                    Background="{StaticResource DarkGrayBrush}" 
                     Foreground="White" 
                     FontWeight="Bold" 
                     BorderThickness="0"
                     Cursor="Hand"/>
                             <Button Content="Отчет" Command="{Binding ExceleOtchet}"
-                                    Margin="0 0 0 10" Background="#001545"
+                                    Margin="0 0 0 10" Background="{StaticResource DarkGrayBrush}"
                                     Foreground="White" FontWeight="Bold"
                                     BorderThickness="0"
                                     Cursor="Hand" Height="40"/>
@@ -1098,7 +1099,7 @@ MaxWidth="850">
                             <Button Content="Настройка колонок" 
                     Height="40" 
                     Margin="0 0 0 10" 
-                    Background="#001545" 
+                    Background="{StaticResource DarkGrayBrush}" 
                     Foreground="White" 
                     FontWeight="Bold" 
                     BorderThickness="0"
@@ -1108,7 +1109,7 @@ MaxWidth="850">
                             <Button Content="Коррекция остатков" 
                     Height="40" 
                     Margin="0 0 0 10" 
-                    Background="#001545" 
+                    Background="{StaticResource DarkGrayBrush}" 
                     Foreground="White" 
                     FontWeight="Bold" 
                     BorderThickness="0"
@@ -1121,13 +1122,13 @@ MaxWidth="850">
                     Background="#00a8ba"
                     Margin="0,10,0,10"/>
                             <Border x:Name="SearchPanel"
-                    Background="#2C3E50"
+                    Background="{StaticResource MidGrayBrush}"
                     CornerRadius="5"
                     Padding="10"
                     Visibility="Visible">
                                 <StackPanel>
                                     <TextBlock Text="Поиск по наименованию" 
-                               Foreground="#2C3E50" 
+                               Foreground="{StaticResource WhiteBrush}" 
                                Margin="0 0 0 5" 
                                FontWeight="SemiBold"/>
                                     <TextBox x:Name="SearchTextBox" 
@@ -1144,7 +1145,7 @@ MaxWidth="850">
                                 </StackPanel>
 
                             </Border>
-                            <Border Background="#2C3E50" 
+                            <Border Background="{StaticResource MidGrayBrush}" 
                     CornerRadius="5" 
                     Padding="10" 
                     Margin="0 10 0 0">
@@ -1155,7 +1156,7 @@ MaxWidth="850">
                                Margin="0 0 0 5"/>
                                     <TextBlock x:Name="TotalCountText" 
                                Text="Всего записей: 0" 
-                               Foreground="#7F8C8D"/>
+                               Foreground="{StaticResource WhiteBrush}"/>
                                 </StackPanel>
                             </Border>
                         </StackPanel>
@@ -1192,7 +1193,7 @@ MaxWidth="850">
                                     </Style>
 
                                     <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="Background" Value="#2C3E50"/>
+                                        <Setter Property="Background" Value="{StaticResource MidGrayBrush}"/>
                                         <Setter Property="Foreground" Value="White"/>
                                         <Setter Property="FontWeight" Value="Bold"/>
                                         <Setter Property="Height" Value="30"/>
@@ -1461,7 +1462,7 @@ MaxWidth="850">
         </Grid>
 
         <!-- Нижняя панель -->
-        <Border Grid.Row="2" Background="{StaticResource DarkBlueBrush}" 
+        <Border Grid.Row="2" Background="{StaticResource DarkGreenBrush}" 
                 BorderBrush="{StaticResource BlueBorderBrush}" BorderThickness="0,2,0,0"
                 Padding="10" Cursor="">
             <Grid>
