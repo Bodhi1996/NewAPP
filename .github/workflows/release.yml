@@ -45,7 +45,7 @@ jobs:
         shell: pwsh
         run: |
           $VERSION = "${{ github.ref_name }}".TrimStart('v')
-          vpk pack -u NewAPP -v $VERSION -p ./publish --mainExe NewAPP.exe
+          vpk pack -u Нейросклад -v $VERSION -p ./publish --mainExe NewAPP.exe
 
       - name: Upload to GitHub Release
         shell: pwsh
