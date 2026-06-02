@@ -12,6 +12,7 @@ using System.DirectoryServices;
 using System.Linq;
 using System.Reflection.PortableExecutable;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
@@ -765,6 +766,15 @@ namespace NewAPP
                 _openComand2 = value; OnPropertyChanged();
             }
         }
+        private string _versionApp; //актуальная версия на данный момент
+        public string VersionApp 
+        {
+            get => _versionApp;
+            set
+            {
+                _versionApp = value; OnPropertyChanged();
+            }
+        }
 
         // ===== КОМАНДЫ =====
         public ICommand StartStopCommand { get; }
@@ -848,7 +858,7 @@ namespace NewAPP
                 LoadlNum = new ObservableCollection<NomenclatureUnit>(_dataBase.AllNum());
                 AllNomenclatureUnits = _dataBase.AllNum();
                 AutoCheckConnectionOnStartup();
-
+                ActualVoid();
                 // Инициализация команд
                 StartStopCommand = new RelayCommand(ExecuteStartStop);
                 SwitchModeCommand = new RelayCommand(ExecuteSwitchMode);
@@ -1601,6 +1611,34 @@ namespace NewAPP
             }
         }
 
+        //актуальная версия программы
+        private async Task ActualVoid ()
+        {
+            try
+            {
+                var updateManager = new UpdateManager(
+                    new GithubSource(
+                        repoUrl: "https://github.com/Bodhi1996/NewAPP",
+                        accessToken: null,
+                        prerelease: false)
+                    );
+                var newVersion = await updateManager.CheckForUpdatesAsync();
+                if (newVersion != null)
+                {
+                    VersionApp = $"Актуальная версия {newVersion.TargetFullRelease.Version}";
+                }
+                else
+                {
+                    VersionApp = $"Актуальная версия {updateManager.CurrentVersion}";
+                }
+            }
+            catch (Exception ex)
+            {
+
+                VersionApp = "Не удалось найти актуальную версию";
+            }
+        }
+
         private async Task AutoCheckConnectionOnStartup ( )
         {
             try
@@ -1645,7 +1683,7 @@ namespace NewAPP
                 // Обновляем статистику в TerminalVM
                 TerminalVM.OnPropertyChanged(nameof(TerminalVM.ActivaTerminal));
                 TerminalVM.OnPropertyChanged(nameof(TerminalVM.TotalTerminal));
-
+                
                 // Обновляем общий статус
                 if (connected)
                 {

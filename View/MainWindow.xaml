@@ -1475,6 +1475,9 @@ MaxWidth="850">
                 <TextBlock Text="{Binding StatusText}" 
                          Foreground="{StaticResource WhiteBrush}"
                          VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding VersionApp}" 
+                         Foreground="{StaticResource WhiteBrush}"
+                         VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <TextBlock Text="Роль: "
