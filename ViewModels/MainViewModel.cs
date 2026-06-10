@@ -1447,10 +1447,10 @@ namespace NewAPP
             var terminal = TerminalVM.SelectedTerminal ?? TerminalVM.Terminals.FirstOrDefault();
             try
             {
-                //await _calibration.CalibWeight("192.168.0.56", 5000, 1, int.Parse(EtalonWeight));
-                //await _calibration.CalibWeight("192.168.0.56", 5000, 1, int.Parse(EtalonWeight));
-                await _calibration.CalibrationPoint(terminal.IpAddress, terminal.Port, terminal.UnitId, int.Parse(EtalonWeight));
-                await _calibration.CalibrationPoint(terminal.IpAddress, terminal.Port, terminal.UnitId, int.Parse(EtalonWeight));
+                await _calibration.CalibrationPoint("192.168.0.56", 5000, byte.Parse(TerminalNumber), int.Parse(EtalonWeight));
+                await _calibration.CalibrationPoint("192.168.0.56", 5000, byte.Parse(TerminalNumber), int.Parse(EtalonWeight));
+                //await _calibration.CalibrationPoint(terminal.IpAddress, terminal.Port, terminal.UnitId, int.Parse(EtalonWeight));
+                //await _calibration.CalibrationPoint(terminal.IpAddress, terminal.Port, terminal.UnitId, int.Parse(EtalonWeight));
 
                 MessageBox.Show("Вес успешно выставлен");
             }
