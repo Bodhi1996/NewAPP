@@ -984,10 +984,15 @@ namespace NewAPP
 
         private async void ExecuteTestConnection ( object param )
         {
-            if (Terminals.Count == 0) return;
+            var terminal = TerminalVM.SelectedTerminal ?? TerminalVM.Terminals.FirstOrDefault();
 
-            var terminal = Terminals[0];
-            StatusText = "Тестирование подключения...";
+            if (terminal == null)
+            {
+                StatusText = "❌ Нет доступных терминалов";
+                return;
+            }
+
+            StatusText = $"Тестирование подключения к {terminal.Name}...";
 
             try
             {
@@ -1000,6 +1005,23 @@ namespace NewAPP
             {
                 StatusText = $"❌ Ошибка: {ex.Message}";
             }
+
+            //if (Terminals.Count == 0) return;
+
+            //var terminal = Terminals[0];
+            //StatusText = "Тестирование подключения...";
+
+            //try
+            //{
+            //    bool connected = await _modbusService.TestConnectionAsync(terminal.IpAddress, terminal.Port);
+            //    StatusText = connected
+            //        ? $"✅ Подключено к {terminal.IpAddress}:{terminal.Port}"
+            //        : $"❌ Не удалось подключиться к {terminal.IpAddress}:{terminal.Port}";
+            //}
+            //catch (Exception ex)
+            //{
+            //    StatusText = $"❌ Ошибка: {ex.Message}";
+            //}
         }
 
         private void ExecuteShowSensors ( object param )
