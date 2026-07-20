@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using EasyModbus;
 
 namespace NewAPP.Services
 {
@@ -210,6 +211,176 @@ namespace NewAPP.Services
                     }
                 }
             }
+        }
+
+        private static int[] GetGBKValue ( int length, string value )
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+            byte[] gbkBytes = Encoding.GetEncoding("GBK").GetBytes(value);
+            int[] result = new int[length];
+
+            for (int i = 0; i < length; i++)
+            {
+                int index = i * 2;
+
+                if (index < gbkBytes.Length)
+                {
+                    int highByte = gbkBytes[index];
+                    int lowByte = (index + 1 < gbkBytes.Length) ? gbkBytes[index + 1] : 0x20;
+                    result[i] = (highByte << 8) | lowByte;
+                }
+                else
+                {
+                    result[i] = 0x2020;
+                }
+            }
+
+            return result;
+        }
+
+        public async Task SetSpecification(string ip, int port, string setValue, int index)//спецификация
+        {
+            ModbusClient client = null;
+            try
+            {
+                client = new ModbusClient(ip, port);
+                client.Connect();
+
+                client.WriteMultipleRegisters(10002, new int[] { index });
+                int[] data = GetGBKValue(6, setValue);
+                client.WriteMultipleRegisters(10043, data);
+                client.Disconnect();
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task SetCode ( string ip, int port, string setValue, int index )//Код
+        {
+            ModbusClient client = null;
+            try
+            {
+                client = new ModbusClient(ip, port);
+                client.Connect();
+
+                client.WriteMultipleRegisters(10002, new int[] { index });
+                int[] data = GetGBKValue(11, setValue);
+                client.WriteMultipleRegisters(10049, data);
+                client.Disconnect();
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task SetName ( string ip, int port, string setValue, int index )//наименование
+        {
+            ModbusClient client = null;
+            try
+            {
+                client = new ModbusClient(ip, port);
+                client.Connect();
+
+                client.WriteMultipleRegisters(10002, new int[] { index });
+                int[] data = GetGBKValue(14, setValue);
+                client.WriteMultipleRegisters(10029, data);
+                client.Disconnect();
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<string> ReadName ( string ip, int port, int index ) //читаем наименование
+        {
+            ModbusClient client = null;
+            try
+            {
+                client = new ModbusClient(ip, port);
+                client.Connect();
+                client.WriteMultipleRegisters(10002, new int[] { index });
+                int[] data = client.ReadHoldingRegisters(10029, 14);
+                client.Disconnect();
+                return ConvertRegistersToString(data);
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<string> ReadCod(string ip, int port, int index )
+        {
+            ModbusClient client = null;
+
+            try
+            {
+                client = new ModbusClient(ip, port);
+                client.Connect();
+                client.WriteMultipleRegisters(10002, new int [] { index });
+                int[] data = client.ReadHoldingRegisters(10049, 11);
+                client.Disconnect();
+                return ConvertRegistersToString(data);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        } //читаем код
+
+        public async Task<string> ReadSpecification(string ip, int port, int index )// читаем спецификацию
+        {
+            ModbusClient client = null;
+
+            try
+            {
+                client = new ModbusClient(ip, port);
+                client.Connect();
+
+                client.WriteMultipleRegisters(10002, new int[] { index });
+                int[] data = client.ReadHoldingRegisters(10043, 6);
+                client.Disconnect();
+                return ConvertRegistersToString(data);
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
+        private string ConvertRegistersToString ( int[] data )
+        {
+            if (data == null || data.Length == 0)
+                return " ";
+
+            // Каждый int = 2 байта
+            byte[] bytes = new byte[data.Length * 2];
+
+            for (int i = 0; i < data.Length; i++)
+            {
+                bytes[i * 2] = (byte)((data[i] >> 8) & 0xFF);     // Старший байт
+                bytes[i * 2 + 1] = (byte)(data[i] & 0xFF);        // Младший байт
+            }
+
+            // Регистрируем кодировку GBK
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+            // Декодируем в строку
+            string result = Encoding.GetEncoding("GBK").GetString(bytes).TrimEnd('\0');
+
+            return string.IsNullOrWhiteSpace(result) ? " " : result;
         }
     }
 }

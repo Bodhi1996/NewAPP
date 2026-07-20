@@ -21,6 +21,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using Velopack;
 using Velopack.Sources;
+using System.IO.Ports;
 
 
 namespace NewAPP
@@ -172,6 +173,16 @@ namespace NewAPP
         {
             get => _isSettingsVisible;
             set { _isSettingsVisible = value; OnPropertyChanged(); }
+        }
+
+        private bool _isNomenclatureSettingsVisible; // свойство видимости для настройки имен
+        public bool IsNomenclatureSettingsVisible 
+        {
+            get => _isNomenclatureSettingsVisible;
+            set
+            {
+                _isNomenclatureSettingsVisible = value; OnPropertyChanged();
+            }
         }
 
         private string _searchText; //свойство поиска
@@ -776,6 +787,45 @@ namespace NewAPP
             }
         }
 
+        private int _indexNomenclatureChannelIndex; //переменная номеря ячейки
+        public int NomenclatureChannelIndex
+        {
+            get => _indexNomenclatureChannelIndex;
+            set
+            {
+                _indexNomenclatureChannelIndex = value; OnPropertyChanged();
+            }
+        }
+
+        private string _nomenclatureSpecification; //передача спецификации
+        public string NomenclatureSpecification
+        {
+            get => _nomenclatureSpecification;
+            set
+            {
+                _nomenclatureSpecification = value; OnPropertyChanged();
+            }
+        }
+
+        private string _nomenclatureCode; //код для ячейки
+        public string NomenclatureCode 
+        {
+            get => _nomenclatureCode;
+            set
+            {
+                _nomenclatureCode = value;  OnPropertyChanged();
+            }
+        }
+        private string _nomenclatureName; //наименование для ячейки
+        public string NomenclatureName 
+        {
+            get => _nomenclatureName;
+            set
+            {
+                _nomenclatureName = value; OnPropertyChanged();
+            }
+        }
+
         // ===== КОМАНДЫ =====
         public ICommand StartStopCommand { get; }
         public ICommand SwitchModeCommand { get; }
@@ -803,6 +853,8 @@ namespace NewAPP
         public ICommand ApplyHotkeysCommand { get; }
         public ICommand UpdateProgrammCommand { get; }
         public ICommand LoggerCommand {  get; }
+        public ICommand NameCommand { get; } //кнопка видимости настроек наименований
+        public ICommand WriteNomenclatureCommand { get; } //кнопка передачи наименования номенклатуры
 
         private Dictionary<Sensor, int> _lastValidWeight = new Dictionary<Sensor, int>();
         private Dictionary<Sensor, int> _consecutiveErrors = new Dictionary<Sensor, int>();
@@ -886,6 +938,8 @@ namespace NewAPP
                 ApplyHotkeysCommand = new RelayCommand(ExecuteApplyHotkeys);
                 UpdateProgrammCommand = new RelayCommand(ExecuteProgrammCommand);
                 LoggerCommand = new RelayCommand(ExecuteLoggerCommand);
+                NameCommand = new RelayCommand(ExecuteNameCommand);
+                WriteNomenclatureCommand = new RelayCommand(ExecuteWriteNomenclatureCommand); //кнопка передачи наименований номенклатуры
 
                 AvailableActions = new ObservableCollection<ActionItem>
                 {
@@ -1037,6 +1091,8 @@ namespace NewAPP
             IsNomenclatureVisible = false;
             IsHotkeysVisible = false;
 
+            IsNomenclatureSettingsVisible = false;
+
 
             //VisibleAdminButton();
             UpdateVisibleSensors();
@@ -1142,6 +1198,23 @@ namespace NewAPP
             IsRightCellsVisible = false;
             IsHotkeysVisible = false;
 
+            IsNomenclatureSettingsVisible = false;
+
+
+        }
+
+        private void ExecuteNameCommand( object param ) //кнопка добавления наименований
+        {
+            IsNomenclatureSettingsVisible = true;
+            IsAddUsersVisible = false;//уберу пока
+            IsWelcomeVisible = false;
+            IsSensorsVisible = false;
+            IsSettingsVisible = false;
+            IsTcpSettingsVisible = false;
+            IsTopControlsVisible = false;
+            IsNomenclatureVisible = false;
+            IsRightCellsVisible = false;
+            IsHotkeysVisible = false;
         }
 
         private async void ExecuteProgrammCommand ( object param )
@@ -1207,6 +1280,8 @@ namespace NewAPP
             IsNomenclatureVisible = false;
             IsAddUsersVisible = false;
             IsHotkeysVisible = false;
+            IsNomenclatureSettingsVisible = false;
+
             // VisibleAdminButton();
 
             StatusText = "Настройки калибровки";
@@ -1225,6 +1300,7 @@ namespace NewAPP
             IsSettingsVisible = false;
             IsHotkeysVisible = false;
             // VisibleAdminButton();
+            IsNomenclatureSettingsVisible = false;
 
             StatusText = "Настройки сети";
         }
@@ -1342,7 +1418,53 @@ namespace NewAPP
             
         }
 
+        private async void ExecuteWriteNomenclatureCommand (object param) //метод передачи данных на терминал
+        {
+            int index = NomenclatureChannelIndex; //номер ячейки
+            string specification = NomenclatureSpecification ?? ""; //спецификация 3 строка
+            string code = NomenclatureCode ?? "";
+            string name = NomenclatureName ?? "";
 
+            //определяем первый терминал
+            var terminal = TerminalVM.Terminals.FirstOrDefault();
+            if (terminal == null)
+            {
+                MessageBox.Show("не найдено терминалов!");
+            }
+            string firstTerminal = terminal.IpAddress;
+
+            //читаем регистры которые уже внесены
+            string currentName = await _calibration.ReadName(firstTerminal, 5000, index);
+            string currentCode = await _calibration.ReadCod(firstTerminal, 5000, index);
+            string currentSpecification = await _calibration.ReadSpecification(firstTerminal, 5000, index);
+
+
+            string nameToSend = string.IsNullOrWhiteSpace(name) ? currentName : name; //проверяем имя
+            await _calibration.SetName(firstTerminal, 5000, nameToSend, index);
+
+            string codeToSend = string.IsNullOrWhiteSpace(code) ? currentCode : code; //проверяем код
+            await _calibration.SetCode(firstTerminal, 5000, codeToSend, index);
+
+            string specificationToSend = string.IsNullOrWhiteSpace(specification) ? currentSpecification : specification; //проверяем спецификацию
+            await _calibration.SetSpecification(firstTerminal, 5000, specificationToSend, index);
+
+            //при передаче обнуляет данные которые не передаются
+            //if(specification != null)
+            //{
+            //    await _calibration.SetSpecification(firstTerminal, 5000, specification, index);
+            //}
+
+            //if (code != null)
+            //{
+            //    await _calibration.SetCode(firstTerminal, 5000, code, index);
+            //}
+
+            //if (name != null)
+            //{
+
+            //    await _calibration.SetName(firstTerminal, 5000, name, index);
+            //}
+        }
 
         private void OpenColumnSettings ( object parameter ) //кнопка открытия визуальных настроек
         {
@@ -1400,6 +1522,7 @@ namespace NewAPP
             IsWelcomeVisible = false;
             IsSensorsVisible = false;
             IsSettingsVisible = false;
+            IsNomenclatureSettingsVisible = false;
 
         }
 
@@ -1461,6 +1584,8 @@ namespace NewAPP
             IsRightCellsVisible = false;
             IsAddUsersVisible = false;
             IsHotkeysVisible = false;
+            IsNomenclatureSettingsVisible = false;
+
             LoadAllNomenclature();
         }
 

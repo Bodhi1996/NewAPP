@@ -14,8 +14,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="EasyModbusTCP" Version="5.6.0" />
     <PackageReference Include="EPPlus" Version="8.5.0" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.3" />
+    <PackageReference Include="System.IO.Ports" Version="10.0.10" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="10.0.10" />
     <PackageReference Include="Velopack" Version="0.0.1298" />
   </ItemGroup>
 
