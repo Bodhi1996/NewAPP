@@ -381,6 +381,6 @@ namespace NewAPP.Services
             string result = Encoding.GetEncoding("GBK").GetString(bytes).TrimEnd('\0');
 
             return string.IsNullOrWhiteSpace(result) ? " " : result;
-        } 
+        }
     }
 }
